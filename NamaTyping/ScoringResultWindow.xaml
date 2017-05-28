@@ -1,0 +1,89 @@
+﻿<Window x:Class="ScoringResultWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="採点結果" Height="480" Width="640" Icon="Images/report--pencil.png">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type ListViewItem}">
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#F3F7FB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+        <ToolBarPanel  DockPanel.Dock="Top">
+            <ToolBar ToolBarTray.IsLocked="True">
+                <Button ToolTip="クリップボードにコピー" Click="Button_Click">
+                    <Image VerticalAlignment="Center" Source="Images/document-copy.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                </Button>
+            </ToolBar>
+        </ToolBarPanel>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <ListView ItemsSource="{Binding}" Name="RankListBox"  AlternationCount="2">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Header="順位" Width="Auto" DisplayMemberBinding="{Binding Rank}" />
+                            <GridViewColumn Header="点数" Width="Auto" DisplayMemberBinding="{Binding Score}" />
+                            <GridViewColumn Header="名前" Width="Auto" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="前回順位" Width="Auto" DisplayMemberBinding="{Binding PreviousRank}" />
+                            <GridViewColumn Header="合計点数" Width="Auto" DisplayMemberBinding="{Binding TotalScore}" />
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+
+            </ListView>
+
+
+
+            <GridSplitter Width="5" Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Stretch"
+                        ResizeDirection="Columns">
+                <GridSplitter.Style>
+                    <Style TargetType="{x:Type GridSplitter}">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="LightGray" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </GridSplitter.Style>
+            </GridSplitter>
+
+
+            <ListView Grid.Column="2" Name="ResultListBox"
+                  AlternationCount="2">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Header="No" DisplayMemberBinding="{Binding CommentNo}" />
+                            <GridViewColumn Header="" DisplayMemberBinding="{Binding Rating}" />
+                            <GridViewColumn Header="" DisplayMemberBinding="{Binding Text}" />
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+                <!--<ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="" Value="">
+                            <Setter Property="Foreground" Value="Gray" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>-->
+            </ListView>
+        </Grid>
+    </DockPanel>
+</Window>
