@@ -84,6 +84,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="PresentationFramework.Royale" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceModel" />
@@ -129,6 +130,7 @@
       <DependentUpon>ScreenWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\User.vb" />
+    <Compile Include="Settings.vb" />
     <Compile Include="ViewModel\MainViewModel.vb" />
     <Compile Include="ViewModel\MessageKind.vb" />
     <Compile Include="ViewModel\RankDataViewModel.vb" />

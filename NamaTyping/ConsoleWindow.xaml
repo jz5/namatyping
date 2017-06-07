@@ -26,8 +26,11 @@
 
         </StackPanel>
         
-        <StackPanel Grid.Row="1" Margin="0 5 0 0">
-            <Button Content="閉じる" Width="100" HorizontalAlignment="Right" Click="Button_Click" IsDefault="True" />
+        <StackPanel Grid.Row="1" Margin="0 15 0 0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="設定ファイル保存フォルダを開く" Click="OpenSettingsFolder" Padding="10,1"  Margin="0,0,15,0" />
+                <Button Content="閉じる" Width="100" Click="Button_Click" IsDefault="True" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>
