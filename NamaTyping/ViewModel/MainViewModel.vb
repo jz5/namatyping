@@ -71,7 +71,7 @@ Namespace ViewModel
             End Set
         End Property
 
-        Private _ShowNameEntryMessages As Boolean
+        Private _ShowNameEntryMessages As Boolean = My.Settings.ShowNameEntryMessages
         Public Property ShowNameEntryMessages() As Boolean
             Get
                 Return _ShowNameEntryMessages
@@ -82,7 +82,7 @@ Namespace ViewModel
             End Set
         End Property
 
-        Private _ShowPointMessages As Boolean
+        Private _ShowPointMessages As Boolean = My.Settings.ShowPointMessages
         Public Property ShowPointMessages() As Boolean
             Get
                 Return _ShowPointMessages
@@ -93,7 +93,7 @@ Namespace ViewModel
             End Set
         End Property
 
-        Private _ShowFilteredMessages As Boolean = True
+        Private _ShowFilteredMessages As Boolean = My.Settings.ShowFilteredMessages
         Public Property ShowFilteredMessages() As Boolean
             Get
                 Return _ShowFilteredMessages
@@ -115,7 +115,7 @@ Namespace ViewModel
             End Set
         End Property
 
-        Private _DisplayCommentPattern As String = "■"
+        Private _DisplayCommentPattern As String = My.Settings.DisplayCommentPattern
         Public Property DisplayCommentPattern As String
             Get
                 Return _DisplayCommentPattern
@@ -180,7 +180,7 @@ Namespace ViewModel
             End Set
         End Property
 
-        Private _HighlightUsers As String = ""
+        Private _HighlightUsers As String = My.Settings.HighlightUsers
         Public Property HighlightUsers() As String
             Get
                 Return _HighlightUsers
@@ -236,7 +236,7 @@ Namespace ViewModel
             End Set
         End Property
 
-        Private _MessageFontSize As Double = 16
+        Private _MessageFontSize As Double = My.Settings.MessageFontSize
         Public Property MessageFontSize As Double
             Get
                 Return _MessageFontSize
@@ -247,7 +247,7 @@ Namespace ViewModel
             End Set
         End Property
 
-        Private _LyricFontSize As Double = 20
+        Private _LyricFontSize As Double = My.Settings.LyricFontSize
         Public Property LyricFontSize As Double
             Get
                 Return _LyricFontSize
@@ -280,7 +280,7 @@ Namespace ViewModel
             End Set
         End Property
 
-        Private _BottomGridOpacity As Double = 0.6
+        Private _BottomGridOpacity As Double = My.Settings.BottomGridOpacity
         Public Property BottomGridOpacity As Double
             Get
                 Return _BottomGridOpacity
@@ -291,7 +291,7 @@ Namespace ViewModel
             End Set
         End Property
 
-        Private _RecentLyricLineCount As Integer = 3
+        Private _RecentLyricLineCount As Integer = My.Settings.RecentLyricLineCount
         Public Property RecentLyricLineCount As Integer
             Get
                 Return _RecentLyricLineCount
@@ -1256,6 +1256,16 @@ Namespace ViewModel
                 End If
                 Return _ShowResultsCommand
             End Get
+        End Property
+
+        Private _WindowSizePattern As Integer = My.Settings.WindowSizePattern
+        Public Property WindowSizePattern As Integer
+            Get
+                Return _WindowSizePattern
+            End Get
+            Set(ByVal value As Integer)
+                _WindowSizePattern = value
+            End Set
         End Property
 
 

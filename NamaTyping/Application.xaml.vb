@@ -19,8 +19,16 @@ Class Application
         ScreenWindow = New ScreenWindow
         ScreenWindow.DataContext = ViewModel
         ScreenWindow.ScreenControl.DataContext = ViewModel
+        ScreenWindow.Topmost = My.Settings.Topmost
+        If Not Double.IsNaN(My.Settings.WindowLeft) Then
+            ScreenWindow.Left = My.Settings.WindowLeft
+        End If
+        If Not Double.IsNaN(My.Settings.WindowTop) Then
+            ScreenWindow.Top = My.Settings.WindowTop
+        End If
 
         ViewModel.Player = ScreenWindow.Player
+        ViewModel.Volume = My.Settings.Volume
 
         ViewModel.Dispatcher = ScreenWindow.Dispatcher
         ScreenWindow.Show()
@@ -74,6 +82,8 @@ Class Application
     End Sub
 
     Private Sub ScreenWindow_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles ScreenWindow.Closed
+        SaveSettings()
+
         ScreenWindow = Nothing
         If ConsoleWindow IsNot Nothing Then
             ConsoleWindow.Close()
@@ -136,5 +146,27 @@ Class Application
     Private Sub ViewModel_Stopped(ByVal sender As Object, ByVal e As System.EventArgs) Handles ViewModel.Stopped
     End Sub
 
+    ''' <summary>
+    ''' ユーザー設定を保存します。
+    ''' </summary>
+    Protected Sub SaveSettings()
+        My.Settings.Topmost = ScreenWindow.Topmost
+        My.Settings.ShowNameEntryMessages = ViewModel.ShowNameEntryMessages
+        My.Settings.ShowPointMessages = ViewModel.ShowPointMessages
+        My.Settings.ShowFilteredMessages = ViewModel.ShowFilteredMessages
+        My.Settings.DisplayCommentPattern = ViewModel.DisplayCommentPattern
+        My.Settings.HighlightUsers = ViewModel.HighlightUsers
+        My.Settings.MessageFontSize = ViewModel.MessageFontSize
+        My.Settings.LyricFontSize = ViewModel.LyricFontSize
+        My.Settings.BottomGridOpacity = ViewModel.BottomGridOpacity
+        My.Settings.RecentLyricLineCount = ViewModel.RecentLyricLineCount
+        My.Settings.Volume = ViewModel.Volume
+        My.Settings.WindowSizePattern = ViewModel.WindowSizePattern
+
+        My.Settings.WindowLeft = ScreenWindow.Left
+        My.Settings.WindowTop = ScreenWindow.Top
+
+        My.Settings.Save()
+    End Sub
 
 End Class

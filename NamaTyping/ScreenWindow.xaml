@@ -91,7 +91,7 @@
 
                 <ComboBox Width="120" SelectionChanged="ComboBox_SelectionChanged" 
                           Name="SizeComboBox"
-                          SelectedIndex="2">
+                          SelectedIndex="{Binding WindowSizePattern, Mode=TwoWay}">
                     <ComboBoxItem>
                         <TextBlock Padding="3,0,0,0">640x360 Uniform</TextBlock>
                     </ComboBoxItem>
