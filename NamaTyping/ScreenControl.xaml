@@ -298,7 +298,7 @@
 
                         <ToolBarTray Background="Transparent"  Margin="0" Orientation="Vertical">
                             <ToolBar Background="Transparent" ToolBarTray.IsLocked="True" Loaded="ToolBar_Loaded" IsVisibleChanged="ToolBar_IsVisibleChanged">
-                                <Button ToolTip="フォントを大きく1"
+                                <Button ToolTip="フォントを大きく"
                                         Command="{Binding ChangeLyricFontSizeCommand}" CommandParameter="1">
                                     <Image Source="Images/control-090.png" Width="16" Height="16" SnapsToDevicePixels="True" />
                                 </Button>

@@ -13,7 +13,7 @@
         <StackPanel>
             <TextBlock Text="表示するコメント:" />            
             <TextBox Text="{Binding DisplayCommentPattern}" />
-            <TextBlock Text="※ 以下の文字で始まるコメントを表示，指定なしで全コメント表示" />
+            <TextBlock Text="※ 以上の文字で始まるコメントを表示，指定なしで全コメント表示" />
             
             <TextBlock Text="色付きユーザー ID（コンマ区切り）:" Margin="0 10 0 0" />
             <TextBox Text="{Binding Path=HighlightUsers}" />
