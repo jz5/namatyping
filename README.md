@@ -1,6 +1,6 @@
 ## ニコ生タイピング
 
-ニコニコ生放送（http://live.nicovideo.jp）で放送中のコメントを利用したタイピングゲームです。
+ニコニコ生放送（<http://live.nicovideo.jp/>）で放送中のコメントを利用したタイピングゲームです。
 
 ## 説明
 
@@ -8,7 +8,7 @@
 
 ## ダウンロード
 
-* https://github.com/jz5/namatyping/releases
+* <https://github.com/jz5/namatyping/releases>
 
 ## 動作環境
 
