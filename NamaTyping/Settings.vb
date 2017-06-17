@@ -4,6 +4,7 @@
 ' SettingsLoaded イベントは、設定値が読み込まれた後に発生します。
 ' SettingsSaving イベントは、設定値が保存される前に発生します。
 Imports System.Configuration
+Imports System.IO
 
 Partial Friend NotInheritable Class MySettings
     ''' <summary>
@@ -52,15 +53,39 @@ Partial Friend NotInheritable Class MySettings
         If Version = "" Then
             MyBase.Upgrade()
 
-            'Dim OldVersion As Version = Nothing
-            'If (System.Version.TryParse(Version, OldVersion)) Then
-            '    If OldVersion.Major < 3 Then
-            '        マイグレーション処理
-            '    End If
-            'End If
+            Dim OldVersion As Version = Nothing
+            If (System.Version.TryParse(Version, OldVersion)) Then
+                CopyOldVersionFiles(OldVersion.ToString())
+
+                'If OldVersion.Major < 3 Then
+                '    マイグレーション処理
+                'End If
+            End If
 
             Version = My.Application.Info.Version.ToString()
             Save()
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' 旧バージョンの設定ファイル保存フォルダに存在する user.config 以外のファイルを、現バージョンのフォルダにコピーします。
+    ''' </summary>
+    ''' <param name="oldVersion">旧バージョン番号。</param>
+    Private Sub CopyOldVersionFiles(ByVal oldVersion As String)
+        Dim oldParentPath = My.Computer.FileSystem.CombinePath(My.Computer.FileSystem.GetParentPath(ParentPath), oldVersion)
+        If oldParentPath <> ParentPath Then
+            Dim exclusionFileName = My.Computer.FileSystem.GetName(FilePath)
+            Dim oldDirectory = New DirectoryInfo(oldParentPath)
+            For Each entry As FileSystemInfo In oldDirectory.EnumerateFileSystemInfos()
+                If entry.Name <> exclusionFileName Then
+                    Dim newEntryPath = My.Computer.FileSystem.CombinePath(ParentPath, My.Computer.FileSystem.GetName(entry.Name))
+                    If (entry.Attributes And FileAttributes.Directory) = FileAttributes.Directory Then
+                        My.Computer.FileSystem.CopyDirectory(entry.FullName, newEntryPath)
+                    Else
+                        My.Computer.FileSystem.CopyFile(entry.FullName, newEntryPath)
+                    End If
+                End If
+            Next
         End If
     End Sub
 
