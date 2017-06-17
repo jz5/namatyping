@@ -41,11 +41,20 @@
     <Setting Name="WindowSizePattern" Description="ウィンドウサイズなどのパターン (0〜3)。" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
+    <Setting Name="BlacklistCharactersHighlight" Description="運営NGワードの強調などを行う。" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
     <Setting Name="WindowLeft" Description="ウィンドウの横位置のキャッシュ。" Type="System.Double" Scope="User">
       <Value Profile="(Default)">NaN</Value>
     </Setting>
     <Setting Name="WindowTop" Description="ウィンドウの縦位置のキャッシュ。" Type="System.Double" Scope="User">
       <Value Profile="(Default)">NaN</Value>
+    </Setting>
+    <Setting Name="BlacklistCharactersSeparator" Description="運営NGワードを分断する文字。" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">/</Value>
+    </Setting>
+    <Setting Name="SubstitutionListDownloadURL" Description="NGワード置換ファイルを手動でダウンロードするURL。" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://id.pokemori.jp/niconico-live-ncv</Value>
     </Setting>
   </Settings>
 </SettingsFile>

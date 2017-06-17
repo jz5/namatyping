@@ -107,6 +107,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CharacterReplacer.vb" />
     <Compile Include="ConsoleWindow.xaml.vb">
       <DependentUpon>ConsoleWindow.xaml</DependentUpon>
     </Compile>
@@ -341,6 +342,9 @@
       <Project>{0ccd8d59-6fa4-4f12-b3b3-ec604720fbaf}</Project>
       <Name>NicoVideo.Lite</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SubstList.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

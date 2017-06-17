@@ -28,6 +28,19 @@ Namespace Model
             End Get
         End Property
 
+        Private Shared _CharacterReplacer As CharacterReplacer
+        Friend Shared Property CharacterReplacer As CharacterReplacer
+            Get
+                If _CharacterReplacer Is Nothing Then
+                    _CharacterReplacer = New CharacterReplacer()
+                End If
+                Return _CharacterReplacer
+            End Get
+            Set(value As CharacterReplacer)
+                _CharacterReplacer = value
+            End Set
+        End Property
+
         Property SoundFileName As String
         Property ImageFileName As String
         Property VideoFileName As String
@@ -240,7 +253,11 @@ Namespace Model
             Lines.Clear()
 
             Dim rawLines = New List(Of String)
-            For Each l In My.Computer.FileSystem.ReadAllText(file, encoding).Split(New String() {vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
+            Dim t = My.Computer.FileSystem.ReadAllText(file, encoding)
+            If My.Settings.BlacklistCharactersHighlight Then
+                t = CharacterReplacer.SplitWords(t)
+            End If
+            For Each l In t.Split(New String() {vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
                 If Not l.StartsWith("[") Then
                     Continue For
                 End If
@@ -288,7 +305,51 @@ Namespace Model
                 Lines.Add(l)
             Next
 
+            ' 強調範囲の設定
+            If My.Settings.BlacklistCharactersHighlight Then
+                Dim allText = ""
+                Dim startOffsets = New List(Of Integer)
+                For i = 0 To Lines.Count - 1
+                    startOffsets.Add(allText.Length)
+                    allText &= GetWipeText(i)
+                Next
+
+                Dim ranges = CharacterReplacer.Matches(allText)
+                While ranges.Count > 0
+                    Dim range = ranges.First()
+                    For i = 0 To Lines.Count - 1
+                        Dim start = startOffsets(i)
+                        Dim lineLength = GetWipeText(i).Length
+                        If start <= range.Key AndAlso range.Key < start + lineLength Then
+                            Lines(i).HighlightRanges.Add(range.Key - start, range.Value)
+                            ranges.Remove(range.Key)
+
+                            Dim rangeEnd = range.Key + range.Value
+                            Dim nextLineStart = start + lineLength
+                            If rangeEnd > nextLineStart Then
+                                ranges.Add(nextLineStart, rangeEnd - nextLineStart)
+                            End If
+                            Exit For
+                        End If
+                    Next
+                End While
+            End If
+
         End Sub
+
+        ''' <summary>
+        ''' 実際に表示されるテキストを取得します。
+        ''' </summary>
+        ''' <seealso cref="WipeTextBlock.Wipe"/>
+        ''' <param name="i">0から始まる行番号。</param>
+        ''' <returns><see cref="WipeEnabled"/>が設定されていれば、和字間隔 (U+3000) をスペース (U+0020) に置き換えた文字列。</returns>
+        Private Function GetWipeText(ByVal i As Integer) As String
+            Dim text = Lines(i).Text
+            If WipeEnabled Then
+                text = text.Replace("　", "  ")
+            End If
+            Return text
+        End Function
 
         'Private Sub ReadLyrics(ByVal fileNameWithoutExtension As String)
 

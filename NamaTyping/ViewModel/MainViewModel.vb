@@ -21,6 +21,11 @@ Namespace ViewModel
             End Set
         End Property
 
+        ''' <summary>
+        ''' 運営NGワードの強調色。
+        ''' </summary>
+        Private ReadOnly BlacklistCharactersHighlightColor As Brush = Brushes.Red
+
 #Region "Properties"
 
 
@@ -608,6 +613,12 @@ Namespace ViewModel
                     wtb.WipeEnabled = False
                     wtb.Text = Lyrics.Lines(LyricsIndex).Text
                 End If
+
+                ' 強調範囲の設定
+                For Each range As KeyValuePair(Of Integer, Integer) In Lyrics.Lines(LyricsIndex).HighlightRanges
+                    wtb.WipeTextBlock.TextEffects.Add(New TextEffect(Nothing, BlacklistCharactersHighlightColor, Nothing, range.Key, range.Value))
+                Next
+
                 RecentLyrics.Add(wtb)
 
                 '' お手本モード
@@ -1268,6 +1279,14 @@ Namespace ViewModel
             End Set
         End Property
 
+        Public Property BlacklistCharactersHighlight As Boolean
+            Get
+                Return My.Settings.BlacklistCharactersHighlight
+            End Get
+            Set(ByVal value As Boolean)
+                My.Settings.BlacklistCharactersHighlight = value
+            End Set
+        End Property
 
     End Class
 End Namespace

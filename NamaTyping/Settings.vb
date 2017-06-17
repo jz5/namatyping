@@ -26,6 +26,18 @@ Partial Friend NotInheritable Class MySettings
     ''' </summary>
     Protected Const WindowSizePatternCount As Integer = 4
 
+    ''' <summary>
+    ''' ユーザー設定ファイル (user.config) のパス。
+    ''' </summary>
+    ''' <returns></returns>
+    Friend ReadOnly Property FilePath As String = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoaming).FilePath
+
+    ''' <summary>
+    ''' ユーザー設定ファイル (user.config) が保存されているフォルダのパス。
+    ''' </summary>
+    ''' <returns></returns>
+    Friend ReadOnly Property ParentPath As String = My.Computer.FileSystem.GetParentPath(FilePath)
+
     Protected Overrides Sub OnSettingsLoaded(sender As Object, e As SettingsLoadedEventArgs)
         MyBase.OnSettingsLoaded(sender, e)
 
