@@ -105,6 +105,12 @@ Partial Friend NotInheritable Class MySettings
         If LyricFontSize > MaxFontSize Then
             LyricFontSize = MaxFontSize
         End If
+        If RankingFontSize < MinFontSize Then
+            RankingFontSize = MinFontSize
+        End If
+        If RankingFontSize > MaxFontSize Then
+            RankingFontSize = MaxFontSize
+        End If
         If BottomGridOpacity < 0 Then
             BottomGridOpacity = 0
         End If

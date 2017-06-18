@@ -263,7 +263,7 @@ Namespace ViewModel
             End Set
         End Property
 
-        Private _RankingFontSize As Double = 20
+        Private _RankingFontSize As Double = My.Settings.RankingFontSize
         Public Property RankingFontSize As Double
             Get
                 Return _RankingFontSize

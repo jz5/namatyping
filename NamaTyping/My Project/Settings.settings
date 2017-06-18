@@ -29,6 +29,9 @@
     <Setting Name="LyricFontSize" Description="歌詞のフォントサイズ (10〜34)。" Roaming="true" Type="System.Double" Scope="User">
       <Value Profile="(Default)">20</Value>
     </Setting>
+    <Setting Name="RankingFontSize" Description="ランキングのフォントサイズ (10〜34)。" Roaming="true" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
     <Setting Name="BottomGridOpacity" Description="歌詞・ランキング背景の不透明度。" Roaming="true" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0.6</Value>
     </Setting>
