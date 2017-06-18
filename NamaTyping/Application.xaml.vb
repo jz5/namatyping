@@ -158,6 +158,7 @@ Class Application
         My.Settings.HighlightUsers = ViewModel.HighlightUsers
         My.Settings.MessageFontSize = ViewModel.MessageFontSize
         My.Settings.LyricFontSize = ViewModel.LyricFontSize
+        My.Settings.RankingFontSize = ViewModel.RankingFontSize
         My.Settings.BottomGridOpacity = ViewModel.BottomGridOpacity
         My.Settings.RecentLyricLineCount = ViewModel.RecentLyricLineCount
         My.Settings.Volume = ViewModel.Volume

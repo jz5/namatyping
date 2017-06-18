@@ -207,6 +207,23 @@ Partial Friend NotInheritable Class MySettings
     End Property
     
     '''<summary>
+    '''ランキングのフォントサイズ (10〜34)。
+    '''</summary>
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("ランキングのフォントサイズ (10〜34)。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("20"),  _
+     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
+    Public Property RankingFontSize() As Double
+        Get
+            Return CType(Me("RankingFontSize"),Double)
+        End Get
+        Set
+            Me("RankingFontSize") = value
+        End Set
+    End Property
+    
+    '''<summary>
     '''歌詞・ランキング背景の不透明度。
     '''</summary>
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
