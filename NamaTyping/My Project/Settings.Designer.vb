@@ -275,6 +275,23 @@ Partial Friend NotInheritable Class MySettings
     End Property
     
     '''<summary>
+    '''運営NGワードの強調などを行う。
+    '''</summary>
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("運営NGワードの強調などを行う。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("True"),  _
+     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
+    Public Property BlacklistCharactersHighlight() As Boolean
+        Get
+            Return CType(Me("BlacklistCharactersHighlight"),Boolean)
+        End Get
+        Set
+            Me("BlacklistCharactersHighlight") = value
+        End Set
+    End Property
+    
+    '''<summary>
     '''ウィンドウの横位置のキャッシュ。
     '''</summary>
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
@@ -304,6 +321,32 @@ Partial Friend NotInheritable Class MySettings
         Set
             Me("WindowTop") = value
         End Set
+    End Property
+    
+    '''<summary>
+    '''運営NGワードを分断する文字。
+    '''</summary>
+    <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("運営NGワードを分断する文字。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("/")>  _
+    Public ReadOnly Property BlacklistCharactersSeparator() As String
+        Get
+            Return CType(Me("BlacklistCharactersSeparator"),String)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''NGワード置換ファイルを手動でダウンロードするURL。
+    '''</summary>
+    <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("NGワード置換ファイルを手動でダウンロードするURL。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("https://id.pokemori.jp/niconico-live-ncv")>  _
+    Public ReadOnly Property SubstitutionListDownloadURL() As String
+        Get
+            Return CType(Me("SubstitutionListDownloadURL"),String)
+        End Get
     End Property
 End Class
 
