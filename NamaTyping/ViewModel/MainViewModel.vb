@@ -984,14 +984,9 @@ Namespace ViewModel
                 Next
             Next
 
-            Dim ids = _HighlightUsers.Split(New Char() {","c}, StringSplitOptions.None)
+            Dim ids = _HighlightUsers.Split(New Char() {","c}, StringSplitOptions.None).Select(Function(id) id.Trim()).ToArray()
             For Each m In Member.Keys
-                For Each id In ids
-                    If m = id.Trim Then
-                        Member(m).Highlighted = True
-                        Exit For
-                    End If
-                Next
+                Member(m).Highlighted = ids.Contains(m)
             Next
 
             For Each m In Member.Values
