@@ -1206,7 +1206,7 @@ Namespace ViewModel
 
         Private Sub ChangeLyricFontSize(ByVal obj As Object)
             Dim d = Convert.ToInt32(obj)
-            lyricfontsize += d
+            LyricFontSize += d
         End Sub
 
         Private Function CanChangeLyricFontSize(ByVal obj As Object) As Boolean
