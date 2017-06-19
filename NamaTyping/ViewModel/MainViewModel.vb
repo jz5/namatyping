@@ -383,7 +383,7 @@ Namespace ViewModel
             Dim commentAdded As Boolean = False
 
             ' 
-            If ShowFilteredMessages AndAlso _
+            If ShowFilteredMessages AndAlso
                (DisplayCommentPattern.Trim = "" OrElse e.Comment.Text.StartsWith(DisplayCommentPattern.Trim)) Then
                 AddMessage(e.Comment.No, e.Comment.Text, MessageKind.Filtered)
                 commentAdded = True
@@ -984,7 +984,7 @@ Namespace ViewModel
                 Next
             Next
 
-            Dim ids = _HighlightUsers.Split(New Char() {","c}, StringSplitOptions.None).Select(Function(id) id.Trim()).ToArray()
+            Dim ids = _HighlightUsers.Split(New Char() {","c}, StringSplitOptions.None).Select(Function(id) id.Trim()).ToList
             For Each m In Member.Keys
                 Member(m).Highlighted = ids.Contains(m)
             Next
@@ -994,8 +994,8 @@ Namespace ViewModel
                 'm.NormalizedScore = Convert.ToInt32(m.Score / maxScore * 1000.0)
             Next
 
-            Dim orderedMember = From m In Member.Values _
-                                Where m.RecentCommentDateTime >= StartDateTime _
+            Dim orderedMember = From m In Member.Values
+                                Where m.RecentCommentDateTime >= StartDateTime
                                 Order By m.NormalizedScore Descending, m.TotalScore Descending, m.PreviousRank Ascending
 
 
