@@ -39,6 +39,11 @@ Partial Friend NotInheritable Class MySettings
     ''' <returns></returns>
     Friend ReadOnly Property ParentPath As String = My.Computer.FileSystem.GetParentPath(FilePath)
 
+    ''' <summary>
+    ''' <see cref="Upgrade"/>を呼び出し済みなら真。
+    ''' </summary>
+    Private AlreadyUpgraded As Boolean = False
+
     Protected Overrides Sub OnSettingsLoaded(sender As Object, e As SettingsLoadedEventArgs)
         MyBase.OnSettingsLoaded(sender, e)
 
@@ -50,20 +55,24 @@ Partial Friend NotInheritable Class MySettings
     ''' 旧バージョンのユーザー設定を引き継ぎます。
     ''' </summary>
     Public Overrides Sub Upgrade()
-        If Version = "" Then
-            MyBase.Upgrade()
+        If Not AlreadyUpgraded Then
+            AlreadyUpgraded = True
 
-            Dim OldVersion As Version = Nothing
-            If (System.Version.TryParse(Version, OldVersion)) Then
-                CopyOldVersionFiles(OldVersion.ToString())
+            If Version = "" Then
+                MyBase.Upgrade()
 
-                'If OldVersion.Major < 3 Then
-                '    マイグレーション処理
-                'End If
+                Dim OldVersion As Version = Nothing
+                If (System.Version.TryParse(Version, OldVersion)) Then
+                    CopyOldVersionFiles(OldVersion.ToString())
+
+                    'If OldVersion.Major < 3 Then
+                    '    マイグレーション処理
+                    'End If
+                End If
+
+                Version = My.Application.Info.Version.ToString()
+                Save()
             End If
-
-            Version = My.Application.Info.Version.ToString()
-            Save()
         End If
     End Sub
 
