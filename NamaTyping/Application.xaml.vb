@@ -14,6 +14,12 @@ Class Application
     Protected Overrides Sub OnStartup(ByVal e As StartupEventArgs)
         MyBase.OnStartup(e)
 
+        If Not System.Diagnostics.Debugger.IsAttached Then
+            ' 「デバッグなしで開始」していれば
+            AddHandler DispatcherUnhandledException, AddressOf Application_DispatcherUnhandledException
+            AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf CurrentDomain_UnhandledException
+        End If
+
         ViewModel = New ViewModel.MainViewModel
 
         ScreenWindow = New ScreenWindow
@@ -168,6 +174,37 @@ Class Application
         My.Settings.WindowTop = ScreenWindow.Top
 
         My.Settings.Save()
+    End Sub
+
+    ''' <summary>
+    ''' WPF UIスレッドにおける未処理例外のイベントハンドラ。
+    ''' </summary>
+    Private Sub Application_DispatcherUnhandledException(sender As Object, e As Windows.Threading.DispatcherUnhandledExceptionEventArgs)
+        e.Handled = True
+        ShowExceptionAndShutdown(e.Exception)
+    End Sub
+
+    ''' <summary>
+    ''' WPF UIスレッド以外における未処理例外のイベントハンドラ。
+    ''' </summary>
+    Private Sub CurrentDomain_UnhandledException(sender As Object, e As UnhandledExceptionEventArgs)
+        ShowExceptionAndShutdown(CType(e.ExceptionObject, Exception))
+    End Sub
+
+    ''' <summary>
+    ''' 異常終了を表すコード。
+    ''' </summary>
+    Private Const FailureExitCode = 1
+
+    ''' <summary>
+    ''' 例外情報を表示し、アプリケーションを終了します。
+    ''' </summary>
+    Private Sub ShowExceptionAndShutdown(ex As Exception)
+        MsgBox(
+            "問題が発生したため、アプリケーションを終了します。" & vbNewLine & vbNewLine & "例外情報 (Ctrl+Cでコピー可能):" & vbNewLine & ex.ToString(),
+            MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical
+        )
+        Shutdown(FailureExitCode)
     End Sub
 
 End Class
