@@ -55,17 +55,35 @@ Namespace Model
 
         Property WipeEnabled As Boolean
 
-        Public Sub Load(ByVal file As String)
+        ''' <summary>
+        ''' ファイルを読み込みます。
+        ''' </summary>
+        ''' <param name="file">存在するXMLファイル、またはlrcファイルのパス。</param>
+        ''' <param name="errorMessage">読み込みに失敗した場合のエラーメッセージ。</param>
+        ''' <returns>読み込みに成功していれば<c>True</c>を返します。</returns>
+        Public Function TryLoad(ByVal file As String, Optional ByRef errorMessage As String = Nothing) As Boolean
 
+            Dim success = False
             If file.ToUpper.EndsWith(".XML") Then
-                LoadFromXml(file)
+                success = TryLoadFromXml(file, errorMessage)
             ElseIf file.ToUpper.EndsWith(".LRC") Then
-                LoadFromLyrics(file)
+                success = TryLoadFromLyrics(file, errorMessage)
             Else
 
             End If
 
-        End Sub
+            If Not success AndAlso errorMessage Is Nothing Then
+                If ReplacementWordsFileName Is Nothing Then
+                    errorMessage = "置換ファイル(.rep.txt, .repl.txt)がありません"
+                ElseIf LyricsFileName Is Nothing Then
+                    errorMessage = "歌詞ファイル(.lrc)がありません"
+                ElseIf VideoFileName Is Nothing OrElse SoundFileName Is Nothing Then
+                    errorMessage = "動画またはサウンドファイルがありません"
+                End If
+            End If
+
+            Return success
+        End Function
 
         Public Sub Reload()
             If Not System.IO.File.Exists(ReplacementWordsFileName) Then
@@ -79,16 +97,22 @@ Namespace Model
             LoadLyrics(LyricsFileName, Encoding)
         End Sub
 
-        Public ReadOnly Property Exists As Boolean
+        Private ReadOnly Property Exists As Boolean
             Get
                 Return ReplacementWordsFileName IsNot Nothing AndAlso LyricsFileName IsNot Nothing AndAlso
                     (VideoFileName IsNot Nothing OrElse SoundFileName IsNot Nothing)
             End Get
         End Property
 
-        Private Sub LoadFromXml(ByVal file As String)
+        Private Function TryLoadFromXml(ByVal file As String, Optional ByRef errorMessage As String = Nothing) As Boolean
 
-            Dim doc = XDocument.Load(file)
+            Dim doc As XDocument
+            Try
+                doc = XDocument.Load(file)
+            Catch ex As System.Xml.XmlException
+                errorMessage = String.Format("「{0}」の読み込みに失敗しました: {1}", My.Computer.FileSystem.GetName(file), ex.Message)
+                Return False
+            End Try
             Dim path = System.IO.Path.GetDirectoryName(file)
 
             For Each entry In doc...<entry>
@@ -98,7 +122,7 @@ Namespace Model
                 If entry.<ntype:encoding>.Value IsNot Nothing Then
                     Try
                         Encoding = System.Text.Encoding.GetEncoding(entry.<ntype:encoding>.Value)
-                    Catch
+                    Catch ex As ArgumentException
                         ' ignore
                     End Try
                 End If
@@ -119,6 +143,14 @@ Namespace Model
                 For Each link In entry...<link>
                     ' TODO: http:// 処理
 
+                    If link.@href Is Nothing Then
+                        errorMessage = "次の <link> タグに href 属性が存在しません: " & New XElement(link.Name.LocalName, link.Elements(), link.Attributes()).ToString()
+                        Return False
+                    End If
+                    If link.@href.IndexOfAny(System.IO.Path.GetInvalidPathChars()) <> -1 Then
+                        errorMessage = String.Format("href 属性値「{0}」には、パスに使えない文字が含まれています。", link.@href)
+                        Return False
+                    End If
                     Dim f = System.IO.Path.Combine(path, link.@href)
                     If Not System.IO.File.Exists(f) Then
                         Continue For
@@ -154,17 +186,18 @@ Namespace Model
                 If Exists Then
                     LoadReplacementWords(ReplacementWordsFileName, Encoding)
                     LoadLyrics(LyricsFileName, Encoding)
+                    Return True
                 End If
 
                 ' MEMO: not supported multi entries
                 Exit For
             Next
 
-
-        End Sub
+            Return False
+        End Function
 
         ' for old format
-        Private Sub LoadFromLyrics(ByVal file As String)
+        Private Function TryLoadFromLyrics(ByVal file As String, Optional ByRef errorMessage As String = Nothing) As Boolean
             Dim path = System.IO.Path.GetDirectoryName(file)
             Dim fileNameWithoutExtenstion = System.IO.Path.GetFileNameWithoutExtension(file)
 
@@ -215,9 +248,11 @@ Namespace Model
             If Exists Then
                 LoadReplacementWords(ReplacementWordsFileName, Encoding)
                 LoadLyrics(LyricsFileName, Encoding)
+                Return True
             End If
 
-        End Sub
+            Return False
+        End Function
 
 
 
