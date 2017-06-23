@@ -179,7 +179,7 @@ Class Application
     ''' <summary>
     ''' WPF UIスレッドにおける未処理例外のイベントハンドラ。
     ''' </summary>
-    Private Sub Application_DispatcherUnhandledException(sender As Object, e As Windows.Threading.DispatcherUnhandledExceptionEventArgs)
+    Private Sub Application_DispatcherUnhandledException(sender As Object, e As System.Windows.Threading.DispatcherUnhandledExceptionEventArgs)
         e.Handled = True
         ShowExceptionAndShutdown(e.Exception)
     End Sub

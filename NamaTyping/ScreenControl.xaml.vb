@@ -14,7 +14,7 @@
         Dim toolBar = DirectCast(sender, ToolBar)
         Dim grid = toolBar.Template.FindName("OverflowGrid", toolBar)
         If grid IsNot Nothing Then
-            DirectCast(grid, FrameworkElement).Visibility = Windows.Visibility.Collapsed
+            DirectCast(grid, FrameworkElement).Visibility = System.Windows.Visibility.Collapsed
         End If
     End Sub
 
