@@ -238,9 +238,10 @@
         </ToolBarPanel>
 
         <StatusBar Grid.Row="4">
-            <StatusBarItem x:Name="statusBarItem">
+            <StatusBarItem x:Name="statusBarItem" MaxWidth="{Binding ElementName=ScreenWindowsFormsHost, Path=Width}">
                 <TextBox IsReadOnly="True" x:Name="StatusTextBox" Text="{Binding StatusMessage}"
-						 BorderThickness="0" Background="Transparent" VerticalAlignment="Center">
+						 BorderThickness="0" Background="Transparent" VerticalAlignment="Center"
+                         MaxLines="1" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="TextChanged">
                             <ei:ControlStoryboardAction Storyboard="{StaticResource FadeStoryboard}"/>

@@ -793,24 +793,12 @@ Namespace ViewModel
 
 
                 Dim l = New Lyrics
-                Try
-                    l.Load(dialog.FileName)
 
-                    If Not l.Exists Then
-                        If l.ReplacementWordsFileName Is Nothing Then
-                            StatusMessage = "置換ファイル(.rep.txt, .repl.txt)がありません"
-                        ElseIf l.LyricsFileName Is Nothing Then
-                            StatusMessage = "歌詞ファイル(.lrc)がありません"
-                        ElseIf l.VideoFileName Is Nothing OrElse Lyrics.SoundFileName Is Nothing Then
-                            StatusMessage = "動画またはサウンドファイルがありません"
-                        End If
-                        Exit Sub
-                    End If
-
-                Catch ex As Exception
-                    StatusMessage = "ファイル読み込み中にエラーが発生しました"
+                Dim errorMessage As String = Nothing
+                If Not l.TryLoad(dialog.FileName, errorMessage) Then
+                    StatusMessage = errorMessage
                     Exit Sub
-                End Try
+                End If
 
                 Lyrics = l
 
