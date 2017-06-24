@@ -1,6 +1,7 @@
 ﻿Imports System.Text.RegularExpressions
 Imports <xmlns="http://www.w3.org/2005/Atom">
 Imports <xmlns:ntype="http://namaalert.jp/namatyping">
+Imports Pronama.NamaTyping.TextEncoding
 
 Namespace Model
 
@@ -48,6 +49,7 @@ Namespace Model
         Property NgWordsFileName As String
         Property LyricsFileName As String
         Property Encoding As System.Text.Encoding
+        Property ReplacementWordsFileEncoding As System.Text.Encoding
 
         Property Title As String
         Property Offset As Double = 0
@@ -93,7 +95,7 @@ Namespace Model
                 Exit Sub
             End If
 
-            LoadReplacementWords(ReplacementWordsFileName, Encoding)
+            LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
             LoadLyrics(LyricsFileName, Encoding)
         End Sub
 
@@ -118,10 +120,10 @@ Namespace Model
             For Each entry In doc...<entry>
                 Title = entry.<title>.Value
 
-                Encoding = System.Text.Encoding.GetEncoding("shift_jis")
                 If entry.<ntype:encoding>.Value IsNot Nothing Then
                     Try
                         Encoding = System.Text.Encoding.GetEncoding(entry.<ntype:encoding>.Value)
+                        ReplacementWordsFileEncoding = Encoding
                     Catch ex As ArgumentException
                         ' ignore
                     End Try
@@ -184,7 +186,7 @@ Namespace Model
                 Next
 
                 If Exists Then
-                    LoadReplacementWords(ReplacementWordsFileName, Encoding)
+                    LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
                     LoadLyrics(LyricsFileName, Encoding)
                     Return True
                 End If
@@ -243,10 +245,8 @@ Namespace Model
                 Next
             End If
 
-            Encoding = System.Text.Encoding.GetEncoding("Shift_JIS")
-
             If Exists Then
-                LoadReplacementWords(ReplacementWordsFileName, Encoding)
+                LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
                 LoadLyrics(LyricsFileName, Encoding)
                 Return True
             End If
@@ -256,11 +256,10 @@ Namespace Model
 
 
 
-        Private Sub LoadReplacementWords(ByVal file As String, ByVal encoding As System.Text.Encoding)
+        Private Sub LoadReplacementWords(ByVal file As String, ByRef encoding As System.Text.Encoding)
             ReplacementWords.Clear()
 
-            Dim lines = My.Computer.FileSystem.ReadAllText( _
-                file, encoding).Split(New String() {vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
+            Dim lines = ReadAllText(file, encoding).Split(New String() {vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
 
             Dim sortedLines = From l In lines Order By l.Length Descending
 
@@ -284,11 +283,11 @@ Namespace Model
 
         End Sub
 
-        Private Sub LoadLyrics(ByVal file As String, ByVal encoding As System.Text.Encoding)
+        Private Sub LoadLyrics(ByVal file As String, ByRef encoding As System.Text.Encoding)
             Lines.Clear()
 
             Dim rawLines = New List(Of String)
-            Dim t = My.Computer.FileSystem.ReadAllText(file, encoding)
+            Dim t = ReadAllText(file, encoding)
             If My.Settings.BlacklistCharactersHighlight Then
                 t = CharacterReplacer.SplitWords(t)
             End If

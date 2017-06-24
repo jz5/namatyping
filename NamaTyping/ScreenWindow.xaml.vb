@@ -160,7 +160,7 @@ Partial Public Class ScreenWindow
         End If
 
         Try
-            Dim lines = My.Computer.FileSystem.ReadAllText(file, System.Text.Encoding.GetEncoding("shift_jis")).Split(New String() {vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
+            Dim lines = TextEncoding.ReadAllText(file).Split(New String() {vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
             For Each l In lines
                 Dim words = l.Split(","c)
                 If words.Length < 2 Then
