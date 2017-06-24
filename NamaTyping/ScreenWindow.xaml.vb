@@ -1,5 +1,6 @@
 ﻿'Imports Hal.CookieGetterSharp
 Imports Pronama.NicoVideo.LiveStreaming
+Imports Pronama.NamaTyping.TextEncoding
 
 Partial Public Class ScreenWindow
 
@@ -160,7 +161,7 @@ Partial Public Class ScreenWindow
         End If
 
         Try
-            Dim lines = TextEncoding.ReadAllText(file).Split(New String() {vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
+            Dim lines = ReadLinesWithoutBlankLines(ReadAllText(file))
             For Each l In lines
                 Dim words = l.Split(","c)
                 If words.Length < 2 Then

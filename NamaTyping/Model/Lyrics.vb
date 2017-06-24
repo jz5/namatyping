@@ -259,7 +259,7 @@ Namespace Model
         Private Sub LoadReplacementWords(ByVal file As String, ByRef encoding As System.Text.Encoding)
             ReplacementWords.Clear()
 
-            Dim lines = ReadAllText(file, encoding).Split(New String() {vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
+            Dim lines = ReadLinesWithoutBlankLines(ReadAllText(file, encoding))
 
             Dim sortedLines = From l In lines Order By l.Length Descending
 
@@ -291,7 +291,7 @@ Namespace Model
             If My.Settings.BlacklistCharactersHighlight Then
                 t = CharacterReplacer.SplitWords(t)
             End If
-            For Each l In t.Split(New String() {vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
+            For Each l In ReadLinesWithoutBlankLines(t)
                 If Not l.StartsWith("[") Then
                     Continue For
                 End If

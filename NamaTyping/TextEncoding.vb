@@ -25,4 +25,20 @@ Friend NotInheritable Class TextEncoding
         End If
     End Function
 
+    ''' <summary>
+    ''' 空行を除いた各行を返します。
+    ''' </summary>
+    ''' <param name="text"></param>
+    ''' <returns></returns>
+    Friend Shared Iterator Function ReadLinesWithoutBlankLines(ByVal text As String) As IEnumerable(Of String)
+        Using reader = New IO.StringReader(text)
+            While reader.Peek() <> -1
+                Dim line = reader.ReadLine()
+                If line IsNot "" Then
+                    Yield line
+                End If
+            End While
+        End Using
+    End Function
+
 End Class
