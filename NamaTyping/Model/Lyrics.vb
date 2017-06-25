@@ -95,8 +95,16 @@ Namespace Model
                 Exit Sub
             End If
 
-            LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
-            LoadLyrics(LyricsFileName, Encoding)
+            If TryLoadLyrics(LyricsFileName, Encoding) Then
+                LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
+            Else
+                MessageBox.Show(
+                    String.Format("「{0}」にはタイムタグで始まる行がありません", System.IO.Path.GetFileName(LyricsFileName)),
+                    My.Application.Info.Title,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                )
+            End If
         End Sub
 
         Private ReadOnly Property Exists As Boolean
@@ -187,7 +195,10 @@ Namespace Model
 
                 If Exists Then
                     LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
-                    LoadLyrics(LyricsFileName, Encoding)
+                    If Not TryLoadLyrics(LyricsFileName, Encoding) Then
+                        errorMessage = String.Format("「{0}」にはタイムタグで始まる行がありません", System.IO.Path.GetFileName(LyricsFileName))
+                        Return False
+                    End If
                     Return True
                 End If
 
@@ -247,7 +258,10 @@ Namespace Model
 
             If Exists Then
                 LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
-                LoadLyrics(LyricsFileName, Encoding)
+                If Not TryLoadLyrics(LyricsFileName, Encoding) Then
+                    errorMessage = String.Format("「{0}」にはタイムタグで始まる行がありません", System.IO.Path.GetFileName(LyricsFileName))
+                    Return False
+                End If
                 Return True
             End If
 
@@ -283,9 +297,7 @@ Namespace Model
 
         End Sub
 
-        Private Sub LoadLyrics(ByVal file As String, ByRef encoding As System.Text.Encoding)
-            Lines.Clear()
-
+        Private Function TryLoadLyrics(ByVal file As String, ByRef encoding As System.Text.Encoding) As Boolean
             Dim rawLines = New List(Of String)
             Dim t = ReadAllText(file, encoding)
             If My.Settings.BlacklistCharactersHighlight Then
@@ -297,6 +309,10 @@ Namespace Model
                 End If
                 rawLines.Add(l)
             Next
+
+            If rawLines.Count = 0 Then
+                Return False
+            End If
 
             ' 1行に複数タイムタグがあるか
             For Each l In rawLines
@@ -313,6 +329,8 @@ Namespace Model
                     rawLines(i) &= rawLines(i + 1).Substring(0, "[xx:xx:xx]".Length)
                 End If
             Next
+
+            Lines.Clear()
 
             For i = 0 To rawLines.Count - 1
 
@@ -369,7 +387,9 @@ Namespace Model
                 End While
             End If
 
-        End Sub
+            Return True
+
+        End Function
 
         ''' <summary>
         ''' 実際に表示されるテキストを取得します。
