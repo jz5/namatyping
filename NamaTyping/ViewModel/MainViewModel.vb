@@ -812,12 +812,12 @@ Namespace ViewModel
             OnPropertyChanged("BackgroundImage")
             Player.Close()
 
-            If Lyrics.SoundFileName <> "" Then
-                Player.Source = New Uri(Lyrics.SoundFileName)
-
-            ElseIf Lyrics.VideoFileName <> "" Then
+            If Lyrics.VideoFileName <> "" Then
                 BackgroundImage = Nothing
                 Player.Source = New Uri(Lyrics.VideoFileName)
+            ElseIf Lyrics.SoundFileName <> "" Then
+                Player.Source = New Uri(Lyrics.SoundFileName)
+
             End If
 
             IsLoaded = True
