@@ -154,13 +154,16 @@ Friend NotInheritable Class CharacterReplacer
                 LoadSubstitutionList(doc)
                 doc.Save(FilePath)
                 Updated = downloadedFileUpdated
-                MsgBox("NGワード置換ファイルの取得が完了しました。", MsgBoxStyle.OkOnly Or MsgBoxStyle.Information)
+                MessageBox.Show("NGワード置換ファイルの取得が完了しました。", My.Application.Info.Title, MessageBoxButton.OK, MessageBoxImage.Information)
             Else
-                MsgBox("NGワード置換ファイルは最新です。", MsgBoxStyle.OkOnly Or MsgBoxStyle.Information)
+                MessageBox.Show("NGワード置換ファイルは最新です。", My.Application.Info.Title, MessageBoxButton.OK, MessageBoxImage.Information)
             End If
         Catch ex As Exception
-            MsgBox("NGワード置換ファイルの取得中に例外が発生しました。" & vbNewLine & vbNewLine & "例外情報:" & vbNewLine & ex.ToString(),
-                MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical
+            MessageBox.Show(
+                "NGワード置換ファイルの取得中に例外が発生しました。" & vbNewLine & vbNewLine & "例外情報:" & vbNewLine & ex.ToString(),
+                My.Application.Info.Title,
+                MessageBoxButton.OK,
+                MessageBoxImage.Error
             )
             Variants.Clear()
             Load()
@@ -203,9 +206,11 @@ Friend NotInheritable Class CharacterReplacer
                 PatternForReplacement = Nothing
                 Updated = Nothing
                 Variants.Clear()
-                MsgBox(
+                MessageBox.Show(
                     FilePath & " の読み込み中に例外が発生しました。内蔵ファイルから読み込んで続行します。" & vbNewLine & vbNewLine & "例外情報:" & vbNewLine & ex.ToString(),
-                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical
+                    My.Application.Info.Title,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
                 )
             End Try
         End If
