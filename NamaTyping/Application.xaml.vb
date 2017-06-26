@@ -200,9 +200,11 @@ Class Application
     ''' 例外情報を表示し、アプリケーションを終了します。
     ''' </summary>
     Private Sub ShowExceptionAndShutdown(ex As Exception)
-        MsgBox(
+        MessageBox.Show(
             "問題が発生したため、アプリケーションを終了します。" & vbNewLine & vbNewLine & "例外情報 (Ctrl+Cでコピー可能):" & vbNewLine & ex.ToString(),
-            MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical
+            My.Application.Info.Title,
+            MessageBoxButton.OK,
+            MessageBoxImage.Error
         )
         Shutdown(FailureExitCode)
     End Sub
