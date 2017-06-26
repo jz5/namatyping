@@ -7,6 +7,29 @@ Namespace Model
 
     Public Class Lyrics
 
+        ''' <summary>
+        ''' 動画ファイルの拡張子。音声ファイルでも使う拡張子のうち、音声ファイルである場合が多い拡張子は含まない。
+        ''' </summary>
+        ''' <returns></returns>
+        Private ReadOnly Property VideoFileExtensions As String() = {
+            ".3g2", ".3gp", ".3gp2", ".asf", ".avi", ".flv", ".ivf", ".m4v", ".mov", ".mp4", ".mp4v", ".mpeg", ".mpg", ".ogv", ".ogx", ".webm", ".wm", ".wmv"
+        }
+
+        ''' <summary>
+        ''' 音声ファイルの拡張子。動画ファイルでも使う拡張子のうち、動画ファイルである場合が多い拡張子は含まない。
+        ''' </summary>
+        ''' <returns></returns>
+        Private ReadOnly Property AudioFileExtensions As String() = {
+            ".aac", ".aif", ".aifc", ".aiff", ".au", ".m4a", ".mid", ".midi", ".mp2", ".mp3", ".mpa", ".oga", ".ogg", ".rmi", ".snd", ".spx", ".wav", ".wma"
+        }
+
+        ''' <summary>
+        ''' 画像ファイルの拡張子。
+        ''' </summary>
+        ''' <returns></returns>
+        Private ReadOnly Property ImageFileExtensions As String() = {
+            ".jpg", ".jpeg", ".png", ".bmp"
+        }
 
         Private _ReplacementWords As New Dictionary(Of String, String)
         Public ReadOnly Property ReplacementWords() As IDictionary(Of String, String)
@@ -169,7 +192,7 @@ Namespace Model
                     If link.@rel = "alternate" Then
                         LyricsFileName = f
 
-                    ElseIf link.@rel = "enclosure" Then
+                    ElseIf link.@rel = "enclosure" AndAlso link.@type IsNot Nothing Then
 
                         Select Case link.@type
                             Case "text/plain"
@@ -180,14 +203,15 @@ Namespace Model
                                     NgWordsFileName = f
                                 End If
 
-                            Case "video/x-ms-wmv"
-                                VideoFileName = f
-
                             Case "image/png", "iamge/png", "image/jpeg", "image/bmp"
                                 ImageFileName = f
 
-                            Case "audio/mpeg"
-                                SoundFileName = f
+                            Case Else
+                                If link.@type.StartsWith("video/") Then
+                                    VideoFileName = f
+                                ElseIf link.@type.StartsWith("audio/") Then
+                                    SoundFileName = f
+                                End If
 
                         End Select
                     End If
@@ -232,29 +256,16 @@ Namespace Model
                 LyricsFileName = lrcFile
             End If
 
-            Dim wmvFile = System.IO.Path.Combine(path, fileNameWithoutExtenstion & ".wmv")
-            If System.IO.File.Exists(wmvFile) Then
-                VideoFileName = wmvFile
-            Else
-                Dim mp3File = System.IO.Path.Combine(path, fileNameWithoutExtenstion & ".mp3")
-                If System.IO.File.Exists(mp3File) Then
-                    SoundFileName = mp3File
+            For Each fileInfo In New System.IO.DirectoryInfo(path).GetFiles(fileNameWithoutExtenstion & ".*")
+                Dim extension = fileInfo.Name.Substring(fileNameWithoutExtenstion.Length).ToLower()
+                If VideoFileExtensions.Contains(extension) Then
+                    VideoFileName = fileInfo.FullName
+                ElseIf AudioFileExtensions.Contains(extension) Then
+                    SoundFileName = fileInfo.FullName
+                ElseIf ImageFileExtensions.Contains(extension) Then
+                    ImageFileName = fileInfo.FullName
                 End If
-
-                Dim wmaFile = System.IO.Path.Combine(path, fileNameWithoutExtenstion & ".wma")
-                If System.IO.File.Exists(wmaFile) Then
-                    SoundFileName = wmaFile
-                End If
-
-                Dim supportImageExtensions = New String() {".jpg", ".jpeg", ".png", ".bmp"}
-                For Each ext In supportImageExtensions
-                    Dim imageFile = System.IO.Path.Combine(path, fileNameWithoutExtenstion & ext)
-                    If System.IO.File.Exists(imageFile) Then
-                        ImageFileName = imageFile
-                        Exit For
-                    End If
-                Next
-            End If
+            Next
 
             If Exists Then
                 LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)

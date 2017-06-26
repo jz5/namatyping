@@ -812,17 +812,17 @@ Namespace ViewModel
             OnPropertyChanged("BackgroundImage")
             Player.Close()
 
-            If Lyrics.SoundFileName <> "" Then
-                Player.Source = New Uri(Lyrics.SoundFileName)
-
-            ElseIf Lyrics.VideoFileName <> "" Then
+            If Lyrics.VideoFileName <> "" Then
                 BackgroundImage = Nothing
                 Player.Source = New Uri(Lyrics.VideoFileName)
+            ElseIf Lyrics.SoundFileName <> "" Then
+                Player.Source = New Uri(Lyrics.SoundFileName)
+
             End If
 
             IsLoaded = True
 
-            ' 総時間表示のため Pause で Media を開く
+            ' 総時間表示、およびメディア形式検証のため Pause で Media を開く
             Player.Pause()
             Player.Position = TimeSpan.FromSeconds(0)
             OnPropertyChanged("MediaLength")
@@ -1123,6 +1123,14 @@ Namespace ViewModel
 
         Private Sub _Player_MediaOpened(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles _Player.MediaOpened
             OnPropertyChanged("MediaLength")
+        End Sub
+
+        Private Sub _Player_MediaFailed(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles _Player.MediaFailed
+            StatusMessage = String.Format(
+                "「{0}」はWindows Media Playerで再生できない{1}ファイルです。",
+                My.Computer.FileSystem.GetName(If(Lyrics.SoundFileName, Lyrics.VideoFileName)),
+                If(Lyrics.SoundFileName IsNot Nothing, "音声", "動画")
+            )
         End Sub
 
         Private Sub _Player_MediaEnded(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles _Player.MediaEnded
