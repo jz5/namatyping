@@ -122,7 +122,7 @@ Namespace Model
                 LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
             Else
                 MessageBox.Show(
-                    String.Format("「{0}」にはタイムタグで始まる行がありません", System.IO.Path.GetFileName(LyricsFileName)),
+                    $"「{System.IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません",
                     My.Application.Info.Title,
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
@@ -143,7 +143,7 @@ Namespace Model
             Try
                 doc = XDocument.Load(file)
             Catch ex As System.Xml.XmlException
-                errorMessage = String.Format("「{0}」の読み込みに失敗しました: {1}", My.Computer.FileSystem.GetName(file), ex.Message)
+                errorMessage = $"「{My.Computer.FileSystem.GetName(file)}」の読み込みに失敗しました: {ex.Message}"
                 Return False
             End Try
             Dim path = System.IO.Path.GetDirectoryName(file)
@@ -181,7 +181,7 @@ Namespace Model
                         Return False
                     End If
                     If link.@href.IndexOfAny(System.IO.Path.GetInvalidPathChars()) <> -1 Then
-                        errorMessage = String.Format("href 属性値「{0}」には、パスに使えない文字が含まれています。", link.@href)
+                        errorMessage = $"href 属性値「{link.@href}」には、パスに使えない文字が含まれています。"
                         Return False
                     End If
                     Dim f = System.IO.Path.Combine(path, link.@href)
@@ -220,7 +220,7 @@ Namespace Model
                 If Exists Then
                     LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
                     If Not TryLoadLyrics(LyricsFileName, Encoding) Then
-                        errorMessage = String.Format("「{0}」にはタイムタグで始まる行がありません", System.IO.Path.GetFileName(LyricsFileName))
+                        errorMessage = $"「{System.IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません"
                         Return False
                     End If
                     Return True
@@ -270,7 +270,7 @@ Namespace Model
             If Exists Then
                 LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
                 If Not TryLoadLyrics(LyricsFileName, Encoding) Then
-                    errorMessage = String.Format("「{0}」にはタイムタグで始まる行がありません", System.IO.Path.GetFileName(LyricsFileName))
+                    errorMessage = $"「{System.IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません"
                     Return False
                 End If
                 Return True

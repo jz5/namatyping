@@ -201,7 +201,7 @@ Class Application
     ''' </summary>
     Private Sub ShowExceptionAndShutdown(ex As Exception)
         MessageBox.Show(
-            "問題が発生したため、アプリケーションを終了します。" & vbNewLine & vbNewLine & "例外情報 (Ctrl+Cでコピー可能):" & vbNewLine & ex.ToString(),
+            $"問題が発生したため、アプリケーションを終了します。{vbNewLine}{vbNewLine}例外情報 (Ctrl+Cでコピー可能):{vbNewLine}{ex}",
             My.Application.Info.Title,
             MessageBoxButton.OK,
             MessageBoxImage.Error

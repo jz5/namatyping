@@ -160,7 +160,7 @@ Friend NotInheritable Class CharacterReplacer
             End If
         Catch ex As Exception
             MessageBox.Show(
-                "NGワード置換ファイルの取得中に例外が発生しました。" & vbNewLine & vbNewLine & "例外情報:" & vbNewLine & ex.ToString(),
+                $"NGワード置換ファイルの取得中に例外が発生しました。{vbNewLine}{vbNewLine}例外情報:{vbNewLine}{ex}",
                 My.Application.Info.Title,
                 MessageBoxButton.OK,
                 MessageBoxImage.Error
@@ -207,7 +207,7 @@ Friend NotInheritable Class CharacterReplacer
                 Updated = Nothing
                 Variants.Clear()
                 MessageBox.Show(
-                    FilePath & " の読み込み中に例外が発生しました。内蔵ファイルから読み込んで続行します。" & vbNewLine & vbNewLine & "例外情報:" & vbNewLine & ex.ToString(),
+                    $"「{FilePath}」の読み込み中に例外が発生しました。内蔵ファイルから読み込んで続行します。{vbNewLine}{vbNewLine}例外情報:{vbNewLine}{ex}",
                     My.Application.Info.Title,
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
