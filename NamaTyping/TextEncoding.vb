@@ -7,6 +7,11 @@ Imports Ude
 Friend NotInheritable Class TextEncoding
 
     ''' <summary>
+    ''' UTF-8におけるBOM。
+    ''' </summary>
+    Private Shared ReadOnly UTF8BOM As Byte() = New Byte() {&HEF, &HBB, &HBF}
+
+    ''' <summary>
     ''' ファイルから文字列を取得します。
     ''' </summary>
     ''' <param name="file">存在するファイルのパス。</param>
@@ -19,6 +24,9 @@ Friend NotInheritable Class TextEncoding
             detector.Feed(bytes, 0, bytes.Length)
             detector.DataEnd()
             encoding = If(detector.Charset Is Charsets.SHIFT_JIS, Encoding.GetEncoding("Shift_JIS"), Encoding.UTF8)
+            If encoding Is Encoding.UTF8 AndAlso bytes.Take(UTF8BOM.Length).SequenceEqual(UTF8BOM) Then
+                bytes = bytes.Skip(UTF8BOM.Length).ToArray()
+            End If
             Return encoding.GetString(bytes)
         Else
             Return My.Computer.FileSystem.ReadAllText(file, encoding)
