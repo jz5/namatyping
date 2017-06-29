@@ -74,19 +74,20 @@ Friend NotInheritable Class ReplacementWordsGenerator
         ByVal extension As String,
         ByRef uniquePath As String
     ) As Boolean
-        uniquePath = My.Computer.FileSystem.CombinePath(directoryPath, fileNameWithoutExtension & extension)
-        If Not My.Computer.FileSystem.FileExists(uniquePath) AndAlso Not My.Computer.FileSystem.DirectoryExists(uniquePath) Then
+        uniquePath = Path.Combine(directoryPath, fileNameWithoutExtension & extension)
+        If Not File.Exists(uniquePath) AndAlso Not Directory.Exists(uniquePath) Then
             Return True
         Else
             Dim m = Regex.Match("^(.*)\(\d+\)$", fileNameWithoutExtension)
             Dim fileNameWithoutNumber = If(m.Success, m.Groups(1).Value, fileNameWithoutExtension & " ")
 
-            Dim fileSystemEntries = Directory.GetFileSystemEntries(directoryPath, $"{fileNameWithoutNumber}(*){extension}")
+            Dim filenames = From f In Directory.GetFileSystemEntries(directoryPath, $"{fileNameWithoutNumber}(*){extension}")
+                            Select Path.GetFileName(f)
 
             For i = 2 To MaxDuplicateFileName
                 Dim fileName = $"{fileNameWithoutNumber}({i}){extension}"
-                uniquePath = My.Computer.FileSystem.CombinePath(directoryPath, fileName)
-                If Not fileSystemEntries.Contains(fileName) Then
+                If Not filenames.Contains(fileName) Then
+                    uniquePath = Path.Combine(directoryPath, fileName)
                     Return True
                 End If
             Next
