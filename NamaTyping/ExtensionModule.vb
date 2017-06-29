@@ -54,8 +54,8 @@ Module ExtensionModule
             Alphanumerics.Add(wideChars(i), harfChars(i))
         Next
 
-        Const katakana As String = "ヲァィゥェォャュョッアイウエオナニヌネノマミムメモヤユヨラリルレロワンカキクケコサシスセソタチツテトハヒフヘホガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ"
-        Const hiragana As String = "をぁぃぅぇぉゃゅょっあいうえおなにぬねのまみむめもやゆよらりるれろわんかきくけこさしすせそたちつてとはひふへほがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ"
+        Const katakana As String = "ヲァィゥェォャュョッアイウエオナニヌネノマミムメモヤユヨラリルレロワンカキクケコサシスセソタチツテトハヒフヘホガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポヴヰヱ"
+        Const hiragana As String = "をぁぃぅぇぉゃゅょっあいうえおなにぬねのまみむめもやゆよらりるれろわんかきくけこさしすせそたちつてとはひふへほがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゔゐゑ"
 
         For i = 0 To katakana.Length - 1
             KanaDictionary.Add(katakana(i), hiragana(i))
