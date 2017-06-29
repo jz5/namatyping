@@ -238,4 +238,23 @@ Partial Public Class ScreenWindow
         'Uniform
     End Sub
 
+    ''' <summary>
+    ''' 「ファイルを開く」ダイアログを表示し、選択されたファイルからニコ生タイピング用置換ファイル (*.repl.txt) を生成します。
+    ''' </summary>
+    Private Sub GenerateReplacementWordsFile()
+        Dim dialog = New Microsoft.Win32.OpenFileDialog() With {
+            .Filter = "歌詞ファイル (*.lrc;*.txt)|*.lrc;*.txt|すべてのファイル (*.*)|*.*"
+        }
+
+        If dialog.ShowDialog() Then
+            Dim outputFilePath As String = Nothing
+            Dim errorMessage As String = Nothing
+            ViewModel.StatusMessage = If(
+                ReplacementWordsGenerator.TryGenerate(dialog.FileName, outputFilePath, errorMessage),
+                $"ファイル名「{My.Computer.FileSystem.GetName(outputFilePath)}」で保存しました。",
+                errorMessage
+            )
+        End If
+    End Sub
+
 End Class

@@ -33,6 +33,8 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -83,6 +85,9 @@
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LibNMeCab, Version=0.0.6.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NMeCab.0.06.4\lib\LibNMeCab.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Expression.Interactions" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework.Aero" />
@@ -120,6 +125,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ReplacementWordsGenerator.vb" />
     <Compile Include="TextEncoding.vb" />
     <Compile Include="CharacterReplacer.vb" />
     <Compile Include="ConsoleWindow.xaml.vb">
@@ -227,6 +233,14 @@
       <SubType>Designer</SubType>
     </None>
     <DesignTimeOnly Include="DataStore\DataStore\DataStore.xsd" />
+    <None Include="dic\naist-jdic\AUTHORS" />
+    <None Include="dic\naist-jdic\char.bin" />
+    <None Include="dic\naist-jdic\COPYING" />
+    <None Include="dic\naist-jdic\dicrc" />
+    <None Include="dic\naist-jdic\matrix.bin" />
+    <None Include="dic\naist-jdic\README" />
+    <None Include="dic\naist-jdic\sys.dic" />
+    <None Include="dic\naist-jdic\unk.dic" />
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -361,5 +375,20 @@
   <ItemGroup>
     <None Include="Resources\SubstList.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\document-convert.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lgpl.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <Import Project="..\packages\NMeCab.0.06.4\build\NMeCab.targets" Condition="Exists('..\packages\NMeCab.0.06.4\build\NMeCab.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\NMeCab.0.06.4\build\NMeCab.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NMeCab.0.06.4\build\NMeCab.targets'))" />
+  </Target>
 </Project>
