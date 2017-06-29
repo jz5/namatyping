@@ -92,11 +92,13 @@ Module ExtensionModule
     End Function
 
     <Extension()>
-    Public Function ToHiragana(ByVal text As String, ByVal replacementTable As IDictionary(Of String, String)) As String
+    Public Function ToHiragana(ByVal text As String, Optional ByVal replacementTable As IDictionary(Of String, String) = Nothing) As String
 
-        For Each word In replacementTable
-            text = text.Replace(word.Key, word.Value)
-        Next
+        If replacementTable IsNot Nothing Then
+            For Each word In replacementTable
+                text = text.Replace(word.Key, word.Value)
+            Next
+        End If
 
         Dim newText = New System.Text.StringBuilder
         For Each c In text

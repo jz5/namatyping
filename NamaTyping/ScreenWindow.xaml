@@ -113,56 +113,70 @@
 						  x:Name="ScreenWindowsFormsHost" VerticalAlignment="Center" HorizontalAlignment="Center" />
 
         <ToolBarPanel Grid.Row="2">
+            <DockPanel>
 
-            <ToolBar ToolBarTray.IsLocked="True">
+                <ToolBar ToolBarTray.IsLocked="True" DockPanel.Dock="Right">
 
-                <!--<Button ToolTip="ホーム" Command="{Binding GoHomeCommand}">
-					<Image VerticalAlignment="Center" Source="Images/home.png" Width="16" Height="16" SnapsToDevicePixels="True" x:Name="image2" />
-				</Button>-->
+                    <Button Click="GenerateReplacementWordsFile">
+                        <Button.ToolTip>
+                            <TextBlock>
+                                ニコ生タイピング用置換ファイル (.repl.txt) を生成する<LineBreak/>
+                                (※タイムタグが含まれていても可能)
+                            </TextBlock>
+                        </Button.ToolTip>
+                        <Image Source="Images/document-convert.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                    </Button>
 
-                <Button ToolTip="開く" Command="{Binding LoadCommand}" Margin="5 0 0 0">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Image Source="Images/folder-open-document-music.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                        <TextBlock Text="開く" VerticalAlignment="Center" Margin="5 0 5 0" />
+                </ToolBar>
+
+                <ToolBar ToolBarTray.IsLocked="True">
+
+                    <!--<Button ToolTip="ホーム" Command="{Binding GoHomeCommand}">
+					    <Image VerticalAlignment="Center" Source="Images/home.png" Width="16" Height="16" SnapsToDevicePixels="True" x:Name="image2" />
+				    </Button>-->
+
+                    <Button ToolTip="開く" Command="{Binding LoadCommand}" Margin="5 0 0 0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Image Source="Images/folder-open-document-music.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                            <TextBlock Text="開く" VerticalAlignment="Center" Margin="5 0 5 0" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button ToolTip="開始" Command="{Binding PlayCommand}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Image Source="Images/control.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                            <TextBlock Text="開始" VerticalAlignment="Center" Margin="5 0 5 0" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button ToolTip="終了しランキングを表示します" Command="{Binding StopCommand}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Image Source="Images/trophy.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                            <TextBlock Text="終了" VerticalAlignment="Center" Margin="5 0 5 0" />
+                        </StackPanel>
+                    </Button>
+
+                    <!--<Button ToolTip="ランキング・採点情報をアップロードします" IsEnabled="False">
+					    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+						    <Image Source="Images/arrow-curve-090-left.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+						    <TextBlock Text="アップロード" VerticalAlignment="Center" Margin="5 0 5 0" />
+					    </StackPanel>
+				    </Button>-->
+
+                    <Separator Margin="5 0 0 0" />
+
+                    <TextBlock Text="{Binding PlayerPosition, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
+                    <TextBlock Text="/" Margin="0" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding MediaLength, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
+
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" ToolTip="音量" Margin="5 0 0 0">
+                        <Image Source="Images/speaker-volume.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                        <Slider Width="80" Margin="5 0 5 0" Value="{Binding Volume}" VerticalAlignment="Center" Maximum="1" Minimum="0" LargeChange="0.2" />
                     </StackPanel>
-                </Button>
 
-                <Button ToolTip="開始" Command="{Binding PlayCommand}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Image Source="Images/control.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                        <TextBlock Text="開始" VerticalAlignment="Center" Margin="5 0 5 0" />
-                    </StackPanel>
-                </Button>
-
-                <Button ToolTip="終了しランキングを表示します" Command="{Binding StopCommand}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Image Source="Images/trophy.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                        <TextBlock Text="終了" VerticalAlignment="Center" Margin="5 0 5 0" />
-                    </StackPanel>
-                </Button>
-
-                <!--<Button ToolTip="ランキング・採点情報をアップロードします" IsEnabled="False">
-					<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-						<Image Source="Images/arrow-curve-090-left.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-						<TextBlock Text="アップロード" VerticalAlignment="Center" Margin="5 0 5 0" />
-					</StackPanel>
-				</Button>-->
-
-                <Separator Margin="5 0 0 0" />
-
-                <TextBlock Text="{Binding PlayerPosition, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
-                <TextBlock Text="/" Margin="0" VerticalAlignment="Center" />
-                <TextBlock Text="{Binding MediaLength, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
-
-
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" ToolTip="音量" Margin="5 0 0 0">
-                    <Image Source="Images/speaker-volume.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                    <Slider Width="80" Margin="5 0 5 0" Value="{Binding Volume}" VerticalAlignment="Center" Maximum="1" Minimum="0" LargeChange="0.2" />
-                </StackPanel>
-
-
-            </ToolBar>
-
+                </ToolBar>
+            </DockPanel>
         </ToolBarPanel>
 
         <ToolBarPanel Grid.Row="3">
