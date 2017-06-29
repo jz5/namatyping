@@ -355,7 +355,7 @@ Namespace ViewModel
                 'If _Message.Count > 5 Then
                 '    _Message.RemoveAt(0)
                 'End If
-                Messages.Add(String.Format("{0}: {1}", no, message))
+                Messages.Add($"{no}: {message}")
                 OnMessageAdded()
             End If
 
