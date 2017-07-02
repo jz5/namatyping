@@ -8,10 +8,36 @@ Namespace LiveStreaming
         StandingA
         StandingB
         StandingC
+        StandingD
+        StandingE
+        StandingF
+        StandingG
+        StandingH
+        StandingI
     End Enum
 
     <DataContract()>
     Public Class CommentServer
+        ''' <summary>
+        ''' <see cref="CommunityChannelRoom"/>に対応する<see cref="RoomLabel"/>。(<see cref="CommunityChannelRoom.Arena"/>を除く)
+        ''' </summary>
+        ''' <returns></returns>
+        Private Shared ReadOnly Property RoomLabels As String()
+            Get
+                Return {
+                    Nothing,
+                    "立ち見A列",
+                    "立ち見B列",
+                    "立ち見C列",
+                    "立ち見D列",
+                    "立ち見E列",
+                    "立ち見F列",
+                    "立ち見G列",
+                    "立ち見H列",
+                    "立ち見I列"
+                }
+            End Get
+        End Property
 
         Property LiveId As String
         <DataMember(Name:="addr")>
@@ -27,19 +53,14 @@ Namespace LiveStreaming
         ReadOnly Property Room As CommunityChannelRoom?
             Get
                 If _Room Is Nothing Then
-                    Select Case RoomLabel
-                        Case "立ち見A列"
-                            _Room = CommunityChannelRoom.StandingA
-                        Case "立ち見B列"
-                            _Room = CommunityChannelRoom.StandingB
-                        Case "立ち見C列"
-                            _Room = CommunityChannelRoom.StandingC
-                        Case Else
-                            If RoomLabel IsNot Nothing AndAlso RoomLabel.StartsWith("co") OrElse RoomLabel.StartsWith("ch") Then
-                                _Room = CommunityChannelRoom.Arena
-                            End If
-                    End Select
+                    Dim index = Array.IndexOf(RoomLabels, RoomLabel)
+                    If index <> -1 Then
+                        _Room = DirectCast(index, CommunityChannelRoom)
+                    ElseIf RoomLabel IsNot Nothing AndAlso RoomLabel.StartsWith("co") OrElse RoomLabel.StartsWith("ch") Then
+                        _Room = CommunityChannelRoom.Arena
+                    End If
                 End If
+                Return _Room
             End Get
         End Property
 
@@ -67,111 +88,25 @@ Namespace LiveStreaming
 
         Public Shared Function ChangeRoom(currentServer As CommentServer, dest As CommunityChannelRoom) As CommentServer
 
+            Dim delta = dest - currentServer.Room.Value
+
+            ' Port
             Const minPort = 2805
-            Const maxPort = 2814
-            Dim destPort = currentServer.Port
-
-            Select Case currentServer.Room
-                Case CommunityChannelRoom.Arena
-                    Select Case dest
-                        Case CommunityChannelRoom.StandingA
-                            destPort += 1
-                        Case CommunityChannelRoom.StandingB
-                            destPort += 2
-                        Case CommunityChannelRoom.StandingC
-                            destPort += 3
-                    End Select
-
-                Case CommunityChannelRoom.StandingA
-                    Select Case dest
-                        Case CommunityChannelRoom.Arena
-                            destPort -= 1
-                        Case CommunityChannelRoom.StandingB
-                            destPort += 1
-                        Case CommunityChannelRoom.StandingC
-                            destPort += 2
-                    End Select
-
-                Case CommunityChannelRoom.StandingB
-                    Select Case dest
-                        Case CommunityChannelRoom.Arena
-                            destPort -= 2
-                        Case CommunityChannelRoom.StandingA
-                            destPort -= 1
-                        Case CommunityChannelRoom.StandingC
-                            destPort += 1
-                    End Select
-
-                Case CommunityChannelRoom.StandingC
-                    Select Case dest
-                        Case CommunityChannelRoom.Arena
-                            destPort -= 3
-                        Case CommunityChannelRoom.StandingA
-                            destPort -= 2
-                        Case CommunityChannelRoom.StandingC
-                            destPort -= 1
-                    End Select
-
-            End Select
-
-            Dim hostNumberDelta = 0
+            Const maxPort = 2854
+            Dim destPort = currentServer.Port + (delta * 10)
 
             If destPort < minPort Then
-                hostNumberDelta -= 1
-                destPort = (maxPort + 1) - (minPort - destPort)
+                destPort = maxPort - (minPort - destPort)
             ElseIf destPort > maxPort Then
-                hostNumberDelta += 1
-                destPort = (minPort - 1) + (destPort - maxPort)
+                destPort = minPort + (destPort - maxPort)
             End If
 
             ' Thread
-            Dim destThread = currentServer.Thread
-            Select Case currentServer.Room
-                Case CommunityChannelRoom.Arena
-                    Select Case dest
-                        Case CommunityChannelRoom.StandingA
-                            destThread += 1
-                        Case CommunityChannelRoom.StandingB
-                            destThread += 2
-                        Case CommunityChannelRoom.StandingC
-                            destThread += 3
-                    End Select
-
-                Case CommunityChannelRoom.StandingA
-                    Select Case dest
-                        Case CommunityChannelRoom.Arena
-                            destThread -= 1
-                        Case CommunityChannelRoom.StandingB
-                            destThread += 1
-                        Case CommunityChannelRoom.StandingC
-                            destThread += 2
-                    End Select
-
-                Case CommunityChannelRoom.StandingB
-                    Select Case dest
-                        Case CommunityChannelRoom.Arena
-                            destThread -= 2
-                        Case CommunityChannelRoom.StandingA
-                            destThread -= 1
-                        Case CommunityChannelRoom.StandingC
-                            destThread += 1
-                    End Select
-
-                Case CommunityChannelRoom.StandingC
-                    Select Case dest
-                        Case CommunityChannelRoom.Arena
-                            destThread -= 3
-                        Case CommunityChannelRoom.StandingA
-                            destThread -= 2
-                        Case CommunityChannelRoom.StandingB
-                            destThread -= 1
-                    End Select
-
-            End Select
+            Dim destThread = currentServer.Thread + delta
 
             ' Host
             Const minHost = 101
-            Const maxHost = 104
+            Const maxHost = 105
             Dim destAddress = currentServer.Address
 
             Dim m = Regex.Match(currentServer.Address, "^msg(?<host>\d+)\.live\.nicovideo\.jp$")
@@ -180,7 +115,7 @@ Namespace LiveStreaming
 
             End If
 
-            Dim hostNumber = Convert.ToInt32(m.Groups("host").Value) + hostNumberDelta
+            Dim hostNumber = Convert.ToInt32(m.Groups("host").Value) + delta
             If hostNumber < minHost Then
                 hostNumber = maxHost
             ElseIf hostNumber > maxHost Then
@@ -193,7 +128,9 @@ Namespace LiveStreaming
                 .LiveId = currentServer.LiveId,
                 .Address = destAddress,
                 .Port = destPort,
-                .Thread = destThread}
+                .Thread = destThread,
+                ._Room = dest,
+                .RoomLabel = RoomLabels(dest)}
 
             Return server
 

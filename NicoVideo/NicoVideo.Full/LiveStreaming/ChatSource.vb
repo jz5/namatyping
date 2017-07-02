@@ -6,6 +6,7 @@
         Alert = 2
         Broadcaster = 3
         [Operator] = 6
+        BSP = 7
     End Enum
 
 End Namespace

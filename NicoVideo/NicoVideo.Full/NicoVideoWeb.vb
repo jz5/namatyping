@@ -128,7 +128,7 @@ Public Class NicoVideoWeb
 
         ' id, icon uri
         Dim id As String
-        Dim m0 = Regex.Match(livePageHtml, "(?<img>http://icon\.nimg\.jp/(community|channel/s)/(?<id>.+?)\.jpg\?\d+)")
+        Dim m0 = Regex.Match(livePageHtml, "<img src=""(?<img>https?://icon\.nimg\.jp/(community/\d+|channel/s)/(?<id>.+?)\.jpg\?\d+)")
         If m0.Success Then
             id = m0.Groups("id").Value
 
@@ -148,18 +148,13 @@ Public Class NicoVideoWeb
         End If
 
         ' title
-        Dim m1 = Regex.Match(livePageHtml, "<title>(?<title>.*?)</title>")
+        Dim m1 = Regex.Match(livePageHtml, "<meta property=""og:title"" content=""(?<title>[^""]+)"">")
         If m1.Success Then
-            p.Title = m1.Groups("title").Value
-            If p.Title.EndsWith(" - ニコニコ生放送") Then
-                p.Title = p.Title.Substring(0, p.Title.Length - " - ニコニコ生放送".Length)
-            End If
+            p.Title = WebUtility.HtmlDecode(m1.Groups("title").Value)
         End If
 
         ' live id
-        'http://nicomoba.jp/live/watch/lv66806033
-
-        Dim m2 = Regex.Match(livePageHtml, "http://nicomoba\.jp/live/watch/(?<id>lv\d+)")
+        Dim m2 = Regex.Match(livePageHtml, "<meta property=""og:url"" content=""https?://live\.nicovideo\.jp/watch/(?<id>lv\d+)")
         If m2.Success Then
             p.Id = m2.Groups("id").Value
         End If
@@ -168,21 +163,19 @@ Public Class NicoVideoWeb
         Dim pattern2 As String
         If p.ChannelCommunity.Type = ChannelCommunityType.Channel Then
             'ch
-            pattern2 = "<a href=""http://ch\.nicovideo\.jp/channel/ch\d+"".*?>(?<name>.*?)</a>"
+            pattern2 = "class=""ch_name"" title=""(?<name>[^""]+)"">"
         Else
-            pattern2 = "<a href=""http://com\.nicovideo\.jp/community/co\d+"".*?>(?<name>.*?)</a>"
+            pattern2 = "<span itemprop=""name"">(?<name>[^<]+)</span>"
         End If
 
-        Dim m4 = Regex.Matches(livePageHtml, pattern2, RegexOptions.Singleline)
-        For Each m As Match In m4
-            If Not m.Groups("name").Value.StartsWith("<") Then
-                p.ChannelCommunity.Name = m.Groups("name").Value
-            End If
-        Next
+        Dim m4 = Regex.Match(livePageHtml, pattern2, RegexOptions.Singleline)
+        If m4.Success Then
+            p.ChannelCommunity.Name = WebUtility.HtmlDecode(m4.Groups("name").Value)
+        End If
 
         ' level
         If p.ChannelCommunity.Type = ChannelCommunityType.Community Then
-            Dim m5 = Regex.Match(livePageHtml, "レベル：<strong.*?>(?<lv>\d+)</strong>")
+            Dim m5 = Regex.Match(livePageHtml, "<p class=""community-info-score"">\s*[^：]+：<strong[^>]*>\d+</strong>\s*/\s*[^：]+：<strong[^>]*>(?<lv>\d+)</strong>\s*</p>")
             If m5.Success Then
                 DirectCast(p.ChannelCommunity, Community).Level = Convert.ToInt32(m5.Groups("lv").Value)
             End If
