@@ -169,6 +169,7 @@ Class Application
         My.Settings.RecentLyricLineCount = ViewModel.RecentLyricLineCount
         My.Settings.Volume = ViewModel.Volume
         My.Settings.WindowSizePattern = ViewModel.WindowSizePattern
+        My.Settings.ConnectAllCommentServers = ViewModel.ConnectAllCommentServers
 
         My.Settings.WindowLeft = ScreenWindow.Left
         My.Settings.WindowTop = ScreenWindow.Top
