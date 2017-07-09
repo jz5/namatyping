@@ -314,26 +314,22 @@ Namespace Model
             If My.Settings.SplitBlacklistCharacters Then
                 t = CharacterReplacer.SplitWords(t)
             End If
+
             For Each l In ReadLinesWithoutBlankLines(t)
-                If Not l.StartsWith("[") Then
-                    Continue For
+                Dim m = Regex.Match(l, "^\[\d{2}:\d{2}:\d{2}\](?<karaoke>.*\[\d{2}:\d{2}:\d{2}\])?")
+                If m.Success Then
+                    rawLines.Add(l)
+
+                    ' 1行に複数タイムタグがあるか
+                    If Not WipeEnabled AndAlso m.Groups.Item("karaoke").Success Then
+                        WipeEnabled = True
+                    End If
                 End If
-                rawLines.Add(l)
             Next
 
             If rawLines.Count = 0 Then
                 Return False
             End If
-
-            ' 1行に複数タイムタグがあるか
-            For Each l In rawLines
-                Dim m = Regex.Matches(l, "\[\d{2}:\d{2}:\d{2}\]")
-                If m.Count > 1 Then
-                    WipeEnabled = True
-                    Exit For
-                End If
-            Next
-
 
             For i = 0 To rawLines.Count - 2
                 If Not rawLines(i).EndsWith("]") Then
