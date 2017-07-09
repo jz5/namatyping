@@ -86,8 +86,8 @@ Friend NotInheritable Class ReplacementWordsGenerator
 
             For i = 2 To MaxDuplicateFileName
                 Dim fileName = $"{fileNameWithoutNumber}({i}){extension}"
+                uniquePath = Path.Combine(directoryPath, fileName)
                 If Not filenames.Contains(fileName) Then
-                    uniquePath = Path.Combine(directoryPath, fileName)
                     Return True
                 End If
             Next
