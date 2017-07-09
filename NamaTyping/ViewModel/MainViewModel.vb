@@ -6,6 +6,7 @@ Imports Pronama.NicoVideo.LiveStreaming
 Imports Pronama.NicoVideo.LiveStreaming.CommunityChannelRoom
 Imports System.Text.RegularExpressions
 Imports System.Threading.Tasks
+Imports System.Runtime.InteropServices
 
 Namespace ViewModel
 
@@ -27,6 +28,21 @@ Namespace ViewModel
         ''' 運営NGワードの強調色。
         ''' </summary>
         Private ReadOnly BlacklistCharactersHighlightColor As Brush = Brushes.Red
+
+        ''' <summary>
+        ''' <see cref="MediaElement"/>で Media 読み込み時、対応していないメディア形式だった場合に
+        ''' 発生する<see cref="MediaElement.MediaFailed"/>における<see cref="COMException.ErrorCode"/>の値。
+        ''' </summary>
+        ''' <remarks>
+        ''' 正式な定数名は不明。
+        ''' </remarks>
+        Private Const MilaverrLoadfailed = &HC00D11B1
+
+        ''' <summary>
+        ''' <see cref="MediaElement.SpeedRatio"/>設定時、速度変更に対応していないメディア形式だった場合に
+        ''' 発生する<see cref="MediaElement.MediaFailed"/>における<see cref="COMException.ErrorCode"/>の値。
+        ''' </summary>
+        Private Const MilaverrUnexpectedwmpfailure = &H8898050C
 
 #Region "Properties"
 
@@ -1207,12 +1223,20 @@ Namespace ViewModel
             OnPropertyChanged("MediaLength")
         End Sub
 
-        Private Sub _Player_MediaFailed(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles _Player.MediaFailed
-            StatusMessage = String.Format(
-                "「{0}」はWindows Media Playerで再生できない{1}ファイルです。",
-                My.Computer.FileSystem.GetName(If(Lyrics.SoundFileName, Lyrics.VideoFileName)),
-                If(Lyrics.SoundFileName IsNot Nothing, "音声", "動画")
-            )
+        Private Sub _Player_MediaFailed(ByVal sender As Object, ByVal e As System.Windows.ExceptionRoutedEventArgs) Handles _Player.MediaFailed
+            If TypeOf e.ErrorException Is COMException Then
+                Dim fileName = My.Computer.FileSystem.GetName(If(Lyrics.SoundFileName, Lyrics.VideoFileName))
+                Dim type = If(Lyrics.SoundFileName IsNot Nothing, "音声", "動画")
+                Select Case e.ErrorException.HResult
+                    Case MilaverrLoadfailed
+                        StatusMessage = $"「{fileName}」はWindows Media Playerで再生できない{type}ファイルです。"
+                        Exit Sub
+                    Case MilaverrUnexpectedwmpfailure
+                        StatusMessage = $"「{fileName}」はWindows Media Playerで早送りできない{type}ファイルです。"
+                        Exit Sub
+                End Select
+                Throw e.ErrorException
+            End If
         End Sub
 
         Private Sub _Player_MediaEnded(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles _Player.MediaEnded
