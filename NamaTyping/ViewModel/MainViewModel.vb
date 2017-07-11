@@ -1361,6 +1361,17 @@ Namespace ViewModel
             End Set
         End Property
 
+        Public Property SplitBlacklistCharacters As Boolean
+            Get
+                Return My.Settings.SplitBlacklistCharacters
+            End Get
+            Set(ByVal value As Boolean)
+                My.Settings.SplitBlacklistCharacters = value
+            End Set
+        End Property
+
+        Public ReadOnly Property BlacklistCharactersSeparator As String = My.Settings.BlacklistCharactersSeparator
+
         Public Property ConnectAllCommentServers As Boolean = My.Settings.ConnectAllCommentServers
 
     End Class

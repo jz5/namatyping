@@ -310,8 +310,8 @@ Namespace Model
 
         Private Function TryLoadLyrics(ByVal file As String, ByRef encoding As System.Text.Encoding) As Boolean
             Dim rawLines = New List(Of String)
-            Dim t = ReadAllText(file, encoding)
-            If My.Settings.BlacklistCharactersHighlight Then
+            Dim t = CharacterReplacer.ReplaceUnsplittableWords(ReadAllText(file, encoding))
+            If My.Settings.SplitBlacklistCharacters Then
                 t = CharacterReplacer.SplitWords(t)
             End If
             For Each l In ReadLinesWithoutBlankLines(t)

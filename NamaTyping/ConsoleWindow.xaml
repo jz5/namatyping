@@ -32,7 +32,17 @@
 
         <GroupBox Header="運営NGワード" Grid.Row="1" ToolTip="内蔵置換ファイルと外部から取得した置換ファイルが両方ある場合、更新日時が新しい方を読み込みます。" Margin="0,10,0,0">
             <StackPanel>
-                <CheckBox Content="歌詞の一致部分を強調表示" IsChecked="{Binding BlacklistCharactersHighlight}"/>
+                <CheckBox IsChecked="{Binding BlacklistCharactersHighlight}">
+                    <TextBlock>
+                        <TextBlock Text="歌詞の一致部分"/>を強調
+                    </TextBlock>
+                </CheckBox>
+                <CheckBox IsChecked="{Binding SplitBlacklistCharacters}">
+                    <TextBlock>
+                        <TextBlock Text="〃" Width="{Binding Children[0].Content.Inlines[0].Child.ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                                   TextAlignment="Center" />に<TextBlock Text="{Binding BlacklistCharactersSeparator}" Background="Gainsboro" Padding="2,0" Margin="2,0"/>を挿入
+                    </TextBlock>
+                </CheckBox>
                 <Grid HorizontalAlignment="Right">
                     <Grid.Resources>
                         <Style x:Key="old" TargetType="TextBlock">

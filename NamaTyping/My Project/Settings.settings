@@ -44,7 +44,10 @@
     <Setting Name="WindowSizePattern" Description="ウィンドウサイズなどのパターン (0〜3)。" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
-    <Setting Name="BlacklistCharactersHighlight" Description="運営NGワードの強調などを行う。" Roaming="true" Type="System.Boolean" Scope="User">
+    <Setting Name="BlacklistCharactersHighlight" Description="運営NGワードについて、歌詞の一致部分を強調する。" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SplitBlacklistCharacters" Description="運営NGワードについて、歌詞の一致部分に記号を挿入する。" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ConnectAllCommentServers" Description="すべての部屋からコメントを取得する。" Roaming="true" Type="System.Boolean" Scope="User">
