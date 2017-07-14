@@ -47,6 +47,9 @@
     <Setting Name="BlacklistCharactersHighlight" Description="運営NGワードの強調などを行う。" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="ConnectAllCommentServers" Description="すべての部屋からコメントを取得する。" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
     <Setting Name="WindowLeft" Description="ウィンドウの横位置のキャッシュ。" Type="System.Double" Scope="User">
       <Value Profile="(Default)">NaN</Value>
     </Setting>

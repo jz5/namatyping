@@ -3,7 +3,9 @@ Imports System.Windows.Threading
 Imports Pronama.NamaTyping.Model
 Imports Microsoft.Win32
 Imports Pronama.NicoVideo.LiveStreaming
+Imports Pronama.NicoVideo.LiveStreaming.CommunityChannelRoom
 Imports System.Text.RegularExpressions
+Imports System.Threading.Tasks
 
 Namespace ViewModel
 
@@ -367,14 +369,16 @@ Namespace ViewModel
             LiveProgramClient_CommentReceived(Me, New CommentReceivedEventArgs(comment))
         End Sub
 
-        Private Sub LiveProgramClient_CommentReceived(ByVal sender As Object, ByVal e As CommentReceivedEventArgs) Handles LiveProgramClient.CommentReceived
+        Private Sub LiveProgramClient_CommentReceived(ByVal sender As Object, ByVal e As CommentReceivedEventArgs)
 
             If Not Dispatcher.CheckAccess Then
                 Dispatcher.Invoke(New Action(Of Object, CommentReceivedEventArgs)(AddressOf LiveProgramClient_CommentReceived), New Object() {sender, e})
                 Exit Sub
             End If
 
-            If e.Comment.Source <> ChatSource.Broadcaster AndAlso
+            If (e.Comment.Source <> ChatSource.Broadcaster OrElse
+                    TypeOf sender Is LiveProgramClient AndAlso LiveProgramClientAndRoomLabels.Count > 1 AndAlso
+                        Not LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.Item1 Is sender).Item2.StartsWith("立ち見")) AndAlso
                 e.Comment.Source <> ChatSource.General AndAlso
                 e.Comment.Source <> ChatSource.Premium Then
                 Exit Sub
@@ -838,7 +842,7 @@ Namespace ViewModel
 #Region "Connect"
         Private Connecting As Boolean
 
-        Private WithEvents LiveProgramClient As LiveProgramClient
+        Private ReadOnly LiveProgramClientAndRoomLabels As List(Of Tuple(Of LiveProgramClient, String)) = New List(Of Tuple(Of LiveProgramClient, String))
 
         Private _ConnectCommand As ICommand
         Public ReadOnly Property ConnectCommand() As ICommand
@@ -851,9 +855,7 @@ Namespace ViewModel
         End Property
 
         Private Sub Connect(ByVal obj As Object)
-            If LiveProgramClient IsNot Nothing Then
-                LiveProgramClient.Close()
-            End If
+            Disconnect()
 
             If Not Me.LiveProgramId.StartsWith("lv") Then
                 Exit Sub
@@ -861,26 +863,91 @@ Namespace ViewModel
 
             Connecting = True
 
-            LiveProgramClient = New LiveProgramClient
-            LiveProgramClient.GetCommentServersAsync(Me.LiveProgramId) _
-                .ContinueWith(
+            Dim task = If(ConnectAllCommentServers, GetAllCommentServersAsync(), LiveProgramClient.GetCommentServersAsync(Me.LiveProgramId))
+            task.ContinueWith(
                     Sub(e)
                         If e.Exception IsNot Nothing Then
                             Me.StatusMessage = "エラー: " & e.Exception.InnerException.Message
                             Exit Sub
                         End If
-                        Me.LiveProgramClient.ConnectAsync(e.Result.First)
+                        For Each server In e.Result
+                            Dim client = New LiveProgramClient()
+                            AddHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
+                            AddHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
+                            client.ConnectAsync(server)
+                            Me.LiveProgramClientAndRoomLabels.Add(Tuple.Create(client, server.RoomLabel))
+                        Next
                         Connecting = False
                     End Sub)
 
         End Sub
+
+        ''' <summary> 
+        ''' すべてのコメントサーバーを取得します (ニコニコミュニティの配信のみ)。 
+        ''' </summary>
+        ''' <returns></returns> 
+        Private Function GetAllCommentServersAsync() As Task(Of IList(Of CommentServer))
+            Dim webTask = LiveProgramClient.GetCommentServersAsync(LiveProgramId)
+            Dim liveProgramTask = NicoVideo.NicoVideoWeb.GetLiveProgramAsync(LiveProgramId)
+
+            Return Task.WhenAll(webTask, liveProgramTask).ContinueWith(Of IList(Of CommentServer))(
+                            Function() As IList(Of CommentServer)
+                                Dim commentServers = webTask.Result
+                                Dim program = liveProgramTask.Result
+                                Return If(commentServers.Count = 1 AndAlso Not program.IsOfficial AndAlso TypeOf program.ChannelCommunity Is NicoVideo.Community,
+                                    GetAllCommentServers(program, commentServers(0)),
+                                    webTask.Result)
+                            End Function)
+        End Function
+
+        ''' <summary> 
+        ''' 指定したライブ配信のすべてのコメントサーバーを取得します。 
+        ''' </summary> 
+        ''' <param name="program">ニコニコミュニティの配信。</param> 
+        ''' <param name="basicServer">指定した配信のいずれかのコメントサーバー。</param> 
+        ''' <returns></returns> 
+        Private Function GetAllCommentServers(ByVal program As LiveProgram, ByVal basicServer As CommentServer) As IList(Of CommentServer)
+            Dim servers = New List(Of CommentServer)
+
+            For Each room In GetCommunityChannelRooms(DirectCast(program.ChannelCommunity, NicoVideo.Community).Level)
+                servers.Add(If(basicServer.Room = room, basicServer, CommentServer.ChangeRoom(basicServer, room)))
+            Next
+
+            Return servers
+        End Function
+
+        ''' <summary>
+        ''' コミュニティレベルをもとに、作られる<see cref="CommunityChannelRoom"/>を取得します。 
+        ''' </summary>
+        ''' <param name="level"></param>
+        ''' <returns></returns>
+        Private Function GetCommunityChannelRooms(ByVal level As Integer) As CommunityChannelRoom()
+            Select Case level
+                Case Is < 50
+                    Return {Arena, StandingA}
+                Case Is < 70
+                    Return {Arena, StandingA, StandingB}
+                Case Is < 105
+                    Return {Arena, StandingA, StandingB, StandingC}
+                Case Is < 150
+                    Return {Arena, StandingA, StandingB, StandingC, StandingD}
+                Case Is < 190
+                    Return {Arena, StandingA, StandingB, StandingC, StandingD, StandingE}
+                Case Is < 230
+                    Return {Arena, StandingA, StandingB, StandingC, StandingD, StandingE, StandingF}
+                Case Is < 256
+                    Return {Arena, StandingA, StandingB, StandingC, StandingD, StandingE, StandingF, StandingG}
+                Case Else
+                    Return {Arena, StandingA, StandingB, StandingC, StandingD, StandingE, StandingF, StandingG, StandingH, StandingI}
+            End Select
+        End Function
 
         Private Function CanConnect(ByVal obj As Object) As Boolean
             If LiveProgramId = "" Then
                 Return False
             End If
 
-            If LiveProgramClient Is Nothing OrElse Not LiveProgramClient.Connected Then
+            If LiveProgramClientAndRoomLabels.Count = 0 Then
                 If Connecting Then
                     Return False
                 Else
@@ -908,15 +975,24 @@ Namespace ViewModel
 
         Private Sub Disconnect(ByVal obj As Object)
 
-            If LiveProgramClient IsNot Nothing Then
-                LiveProgramClient.Close()
-                'LiveProgramClient = Nothing
+            If LiveProgramClientAndRoomLabels.Count > 0 Then
+                For Each clientAndLabel In LiveProgramClientAndRoomLabels
+                    Dim client = clientAndLabel.Item1
+                    RemoveHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
+                    RemoveHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
+                    client.Close()
+                Next
+                LiveProgramClientAndRoomLabels.Clear()
+
+                Me.StatusMessage = "切断しました"
+
+                Me.Connected = False
             End If
 
         End Sub
 
         Private Function CanDisconnect(ByVal obj As Object) As Boolean
-            Return LiveProgramClient IsNot Nothing AndAlso LiveProgramClient.Connected
+            Return LiveProgramClientAndRoomLabels.Count > 0
         End Function
 
         Public Sub Disconnect()
@@ -1064,34 +1140,40 @@ Namespace ViewModel
 
         End Sub
 
-        Private Sub LiveProgramClient_ConnectCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs) Handles LiveProgramClient.ConnectCompleted
-            If e.Error Is Nothing Then
-                Exit Sub
-            End If
+        'Private Sub LiveProgramClient_ConnectCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs) Handles LiveProgramClient.ConnectCompleted
+        '    If e.Error Is Nothing Then
+        '        Exit Sub
+        '    End If
 
-            'If TypeOf e.Error Is NicoVideo.NicoVideoException Then
-            '    Dim nex = DirectCast(e.Error, NicoVideo.NicoVideoException)
-            '    If nex.ErrorDescription <> "" Then
-            '        Me.StatusMessage = String.Format("接続に失敗しました（Code={0}, Desc={1}）", nex.ErrorCode, nex.ErrorDescription)
-            '    Else
-            '        Me.StatusMessage = String.Format("接続に失敗しました（Code={0}）", nex.ErrorCode)
-            '    End If
-            'Else
-            '    Me.StatusMessage = String.Format("接続に失敗しました（{0}）", e.Error.Message)
-            'End If
+        '    'If TypeOf e.Error Is NicoVideo.NicoVideoException Then
+        '    '    Dim nex = DirectCast(e.Error, NicoVideo.NicoVideoException)
+        '    '    If nex.ErrorDescription <> "" Then
+        '    '        Me.StatusMessage = String.Format("接続に失敗しました（Code={0}, Desc={1}）", nex.ErrorCode, nex.ErrorDescription)
+        '    '    Else
+        '    '        Me.StatusMessage = String.Format("接続に失敗しました（Code={0}）", nex.ErrorCode)
+        '    '    End If
+        '    'Else
+        '    '    Me.StatusMessage = String.Format("接続に失敗しました（{0}）", e.Error.Message)
+        '    'End If
 
-        End Sub
+        'End Sub
 
-        Private Sub LiveProgramClient_ConnectionStatusChanged(ByVal sender As Object, ByVal e As EventArgs) Handles LiveProgramClient.ConnectedChanged
+        Private Sub LiveProgramClient_ConnectionStatusChanged(ByVal sender As Object, ByVal e As EventArgs)
+            Dim client = DirectCast(sender, LiveProgramClient)
 
-            If LiveProgramClient.Connected Then
-                Me.StatusMessage = "接続しました"
+            If client.Connected Then
+                Dim prefix = "接続しました: "
+                Dim label = LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.Item1 Is client).Item2
+                If Me.StatusMessage IsNot Nothing AndAlso Me.StatusMessage.StartsWith(prefix) Then
+                    Me.StatusMessage &= ", " & label
+                Else
+                    Me.StatusMessage = prefix & label
+                End If
+
+                Me.Connected = True
             Else
-                Me.StatusMessage = "切断しました"
+                Disconnect()
             End If
-
-            Me.Connected = LiveProgramClient.Connected
-
         End Sub
 
 
@@ -1278,6 +1360,8 @@ Namespace ViewModel
                 My.Settings.BlacklistCharactersHighlight = value
             End Set
         End Property
+
+        Public Property ConnectAllCommentServers As Boolean = My.Settings.ConnectAllCommentServers
 
     End Class
 End Namespace

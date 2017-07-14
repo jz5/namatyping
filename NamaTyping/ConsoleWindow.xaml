@@ -19,15 +19,18 @@
             <TextBlock Text="色付きユーザー ID（コンマ区切り）:" Margin="0 10 0 0" />
             <TextBox Text="{Binding Path=HighlightUsers}" />
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 10 0 0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10">
                 <TextBlock Text="歌詞・ランキング背景の不透明度:" VerticalAlignment="Center" />
                 <Slider Width="150" Margin="5 0 5 0" Value="{Binding BottomGridOpacity}" VerticalAlignment="Center" Maximum="1.0" Minimum="0" LargeChange="0.2" />
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding BottomGridOpacity, StringFormat=0.00}" />
             </StackPanel>
 
+            <CheckBox Content="すべてから部屋のコメントを取得する" IsChecked="{Binding ConnectAllCommentServers}" />
+            <TextBlock Text="※ チャンネル生放送、および公式生放送には未対応" />
+
         </StackPanel>
 
-        <GroupBox Header="運営NGワード" Grid.Row="1" ToolTip="内蔵置換ファイルと外部から取得した置換ファイルが両方ある場合、更新日時が新しい方を読み込みます。">
+        <GroupBox Header="運営NGワード" Grid.Row="1" ToolTip="内蔵置換ファイルと外部から取得した置換ファイルが両方ある場合、更新日時が新しい方を読み込みます。" Margin="0,10,0,0">
             <StackPanel>
                 <CheckBox Content="歌詞の一致部分を強調表示" IsChecked="{Binding BlacklistCharactersHighlight}"/>
                 <Grid HorizontalAlignment="Right">

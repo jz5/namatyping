@@ -309,6 +309,23 @@ Partial Friend NotInheritable Class MySettings
     End Property
     
     '''<summary>
+    '''すべての部屋からコメントを取得する。
+    '''</summary>
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("すべての部屋からコメントを取得する。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("False"),  _
+     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
+    Public Property ConnectAllCommentServers() As Boolean
+        Get
+            Return CType(Me("ConnectAllCommentServers"),Boolean)
+        End Get
+        Set
+            Me("ConnectAllCommentServers") = value
+        End Set
+    End Property
+    
+    '''<summary>
     '''ウィンドウの横位置のキャッシュ。
     '''</summary>
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
