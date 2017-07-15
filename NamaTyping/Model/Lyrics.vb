@@ -118,9 +118,13 @@ Namespace Model
                 Exit Sub
             End If
 
-            If TryLoadLyrics(LyricsFileName, Encoding) Then
-                LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
-            Else
+            Dim previousReplacementWords = New Dictionary(Of String, String)(ReplacementWords)
+            LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
+            If Not TryLoadLyrics(LyricsFileName, Encoding) Then
+                ReplacementWords.Clear()
+                For Each values In previousReplacementWords
+                    ReplacementWords.Add(values)
+                Next
                 MessageBox.Show(
                     $"「{System.IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません",
                     My.Application.Info.Title,
