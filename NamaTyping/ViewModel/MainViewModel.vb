@@ -394,7 +394,7 @@ Namespace ViewModel
 
             If (e.Comment.Source <> ChatSource.Broadcaster OrElse
                     TypeOf sender Is LiveProgramClient AndAlso LiveProgramClientAndRoomLabels.Count > 1 AndAlso
-                        Not LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.Item1 Is sender).Item2.StartsWith("立ち見")) AndAlso
+                        Not LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.client Is sender).label.StartsWith("立ち見")) AndAlso
                 e.Comment.Source <> ChatSource.General AndAlso
                 e.Comment.Source <> ChatSource.Premium Then
                 Exit Sub
@@ -858,7 +858,7 @@ Namespace ViewModel
 #Region "Connect"
         Private Connecting As Boolean
 
-        Private ReadOnly LiveProgramClientAndRoomLabels As List(Of Tuple(Of LiveProgramClient, String)) = New List(Of Tuple(Of LiveProgramClient, String))
+        Private ReadOnly LiveProgramClientAndRoomLabels As List(Of (client As LiveProgramClient, label As String)) = New List(Of (client As LiveProgramClient, label As String))
 
         Private _ConnectCommand As ICommand
         Public ReadOnly Property ConnectCommand() As ICommand
@@ -890,7 +890,7 @@ Namespace ViewModel
                                 AddHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
                                 AddHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
                                 client.ConnectAsync(server)
-                                Me.LiveProgramClientAndRoomLabels.Add(Tuple.Create(client, server.RoomLabel))
+                                Me.LiveProgramClientAndRoomLabels.Add((client, server.RoomLabel))
                             Next
                         End If
                         Connecting = False
@@ -993,7 +993,7 @@ Namespace ViewModel
 
             If LiveProgramClientAndRoomLabels.Count > 0 Then
                 For Each clientAndLabel In LiveProgramClientAndRoomLabels
-                    Dim client = clientAndLabel.Item1
+                    Dim client = clientAndLabel.client
                     RemoveHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
                     RemoveHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
                     client.Close()
@@ -1179,7 +1179,7 @@ Namespace ViewModel
 
             If client.Connected Then
                 Dim prefix = "接続しました: "
-                Dim label = LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.Item1 Is client).Item2
+                Dim label = LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.client Is client).label
                 If Me.StatusMessage IsNot Nothing AndAlso Me.StatusMessage.StartsWith(prefix) Then
                     Me.StatusMessage &= ", " & label
                 Else
