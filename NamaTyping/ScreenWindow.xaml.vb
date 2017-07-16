@@ -160,24 +160,19 @@ Partial Public Class ScreenWindow
             Exit Sub
         End If
 
-        Try
-            Dim lines = ReadLinesWithoutBlankLines(ReadAllText(file))
-            For Each l In lines
-                Dim words = l.Split(","c)
-                If words.Length < 2 Then
-                    Continue For
-                End If
+        Dim lines = ReadLinesWithoutBlankLines(ReadAllText(file))
+        For Each l In lines
+            Dim words = l.Split(","c)
+            If words.Length < 2 Then
+                Continue For
+            End If
 
-                Dim comment = New LiveCommentMessage With {.UserId = words(0), .Text = words(1), .Source = If(words(0) = "0", ChatSource.Broadcaster, ChatSource.General)}
-                comment.No = CommentNo
-                CommentNo -= 1
+            Dim comment = New LiveCommentMessage With {.UserId = words(0), .Text = words(1), .Source = If(words(0) = "0", ChatSource.Broadcaster, ChatSource.General)}
+            comment.No = CommentNo
+            CommentNo -= 1
 
-                DirectCast(Me.DataContext, ViewModel.MainViewModel).InjectComment(comment)
-            Next
-
-        Catch ex As Exception
-            ' Ignore
-        End Try
+            DirectCast(Me.DataContext, ViewModel.MainViewModel).InjectComment(comment)
+        Next
 
     End Sub
 

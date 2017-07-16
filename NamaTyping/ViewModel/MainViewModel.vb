@@ -870,7 +870,7 @@ Namespace ViewModel
             End Get
         End Property
 
-        Private Sub Connect(ByVal obj As Object)
+        Private Async Sub Connect(ByVal obj As Object)
             Disconnect()
 
             If Not Me.LiveProgramId.StartsWith("lv") Then
@@ -879,41 +879,41 @@ Namespace ViewModel
 
             Connecting = True
 
-            Dim task = If(ConnectAllCommentServers, GetAllCommentServersAsync(), LiveProgramClient.GetCommentServersAsync(Me.LiveProgramId))
-            task.ContinueWith(
-                    Sub(e)
-                        If e.Exception IsNot Nothing Then
-                            Me.StatusMessage = "エラー: " & e.Exception.InnerException.Message
-                        Else
-                            For Each server In e.Result
-                                Dim client = New LiveProgramClient()
-                                AddHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
-                                AddHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
-                                client.ConnectAsync(server)
-                                Me.LiveProgramClientAndRoomLabels.Add((client, server.RoomLabel))
-                            Next
-                        End If
-                        Connecting = False
-                    End Sub)
+            Dim commentServers = If(ConnectAllCommentServers, GetAllCommentServersAsync(), LiveProgramClient.GetCommentServersAsync(Me.LiveProgramId))
 
+            Try
+                For Each server In Await If(ConnectAllCommentServers, GetAllCommentServersAsync(), LiveProgramClient.GetCommentServersAsync(Me.LiveProgramId))
+                    Dim client = New LiveProgramClient()
+                    AddHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
+                    AddHandler client.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
+                    AddHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
+                    client.ConnectAsync(server)
+                    Me.LiveProgramClientAndRoomLabels.Add((client, server.RoomLabel))
+                Next
+            Catch ex As Exception When ex.Message = "closed"
+                Me.StatusMessage = $"「{LiveProgramId}」は現在配信中ではありません。"
+            Catch ex As Exception When ex.Message = "require_community_member"
+                Me.StatusMessage = "ニコ生タイピングは、フォロワー限定 (コミュ限) の配信には接続できません。"
+            End Try
+
+            Connecting = False
         End Sub
 
         ''' <summary> 
         ''' すべてのコメントサーバーを取得します (ニコニコミュニティの配信のみ)。 
         ''' </summary>
         ''' <returns></returns> 
-        Private Function GetAllCommentServersAsync() As Task(Of IList(Of CommentServer))
+        Private Async Function GetAllCommentServersAsync() As Task(Of IList(Of CommentServer))
             Dim webTask = LiveProgramClient.GetCommentServersAsync(LiveProgramId)
             Dim liveProgramTask = NicoVideo.NicoVideoWeb.GetLiveProgramAsync(LiveProgramId)
 
-            Return Task.WhenAll(webTask, liveProgramTask).ContinueWith(Of IList(Of CommentServer))(
-                            Function() As IList(Of CommentServer)
-                                Dim commentServers = webTask.Result
-                                Dim program = liveProgramTask.Result
-                                Return If(commentServers.Count = 1 AndAlso Not program.IsOfficial AndAlso TypeOf program.ChannelCommunity Is NicoVideo.Community,
-                                    GetAllCommentServers(program, commentServers(0)),
-                                    webTask.Result)
-                            End Function)
+            Await Task.WhenAll(webTask, liveProgramTask)
+
+            Dim commentServers = webTask.Result
+            Dim program = liveProgramTask.Result
+            Return If(commentServers.Count = 1 AndAlso Not program.IsOfficial AndAlso TypeOf program.ChannelCommunity Is NicoVideo.Community,
+                GetAllCommentServers(program, commentServers(0)),
+                webTask.Result)
         End Function
 
         ''' <summary> 
@@ -995,6 +995,7 @@ Namespace ViewModel
                 For Each clientAndLabel In LiveProgramClientAndRoomLabels
                     Dim client = clientAndLabel.client
                     RemoveHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
+                    RemoveHandler client.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
                     RemoveHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
                     client.Close()
                 Next
@@ -1156,23 +1157,24 @@ Namespace ViewModel
 
         End Sub
 
-        'Private Sub LiveProgramClient_ConnectCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs) Handles LiveProgramClient.ConnectCompleted
-        '    If e.Error Is Nothing Then
-        '        Exit Sub
-        '    End If
+        Private Sub LiveProgramClient_ConnectCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
+            If e.Error Is Nothing Then
+                Exit Sub
+            End If
 
-        '    'If TypeOf e.Error Is NicoVideo.NicoVideoException Then
-        '    '    Dim nex = DirectCast(e.Error, NicoVideo.NicoVideoException)
-        '    '    If nex.ErrorDescription <> "" Then
-        '    '        Me.StatusMessage = String.Format("接続に失敗しました（Code={0}, Desc={1}）", nex.ErrorCode, nex.ErrorDescription)
-        '    '    Else
-        '    '        Me.StatusMessage = String.Format("接続に失敗しました（Code={0}）", nex.ErrorCode)
-        '    '    End If
-        '    'Else
-        '    '    Me.StatusMessage = String.Format("接続に失敗しました（{0}）", e.Error.Message)
-        '    'End If
+            Throw e.Error
+            'If TypeOf e.Error Is NicoVideo.NicoVideoException Then
+            '    Dim nex = DirectCast(e.Error, NicoVideo.NicoVideoException)
+            '    If nex.ErrorDescription <> "" Then
+            '        Me.StatusMessage = String.Format("接続に失敗しました（Code={0}, Desc={1}）", nex.ErrorCode, nex.ErrorDescription)
+            '    Else
+            '        Me.StatusMessage = String.Format("接続に失敗しました（Code={0}）", nex.ErrorCode)
+            '    End If
+            'Else
+            '    Me.StatusMessage = String.Format("接続に失敗しました（{0}）", e.Error.Message)
+            'End If
 
-        'End Sub
+        End Sub
 
         Private Sub LiveProgramClient_ConnectionStatusChanged(ByVal sender As Object, ByVal e As EventArgs)
             Dim client = DirectCast(sender, LiveProgramClient)
