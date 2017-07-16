@@ -1225,7 +1225,7 @@ Namespace ViewModel
 
         Private Sub _Player_MediaFailed(ByVal sender As Object, ByVal e As System.Windows.ExceptionRoutedEventArgs) Handles _Player.MediaFailed
             If TypeOf e.ErrorException Is COMException Then
-                Dim fileName = My.Computer.FileSystem.GetName(If(Lyrics.SoundFileName, Lyrics.VideoFileName))
+                Dim fileName = IO.Path.GetFileName(If(Lyrics.SoundFileName, Lyrics.VideoFileName))
                 Dim type = If(Lyrics.SoundFileName IsNot Nothing, "音声", "動画")
                 Select Case e.ErrorException.HResult
                     Case MilaverrLoadfailed

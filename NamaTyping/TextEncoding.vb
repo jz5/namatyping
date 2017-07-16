@@ -19,7 +19,7 @@ Friend NotInheritable Class TextEncoding
     ''' <returns></returns>
     Friend Shared Function ReadAllText(ByVal file As String, Optional ByRef encoding As Encoding = Nothing) As String
         If encoding Is Nothing Then
-            Dim bytes = My.Computer.FileSystem.ReadAllBytes(file)
+            Dim bytes = IO.File.ReadAllBytes(file)
             Dim detector = New CharsetDetector()
             detector.Feed(bytes, 0, bytes.Length)
             detector.DataEnd()
@@ -29,7 +29,7 @@ Friend NotInheritable Class TextEncoding
             End If
             Return encoding.GetString(bytes)
         Else
-            Return My.Computer.FileSystem.ReadAllText(file, encoding)
+            Return IO.File.ReadAllText(file, encoding)
         End If
     End Function
 

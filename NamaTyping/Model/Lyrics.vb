@@ -147,7 +147,7 @@ Namespace Model
             Try
                 doc = XDocument.Load(file)
             Catch ex As System.Xml.XmlException
-                errorMessage = $"「{My.Computer.FileSystem.GetName(file)}」の読み込みに失敗しました: {ex.Message}"
+                errorMessage = $"「{System.IO.Path.GetFileName(file)}」の読み込みに失敗しました: {ex.Message}"
                 Return False
             End Try
             Dim path = System.IO.Path.GetDirectoryName(file)

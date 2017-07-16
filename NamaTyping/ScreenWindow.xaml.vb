@@ -251,7 +251,7 @@ Partial Public Class ScreenWindow
             Dim errorMessage As String = Nothing
             ViewModel.StatusMessage = If(
                 ReplacementWordsGenerator.TryGenerate(dialog.FileName, outputFilePath, errorMessage),
-                $"ファイル名「{My.Computer.FileSystem.GetName(outputFilePath)}」で保存しました。",
+                $"ファイル名「{IO.Path.GetFileName(outputFilePath)}」で保存しました。",
                 errorMessage
             )
         End If
