@@ -884,15 +884,15 @@ Namespace ViewModel
                     Sub(e)
                         If e.Exception IsNot Nothing Then
                             Me.StatusMessage = "エラー: " & e.Exception.InnerException.Message
-                            Exit Sub
+                        Else
+                            For Each server In e.Result
+                                Dim client = New LiveProgramClient()
+                                AddHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
+                                AddHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
+                                client.ConnectAsync(server)
+                                Me.LiveProgramClientAndRoomLabels.Add(Tuple.Create(client, server.RoomLabel))
+                            Next
                         End If
-                        For Each server In e.Result
-                            Dim client = New LiveProgramClient()
-                            AddHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
-                            AddHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
-                            client.ConnectAsync(server)
-                            Me.LiveProgramClientAndRoomLabels.Add(Tuple.Create(client, server.RoomLabel))
-                        Next
                         Connecting = False
                     End Sub)
 
