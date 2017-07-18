@@ -115,12 +115,20 @@ Friend NotInheritable Class CharacterReplacer
     End Sub
 
     ''' <summary>
-    ''' 運営NGワードの分断と置換を行います。
+    ''' 運営NGワードを<see cref="MySettings.BlacklistCharactersSeparator"/>で分断します。
     ''' </summary>
     ''' <param name="lyrics">タイムタグ付きの歌詞。</param>
     ''' <returns></returns>
     Friend Function SplitWords(ByVal lyrics As String) As String
-        lyrics = PatternForReplacement.Replace(lyrics, "$0" & EscapeForReplacementPattern(My.Settings.BlacklistCharactersSeparator))
+        Return PatternForReplacement.Replace(lyrics, "$0" & EscapeForReplacementPattern(My.Settings.BlacklistCharactersSeparator))
+    End Function
+
+    ''' <summary>
+    ''' 1文字の運営NGワードを置換します。
+    ''' </summary>
+    ''' <param name="lyrics">タイムタグ付きの歌詞。</param>
+    ''' <returns></returns>
+    Friend Function ReplaceUnsplittableWords(ByVal lyrics As String) As String
         For Each pair As KeyValuePair(Of String, String) In Variants
             lyrics = lyrics.Replace(pair.Key, pair.Value)
         Next
