@@ -314,12 +314,8 @@ Namespace Model
 
         Private Function TryLoadLyrics(ByVal file As String, ByRef encoding As System.Text.Encoding) As Boolean
             Dim rawLines = New List(Of String)
-            Dim t = CharacterReplacer.ReplaceUnsplittableWords(ReadAllText(file, encoding))
-            If My.Settings.SplitBlacklistCharacters Then
-                t = CharacterReplacer.SplitWords(t)
-            End If
 
-            For Each l In ReadLinesWithoutBlankLines(t)
+            For Each l In ReadLinesWithoutBlankLines(CharacterReplacer.ReplaceUnsplittableWords(ReadAllText(file, encoding)))
                 Dim m = Regex.Match(l, "^\[\d{2}:\d{2}:\d{2}\](?<karaoke>.*\[\d{2}:\d{2}:\d{2}\])?")
                 If m.Success Then
                     rawLines.Add(l)
@@ -367,6 +363,15 @@ Namespace Model
                 l.Text = text
                 Lines.Add(l)
             Next
+
+            ' 運営NGワードの分断
+            If My.Settings.SplitBlacklistCharacters Then
+                Dim textWithTimeTags = CharacterReplacer.SplitWords(String.Join(vbLf, From line In Lines Select line.TextWithTimeTag)).Split(vbLf(0))
+                For i = 0 To Lines.Count - 1
+                    Lines(i).TextWithTimeTag = textWithTimeTags(i)
+                    Lines(i).Text = Regex.Replace(textWithTimeTags(i), "\[\d{2}:\d{2}:\d{2}\]", "")
+                Next
+            End If
 
             ' 強調範囲の設定
             If My.Settings.BlacklistCharactersHighlight Then
