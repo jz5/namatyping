@@ -2,7 +2,7 @@
 
     Friend NotInheritable Class MessageBuilder
 
-        Public Shared Function BuildMessage(ByVal value As String) As Message
+        Public Shared Function BuildMessage(value As String) As Message
 
             If value.StartsWith("<chat ") Then
                 Return New LiveCommentMessage(value)

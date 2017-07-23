@@ -9,43 +9,27 @@ Namespace LiveStreaming
 
 #Region "Properties"
 
-        Private _No As Integer
-        Public ReadOnly Property No As Integer
-            Get
-                Return _No
-            End Get
-        End Property
+        Public Property No As Integer
 
-        Private _Status As Integer
-        Public ReadOnly Property Status As Integer
-            Get
-                Return _Status
-            End Get
-        End Property
+        Public Property Status As Integer
 
-        Private _Success As Boolean
-        Public ReadOnly Property Success() As Boolean
-            Get
-                Return _Success
-            End Get
-        End Property
+        Public Property Success As Boolean
 
 #End Region
 
-        Friend Sub New(ByVal xmlText As String)
+        Friend Sub New(xmlText As String)
             MyBase.New(xmlText)
             Parse(XElement.Parse(xmlText))
         End Sub
 
-        Private Sub Parse(ByVal xml As XElement)
+        Private Sub Parse(xml As XElement)
 
-            _No = Integer.Parse(xml.@no)
-            _Success = xml.@status = "0"
-            _Status = Integer.Parse(xml.@status)
+            No = Integer.Parse(xml.@no)
+            Success = xml.@status = "0"
+            Status = Integer.Parse(xml.@status)
 
             ' MEMO status="4": PostKeyが無効
         End Sub
-
     End Class
 
 End Namespace

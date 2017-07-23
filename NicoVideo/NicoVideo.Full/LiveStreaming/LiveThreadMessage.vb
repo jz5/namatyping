@@ -21,12 +21,12 @@ Namespace LiveStreaming
         Public Sub New()
         End Sub
 
-        Friend Sub New(ByVal xmlText As String)
+        Friend Sub New(xmlText As String)
             MyBase.New(xmlText)
             Parse(XElement.Parse(xmlText))
         End Sub
 
-        Private Sub Parse(ByVal xml As XElement)
+        Private Sub Parse(xml As XElement)
 
             LastNo = If(xml.@last_res IsNot Nothing, Integer.Parse(xml.@last_res), 0)
             ResultCode = Integer.Parse(xml.@resultcode)

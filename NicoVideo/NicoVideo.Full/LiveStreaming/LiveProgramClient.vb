@@ -108,17 +108,17 @@ Namespace LiveStreaming
 
 #Region "Events"
         Public Event ConnectedChanged As EventHandler(Of EventArgs)
-        Protected Sub OnConnectedChanged(ByVal e As EventArgs)
+        Protected Sub OnConnectedChanged(e As EventArgs)
             RaiseEvent ConnectedChanged(Me, e)
         End Sub
 
         Public Event ConnectCompleted As EventHandler(Of AsyncCompletedEventArgs)
-        Protected Sub OnConnectCompleted(ByVal e As AsyncCompletedEventArgs)
+        Protected Sub OnConnectCompleted(e As AsyncCompletedEventArgs)
             RaiseEvent ConnectCompleted(Me, e)
         End Sub
 
         Public Event CommentReceived As EventHandler(Of CommentReceivedEventArgs)
-        Protected Sub OnCommentReceived(ByVal e As CommentReceivedEventArgs)
+        Protected Sub OnCommentReceived(e As CommentReceivedEventArgs)
             RaiseEvent CommentReceived(Me, e)
         End Sub
 
@@ -165,7 +165,7 @@ Namespace LiveStreaming
             End If
         End Sub
 
-        Private Sub Socket_ConnectCompleted(ByVal sender As Object, ByVal e As SocketAsyncEventArgs)
+        Private Sub Socket_ConnectCompleted(sender As Object, e As SocketAsyncEventArgs)
             If e.SocketError <> SocketError.Success Then
                 OnConnectCompleted(New AsyncCompletedEventArgs(New SocketException(e.SocketError), False, Nothing))
                 Exit Sub
@@ -195,7 +195,7 @@ Namespace LiveStreaming
             OnConnectCompleted(New AsyncCompletedEventArgs(exception, False, Nothing))
         End Sub
 
-        Private Sub Socket_SendCompleted(ByVal sender As Object, ByVal e As SocketAsyncEventArgs)
+        Private Sub Socket_SendCompleted(sender As Object, e As SocketAsyncEventArgs)
             Dim buffer(4096) As Byte
             Dim args = New SocketAsyncEventArgs
             args.SetBuffer(buffer, 0, buffer.Length)
@@ -206,7 +206,7 @@ Namespace LiveStreaming
 
         Private ContextBuffer As New List(Of Byte)
 
-        Private Sub Socket_ReceiveCompleted(ByVal sender As Object, ByVal e As SocketAsyncEventArgs)
+        Private Sub Socket_ReceiveCompleted(sender As Object, e As SocketAsyncEventArgs)
             If e.BytesTransferred > 0 Then
 
 
@@ -228,7 +228,7 @@ Namespace LiveStreaming
             ReceiveData(e)
         End Sub
 
-        Private Sub ReceiveData(ByVal e As SocketAsyncEventArgs)
+        Private Sub ReceiveData(e As SocketAsyncEventArgs)
             If Not Socket.Connected Then
                 OnConnectedChanged(EventArgs.Empty)
                 Exit Sub
@@ -240,7 +240,7 @@ Namespace LiveStreaming
             End If
         End Sub
 
-        Private Sub ParseReceivedText(ByVal text As String)
+        Private Sub ParseReceivedText(text As String)
 
             Dim message As Message = Nothing
             Try

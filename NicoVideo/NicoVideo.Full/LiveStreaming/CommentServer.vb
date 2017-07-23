@@ -49,18 +49,18 @@ Namespace LiveStreaming
         <DataMember(Name:="room_label")>
         Property RoomLabel As String
 
-        Private _Room As CommunityChannelRoom? = Nothing
+        Private _room As CommunityChannelRoom? = Nothing
         ReadOnly Property Room As CommunityChannelRoom?
             Get
-                If _Room Is Nothing Then
+                If _room Is Nothing Then
                     Dim index = Array.IndexOf(RoomLabels, RoomLabel)
                     If index <> -1 Then
-                        _Room = DirectCast(index, CommunityChannelRoom)
+                        _room = DirectCast(index, CommunityChannelRoom)
                     ElseIf RoomLabel IsNot Nothing AndAlso RoomLabel.StartsWith("co") OrElse RoomLabel.StartsWith("ch") Then
-                        _Room = CommunityChannelRoom.Arena
+                        _room = CommunityChannelRoom.Arena
                     End If
                 End If
-                Return _Room
+                Return _room
             End Get
         End Property
 
@@ -76,14 +76,14 @@ Namespace LiveStreaming
         End Property
 
         Public Sub ChangeRoom(dest As CommunityChannelRoom)
-            If Me.Room Is Nothing Then
+            If Room Is Nothing Then
                 Throw New InvalidOperationException
             End If
 
-            Dim server = CommentServer.ChangeRoom(Me, dest)
-            Me.Address = server.Address
-            Me.Port = server.Port
-            Me.Thread = server.Thread
+            Dim server = ChangeRoom(Me, dest)
+            Address = server.Address
+            Port = server.Port
+            Thread = server.Thread
         End Sub
 
         Public Shared Function ChangeRoom(currentServer As CommentServer, dest As CommunityChannelRoom) As CommentServer
@@ -129,7 +129,7 @@ Namespace LiveStreaming
                 .Address = destAddress,
                 .Port = destPort,
                 .Thread = destThread,
-                ._Room = dest,
+                ._room = dest,
                 .RoomLabel = RoomLabels(dest)}
 
             Return server

@@ -1,13 +1,16 @@
-﻿Partial Public Class LyricWindow
+﻿Imports System.Text
+Imports Pronama.NamaTyping.Model
 
-    Public Property Lyrics As Model.Lyrics
+Partial Public Class LyricWindow
 
-    Private Sub LyricWindow_Loaded(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles Me.Loaded
+    Public Property Lyrics As Lyrics
+
+    Private Sub LyricWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         Reload()
-        Me.Title = Lyrics.Title
+        Title = Lyrics.Title
     End Sub
 
-    Private Sub Button_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+    Private Sub Button_Click(sender As Object, e As RoutedEventArgs)
         Reload()
     End Sub
 
@@ -18,7 +21,7 @@
 
         Lyrics.Reload()
 
-        Dim sb = New System.Text.StringBuilder
+        Dim sb = New StringBuilder
         For Each l In Lyrics.Lines
             For Each y In l.Yomi
                 sb.Append(y & vbCrLf)

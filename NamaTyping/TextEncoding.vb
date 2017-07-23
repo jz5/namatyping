@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.IO
+Imports System.Text
 Imports Ude
 
 ''' <summary>
@@ -9,7 +10,7 @@ Friend NotInheritable Class TextEncoding
     ''' <summary>
     ''' UTF-8におけるBOM。
     ''' </summary>
-    Private Shared ReadOnly UTF8BOM As Byte() = New Byte() {&HEF, &HBB, &HBF}
+    Private Shared ReadOnly Utf8Bom As Byte() = New Byte() {&HEF, &HBB, &HBF}
 
     ''' <summary>
     ''' ファイルから文字列を取得します。
@@ -17,7 +18,7 @@ Friend NotInheritable Class TextEncoding
     ''' <param name="file">存在するファイルのパス。</param>
     ''' <param name="encoding"><c>Nothing</c>であれば、UTF-8、Shift_JISを候補に符号化方式を検出し、設定します。</param>
     ''' <returns></returns>
-    Friend Shared Function ReadAllText(ByVal file As String, Optional ByRef encoding As Encoding = Nothing) As String
+    Friend Shared Function ReadAllText(file As String, Optional ByRef encoding As Encoding = Nothing) As String
         If encoding Is Nothing Then
             Dim bytes = IO.File.ReadAllBytes(file)
             Dim detector = New CharsetDetector()
@@ -38,8 +39,8 @@ Friend NotInheritable Class TextEncoding
     ''' </summary>
     ''' <param name="text"></param>
     ''' <returns></returns>
-    Friend Shared Iterator Function ReadLinesWithoutBlankLines(ByVal text As String) As IEnumerable(Of String)
-        Using reader = New IO.StringReader(text)
+    Friend Shared Iterator Function ReadLinesWithoutBlankLines(text As String) As IEnumerable(Of String)
+        Using reader = New StringReader(text)
             While reader.Peek() <> -1
                 Dim line = reader.ReadLine()
                 If line IsNot "" Then

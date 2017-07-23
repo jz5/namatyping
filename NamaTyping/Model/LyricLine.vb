@@ -6,19 +6,9 @@
         Property TextWithTimeTag As String
         Property TimePosition As Double
 
-        Private _Words As IList(Of String) = New List(Of String)
-        Public ReadOnly Property Words() As IList(Of String)
-            Get
-                Return _Words
-            End Get
-        End Property
+        Public ReadOnly Property Words As IList(Of String) = New List(Of String)
 
-        Private _Yomi As IList(Of String) = New List(Of String)
-        Public ReadOnly Property Yomi() As IList(Of String)
-            Get
-                Return _Yomi
-            End Get
-        End Property
+        Public ReadOnly Property Yomi As IList(Of String) = New List(Of String)
 
         ''' <summary>
         ''' 強調表示を行う範囲のリスト (キーが開始位置、値が長さ)。

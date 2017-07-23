@@ -1,4 +1,6 @@
 ﻿Imports System.Collections.ObjectModel
+Imports System.ComponentModel
+Imports System.IO
 Imports System.Windows.Threading
 Imports Pronama.NamaTyping.Model
 Imports Microsoft.Win32
@@ -7,27 +9,20 @@ Imports Pronama.NicoVideo.LiveStreaming.CommunityChannelRoom
 Imports System.Text.RegularExpressions
 Imports System.Threading.Tasks
 Imports System.Runtime.InteropServices
+Imports System.Text
+Imports Pronama.NicoVideo
 
 Namespace ViewModel
 
     Public Class MainViewModel
         Inherits ViewModelBase
 
-
-        Private _Dispatcher As Dispatcher
-        Public Property Dispatcher() As Dispatcher
-            Get
-                Return _Dispatcher
-            End Get
-            Set(ByVal value As Dispatcher)
-                _Dispatcher = value
-            End Set
-        End Property
+        Public Property Dispatcher As Dispatcher
 
         ''' <summary>
         ''' 運営NGワードの強調色。
         ''' </summary>
-        Private ReadOnly BlacklistCharactersHighlightColor As Brush = Brushes.Red
+        Private ReadOnly _blacklistCharactersHighlightColor As Brush = Brushes.Red
 
         ''' <summary>
         ''' <see cref="MediaElement"/>で Media 読み込み時、対応していないメディア形式だった場合に
@@ -47,34 +42,24 @@ Namespace ViewModel
 #Region "Properties"
 
 
-        Private _RecentLyrics As New ObservableCollection(Of WipeTextBlock)
-        Public ReadOnly Property RecentLyrics() As ObservableCollection(Of WipeTextBlock)
-            Get
-                Return _RecentLyrics
-            End Get
-        End Property
+        Public ReadOnly Property RecentLyrics As ObservableCollection(Of WipeTextBlock) = New ObservableCollection(Of WipeTextBlock)
 
-        Private _Messages As New ObservableCollection(Of String)
-        Public ReadOnly Property Messages() As ObservableCollection(Of String)
-            Get
-                Return _Messages
-            End Get
-        End Property
+        Public ReadOnly Property Messages As ObservableCollection(Of String) = New ObservableCollection(Of String)
 
-        Private _LiveProgramIdText As String = ""
-        Public Property LiveProgramIdText() As String
+        Private _liveProgramIdText As String = ""
+        Public Property LiveProgramIdText As String
             Get
-                Return _LiveProgramIdText
+                Return _liveProgramIdText
             End Get
-            Set(ByVal value As String)
-                _LiveProgramIdText = value
+            Set
+                _liveProgramIdText = Value
                 OnPropertyChanged("LiveProgramIdText")
             End Set
         End Property
 
-        Protected ReadOnly Property LiveProgramId() As String
+        Protected ReadOnly Property LiveProgramId As String
             Get
-                Dim match = System.Text.RegularExpressions.Regex.Match(LiveProgramIdText, "(?<id>lv\d+)")
+                Dim match = Regex.Match(LiveProgramIdText, "(?<id>lv\d+)")
                 If match.Success Then
                     Return match.Groups("id").Value
                 Else
@@ -83,100 +68,100 @@ Namespace ViewModel
             End Get
         End Property
 
-        Private _IsExampleMode As Boolean
-        Public Property IsExampleMode() As Boolean
+        Private _isExampleMode As Boolean
+        Public Property IsExampleMode As Boolean
             Get
-                Return _IsExampleMode
+                Return _isExampleMode
             End Get
-            Set(ByVal value As Boolean)
-                _IsExampleMode = value
+            Set
+                _isExampleMode = Value
                 OnPropertyChanged("IsExampleMode")
             End Set
         End Property
 
-        Private _ShowNameEntryMessages As Boolean = My.Settings.ShowNameEntryMessages
-        Public Property ShowNameEntryMessages() As Boolean
+        Private _showNameEntryMessages As Boolean = My.Settings.ShowNameEntryMessages
+        Public Property ShowNameEntryMessages As Boolean
             Get
-                Return _ShowNameEntryMessages
+                Return _showNameEntryMessages
             End Get
-            Set(ByVal value As Boolean)
-                _ShowNameEntryMessages = value
+            Set
+                _showNameEntryMessages = Value
                 OnPropertyChanged("ShowNameEntryMessages")
             End Set
         End Property
 
-        Private _ShowPointMessages As Boolean = My.Settings.ShowPointMessages
-        Public Property ShowPointMessages() As Boolean
+        Private _showPointMessages As Boolean = My.Settings.ShowPointMessages
+        Public Property ShowPointMessages As Boolean
             Get
-                Return _ShowPointMessages
+                Return _showPointMessages
             End Get
-            Set(ByVal value As Boolean)
-                _ShowPointMessages = value
+            Set
+                _showPointMessages = Value
                 OnPropertyChanged("ShowPointMessages")
             End Set
         End Property
 
-        Private _ShowFilteredMessages As Boolean = My.Settings.ShowFilteredMessages
-        Public Property ShowFilteredMessages() As Boolean
+        Private _showFilteredMessages As Boolean = My.Settings.ShowFilteredMessages
+        Public Property ShowFilteredMessages As Boolean
             Get
-                Return _ShowFilteredMessages
+                Return _showFilteredMessages
             End Get
-            Set(ByVal value As Boolean)
-                _ShowFilteredMessages = value
+            Set
+                _showFilteredMessages = Value
                 OnPropertyChanged("ShowFilteredMessages")
             End Set
         End Property
 
-        Private _ShowOtherMessages As Boolean
-        Public Property ShowOtherMessages() As Boolean
+        Private _showOtherMessages As Boolean
+        Public Property ShowOtherMessages As Boolean
             Get
-                Return _ShowOtherMessages
+                Return _showOtherMessages
             End Get
-            Set(ByVal value As Boolean)
-                _ShowOtherMessages = value
+            Set
+                _showOtherMessages = Value
                 OnPropertyChanged("ShowOtherMessages")
             End Set
         End Property
 
-        Private _DisplayCommentPattern As String = My.Settings.DisplayCommentPattern
+        Private _displayCommentPattern As String = My.Settings.DisplayCommentPattern
         Public Property DisplayCommentPattern As String
             Get
-                Return _DisplayCommentPattern
+                Return _displayCommentPattern
             End Get
-            Set(ByVal value As String)
-                _DisplayCommentPattern = value
+            Set
+                _displayCommentPattern = Value
                 OnPropertyChanged("DisplayCommentPattern")
             End Set
         End Property
 
-        Private _BackgroundImage As Uri
-        Public Property BackgroundImage() As Uri
+        Private _backgroundImage As Uri
+        Public Property BackgroundImage As Uri
             Get
-                If Lyrics IsNot Nothing AndAlso Lyrics.ImageFileName <> "" Then
-                    _BackgroundImage = New Uri(Lyrics.ImageFileName)
-                    Return _BackgroundImage
+                If _lyrics IsNot Nothing AndAlso _lyrics.ImageFileName <> "" Then
+                    _backgroundImage = New Uri(_lyrics.ImageFileName)
+                    Return _backgroundImage
                 Else
-                    Return _BackgroundImage
+                    Return _backgroundImage
                 End If
             End Get
-            Set(ByVal value As Uri)
-                _BackgroundImage = value
+            Set
+                _backgroundImage = Value
                 OnPropertyChanged("BackgroundImage")
             End Set
         End Property
 
 
-        Private _StatusMessage As String
-        Public Property StatusMessage() As String
+        Private _statusMessage As String
+        Public Property StatusMessage As String
             Get
-                Return _StatusMessage
+                Return _statusMessage
             End Get
-            Set(ByVal value As String)
-                If value = _StatusMessage Then
-                    _StatusMessage = ""
+            Set
+                If Value = _statusMessage Then
+                    _statusMessage = ""
                     OnPropertyChanged("StatusMessage")
                 End If
-                _StatusMessage = value
+                _statusMessage = Value
                 OnPropertyChanged("StatusMessage")
             End Set
         End Property
@@ -192,142 +177,142 @@ Namespace ViewModel
         '    End Set
         'End Property
 
-        Private _ReverseRank As Boolean = True
-        Public Property ReverseRank() As Boolean
+        Private _reverseRank As Boolean = True
+        Public Property ReverseRank As Boolean
             Get
-                Return _ReverseRank
+                Return _reverseRank
             End Get
-            Set(ByVal value As Boolean)
-                _ReverseRank = value
+            Set
+                _reverseRank = Value
                 OnPropertyChanged("ReverseRank")
             End Set
         End Property
 
-        Private _HighlightUsers As String = My.Settings.HighlightUsers
-        Public Property HighlightUsers() As String
+        Private _highlightUsers As String = My.Settings.HighlightUsers
+        Public Property HighlightUsers As String
             Get
-                Return _HighlightUsers
+                Return _highlightUsers
             End Get
-            Set(ByVal value As String)
-                _HighlightUsers = value
+            Set
+                _highlightUsers = Value
                 OnPropertyChanged("HighlightUsers")
             End Set
         End Property
 
-        Private _Connected As Boolean = False
+        Private _connected As Boolean = False
         Public Property Connected As Boolean
             Get
-                Return _Connected
+                Return _connected
             End Get
-            Set(ByVal value As Boolean)
-                _Connected = value
+            Set
+                _connected = Value
                 OnPropertyChanged("Connected")
             End Set
         End Property
 
-        Private _Playing As Boolean
+        Private _playing As Boolean
         Public Property Playing As Boolean
             Get
-                Return _Playing
+                Return _playing
             End Get
-            Set(ByVal value As Boolean)
-                _Playing = value
+            Set
+                _playing = Value
                 OnPropertyChanged("Playing")
             End Set
         End Property
 
-        Private _LastLyricShown As Boolean
+        Private _lastLyricShown As Boolean
         Public Property LastLyricShown As Boolean
             Get
-                Return _LastLyricShown
+                Return _lastLyricShown
             End Get
-            Set(ByVal value As Boolean)
-                _LastLyricShown = value
+            Set
+                _lastLyricShown = Value
                 OnPropertyChanged("LastLyricShown")
             End Set
         End Property
 
         Private Const TitleFotter As String = " - ニコ生タイピング"
-        Private _WindowTitle As String = "ニコ生タイピング"
+        Private _windowTitle As String = "ニコ生タイピング"
         Public Property WindowTitle As String
             Get
-                Return _WindowTitle
+                Return _windowTitle
             End Get
-            Set(ByVal value As String)
-                _WindowTitle = value & TitleFotter
+            Set
+                _windowTitle = Value & TitleFotter
                 OnPropertyChanged("WindowTitle")
             End Set
         End Property
 
-        Private _MessageFontSize As Double = My.Settings.MessageFontSize
+        Private _messageFontSize As Double = My.Settings.MessageFontSize
         Public Property MessageFontSize As Double
             Get
-                Return _MessageFontSize
+                Return _messageFontSize
             End Get
-            Set(ByVal value As Double)
-                _MessageFontSize = value
+            Set
+                _messageFontSize = Value
                 OnPropertyChanged("MessageFontSize")
             End Set
         End Property
 
-        Private _LyricFontSize As Double = My.Settings.LyricFontSize
+        Private _lyricFontSize As Double = My.Settings.LyricFontSize
         Public Property LyricFontSize As Double
             Get
-                Return _LyricFontSize
+                Return _lyricFontSize
             End Get
-            Set(ByVal value As Double)
-                _LyricFontSize = value
+            Set
+                _lyricFontSize = Value
                 OnPropertyChanged("LyricFontSize")
             End Set
         End Property
 
-        Private _RankingFontSize As Double = My.Settings.RankingFontSize
+        Private _rankingFontSize As Double = My.Settings.RankingFontSize
         Public Property RankingFontSize As Double
             Get
-                Return _RankingFontSize
+                Return _rankingFontSize
             End Get
-            Set(ByVal value As Double)
-                _RankingFontSize = value
+            Set
+                _rankingFontSize = Value
                 OnPropertyChanged("RankingFontSize")
             End Set
         End Property
 
-        Private _LyricTitle As String = ""
+        Private _lyricTitle As String = ""
         Public Property LyricTitle As String
             Get
-                Return _LyricTitle
+                Return _lyricTitle
             End Get
-            Set(ByVal value As String)
-                _LyricTitle = value
+            Set
+                _lyricTitle = Value
                 OnPropertyChanged("LyricTitle")
             End Set
         End Property
 
-        Private _BottomGridOpacity As Double = My.Settings.BottomGridOpacity
+        Private _bottomGridOpacity As Double = My.Settings.BottomGridOpacity
         Public Property BottomGridOpacity As Double
             Get
-                Return _BottomGridOpacity
+                Return _bottomGridOpacity
             End Get
-            Set(ByVal value As Double)
-                _BottomGridOpacity = value
+            Set
+                _bottomGridOpacity = Value
                 OnPropertyChanged("BottomGridOpacity")
             End Set
         End Property
 
-        Private _RecentLyricLineCount As Integer = My.Settings.RecentLyricLineCount
+        Private _recentLyricLineCount As Integer = My.Settings.RecentLyricLineCount
         Public Property RecentLyricLineCount As Integer
             Get
-                Return _RecentLyricLineCount
+                Return _recentLyricLineCount
             End Get
-            Set(ByVal value As Integer)
-                _RecentLyricLineCount = value
+            Set
+                _recentLyricLineCount = Value
                 OnPropertyChanged("RecentLyricLineCount")
             End Set
         End Property
 
 #End Region
 
-#Region "Evnets"
+#Region "Events"
 
         Public Event ShowSettings As EventHandler(Of EventArgs)
         Protected Sub OnShowSettings()
@@ -363,7 +348,7 @@ Namespace ViewModel
 #End Region
 
 
-        Private Sub AddMessage(ByVal no As Integer, ByVal message As String, ByVal kind As MessageKind)
+        Private Sub AddMessage(no As Integer, message As String, kind As MessageKind)
 
             If (kind = MessageKind.System AndAlso ShowPointMessages) OrElse
                 (kind = MessageKind.Filtered AndAlso ShowFilteredMessages) OrElse
@@ -379,13 +364,13 @@ Namespace ViewModel
 
         End Sub
 
-        Private Member As New System.Collections.Generic.Dictionary(Of String, User)
+        Private Member As New Dictionary(Of String, User)
 
-        Public Sub InjectComment(ByVal comment As LiveCommentMessage)
+        Public Sub InjectComment(comment As LiveCommentMessage)
             LiveProgramClient_CommentReceived(Me, New CommentReceivedEventArgs(comment))
         End Sub
 
-        Private Sub LiveProgramClient_CommentReceived(ByVal sender As Object, ByVal e As CommentReceivedEventArgs)
+        Private Sub LiveProgramClient_CommentReceived(sender As Object, e As CommentReceivedEventArgs)
 
             If Not Dispatcher.CheckAccess Then
                 Dispatcher.Invoke(New Action(Of Object, CommentReceivedEventArgs)(AddressOf LiveProgramClient_CommentReceived), New Object() {sender, e})
@@ -393,20 +378,17 @@ Namespace ViewModel
             End If
 
             If (e.Comment.Source <> ChatSource.Broadcaster OrElse
-                    TypeOf sender Is LiveProgramClient AndAlso LiveProgramClientAndRoomLabels.Count > 1 AndAlso
-                        Not LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.client Is sender).label.StartsWith("立ち見")) AndAlso
+                    TypeOf sender Is LiveProgramClient AndAlso _liveProgramClientAndRoomLabels.Count > 1 AndAlso
+                        Not _liveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.client Is sender).label.StartsWith("立ち見")) AndAlso
                 e.Comment.Source <> ChatSource.General AndAlso
                 e.Comment.Source <> ChatSource.Premium Then
                 Exit Sub
             End If
 
-            Dim commentAdded As Boolean = False
-
             ' 
             If ShowFilteredMessages AndAlso
                (DisplayCommentPattern.Trim = "" OrElse e.Comment.Text.StartsWith(DisplayCommentPattern.Trim)) Then
                 AddMessage(e.Comment.No, e.Comment.Text, MessageKind.Filtered)
-                commentAdded = True
             End If
 
             If (e.Comment.Source = ChatSource.Broadcaster OrElse e.Comment.Source = ChatSource.Operator) AndAlso e.Comment.Text.StartsWith("/disconnect") Then
@@ -432,7 +414,7 @@ Namespace ViewModel
 
         End Sub
 
-        Protected Function NameEntryProcedure(ByVal comment As LiveCommentMessage) As Boolean
+        Protected Function NameEntryProcedure(comment As LiveCommentMessage) As Boolean
 
             If Not Regex.IsMatch(comment.Text, "^(@|＠).+$") Then
                 Return False
@@ -465,7 +447,7 @@ Namespace ViewModel
             Return True
         End Function
 
-        Private Sub TypingProcedure(ByVal comment As LiveCommentMessage)
+        Private Sub TypingProcedure(comment As LiveCommentMessage)
 
             If Not Member.ContainsKey(comment.UserId) Then
                 ' ユーザー追加 MEMO ユーザー追加場所は2か所
@@ -481,19 +463,19 @@ Namespace ViewModel
 
             For Each t In texts
                 Do
-                    For i = user.LyricsIndex To LyricsIndex - 1
+                    For i = user.LyricsIndex To _lyricsIndex - 1
 
-                        Dim start As Integer = 0
+                        Dim start = 0
                         If user.LyricsIndex = i Then
                             start = user.LyricsSubIndex
                         End If
 
-                        For j = start To Lyrics.Lines(i).Words.Count - 1
-                            If t.StartsWith(Lyrics.Lines(i).Words(j)) Then
+                        For j = start To _lyrics.Lines(i).Words.Count - 1
+                            If t.StartsWith(_lyrics.Lines(i).Words(j)) Then
                                 Dim point As Integer
 
                                 ' Point
-                                point = Lyrics.Lines(i).Yomi(j).Length * 3
+                                point = _lyrics.Lines(i).Yomi(j).Length * 3
 
                                 user.RawScore += point
 
@@ -504,7 +486,7 @@ Namespace ViewModel
                                         skipped = False
                                     End If
                                 ElseIf i = user.LyricsIndex + 1 Then
-                                    If j = 0 AndAlso user.LyricsSubIndex = Lyrics.Lines(i - 1).Words.Count Then
+                                    If j = 0 AndAlso user.LyricsSubIndex = _lyrics.Lines(i - 1).Words.Count Then
                                         skipped = False
                                     End If
                                 End If
@@ -517,27 +499,27 @@ Namespace ViewModel
                                 user.LyricsIndex = i
                                 user.LyricsSubIndex = j + 1
 
-                                AddMessage(comment.No, "Great! " & user.Name & " " & Lyrics.Lines(i).Words(j), MessageKind.System)
+                                AddMessage(comment.No, "Great! " & user.Name & " " & _lyrics.Lines(i).Words(j), MessageKind.System)
                                 user.ScoringResults.Add(New ScoringResult With {
                                                         .LineIndex = i,
                                                         .WordIndex = j,
-                                                        .Text = Lyrics.Lines(i).Words(j),
+                                                        .Text = _lyrics.Lines(i).Words(j),
                                                         .Rating = Rating.Great,
                                                         .CommentNo = comment.No})
 
-                                If t.Length > Lyrics.Lines(i).Words(j).Length Then
-                                    t = t.Substring(Lyrics.Lines(i).Words(j).Length)
+                                If t.Length > _lyrics.Lines(i).Words(j).Length Then
+                                    t = t.Substring(_lyrics.Lines(i).Words(j).Length)
                                 Else
                                     Exit Do
                                 End If
 
                             Else
-                                Dim yomi = t.ToHiragana(Lyrics.ReplacementWords)
-                                If yomi.StartsWith(Lyrics.Lines(i).Yomi(j)) Then
+                                Dim yomi = t.ToHiragana(_lyrics.ReplacementWords)
+                                If yomi.StartsWith(_lyrics.Lines(i).Yomi(j)) Then
 
                                     ' Point
                                     Dim point As Integer
-                                    point = Lyrics.Lines(i).Yomi(j).Length * 2
+                                    point = _lyrics.Lines(i).Yomi(j).Length * 2
 
                                     user.RawScore += point
 
@@ -549,7 +531,7 @@ Namespace ViewModel
                                             skipped = False
                                         End If
                                     ElseIf i = user.LyricsIndex + 1 Then
-                                        If j = 0 AndAlso user.LyricsSubIndex = Lyrics.Lines(i - 1).Words.Count Then
+                                        If j = 0 AndAlso user.LyricsSubIndex = _lyrics.Lines(i - 1).Words.Count Then
                                             skipped = False
                                         End If
                                     End If
@@ -562,17 +544,17 @@ Namespace ViewModel
                                     user.LyricsIndex = i
                                     user.LyricsSubIndex = j + 1
 
-                                    AddMessage(comment.No, "Good! " & user.Name & " " & Lyrics.Lines(i).Yomi(j), MessageKind.System)
+                                    AddMessage(comment.No, "Good! " & user.Name & " " & _lyrics.Lines(i).Yomi(j), MessageKind.System)
                                     user.ScoringResults.Add(New ScoringResult With {
                                                             .LineIndex = i,
                                                             .WordIndex = j,
-                                                            .Text = Lyrics.Lines(i).Yomi(j),
+                                                            .Text = _lyrics.Lines(i).Yomi(j),
                                                             .Rating = Rating.Good,
                                                             .CommentNo = comment.No})
 
 
-                                    If yomi.Length > Lyrics.Lines(i).Yomi(j).Length Then
-                                        t = yomi.Substring(Lyrics.Lines(i).Yomi(j).Length)
+                                    If yomi.Length > _lyrics.Lines(i).Yomi(j).Length Then
+                                        t = yomi.Substring(_lyrics.Lines(i).Yomi(j).Length)
                                     Else
                                         Exit Do
                                     End If
@@ -597,20 +579,20 @@ Namespace ViewModel
         End Sub
 
 
-        Private Lyrics As Lyrics
+        Private _lyrics As Lyrics
 
         ' Status
-        Private IsLoaded As Boolean
+        Private _isLoaded As Boolean
 
 
-        Private LyricsIndex As Integer
-        Private StartDateTime As DateTime
+        Private _lyricsIndex As Integer
+        Private _startDateTime As DateTime
         Private WithEvents LyricTimer As New DispatcherTimer
         Private WithEvents PlayerTimer As New DispatcherTimer
 
-        Private Sub LyricTimer_Tick(ByVal sender As Object, ByVal e As System.EventArgs) Handles LyricTimer.Tick
+        Private Sub LyricTimer_Tick(sender As Object, e As EventArgs) Handles LyricTimer.Tick
 
-            If Player.HasAudio AndAlso Player.Position.TotalMilliseconds >= Lyrics.Lines(LyricsIndex).TimePosition * 1000 + Lyrics.Offset * 1000 Then
+            If Player.HasAudio AndAlso Player.Position.TotalMilliseconds >= _lyrics.Lines(_lyricsIndex).TimePosition * 1000 + _lyrics.Offset * 1000 Then
 
                 Do
                     If RecentLyrics.Count >= RecentLyricLineCount Then
@@ -621,22 +603,23 @@ Namespace ViewModel
                 Loop
 
                 ' TODO
-                Dim wtb = New WipeTextBlock
-                wtb.FontWeight = FontWeights.Bold
-                wtb.Foreground = New SolidColorBrush(Colors.White)
+                Dim wtb = New WipeTextBlock With {
+                    .FontWeight = FontWeights.Bold,
+                    .Foreground = New SolidColorBrush(Colors.White)
+                }
 
                 Dim binding = New Binding("LyricFontSize") With {.Source = Me}
                 wtb.SetBinding(WipeTextBlock.FontSizeProperty, binding)
-                If Lyrics.WipeEnabled Then
-                    wtb.TextWithTimeTag = Lyrics.Lines(LyricsIndex).TextWithTimeTag
+                If _lyrics.WipeEnabled Then
+                    wtb.TextWithTimeTag = _lyrics.Lines(_lyricsIndex).TextWithTimeTag
                 Else
                     wtb.WipeEnabled = False
-                    wtb.Text = Lyrics.Lines(LyricsIndex).Text
+                    wtb.Text = _lyrics.Lines(_lyricsIndex).Text
                 End If
 
                 ' 強調範囲の設定
-                For Each range As KeyValuePair(Of Integer, Integer) In Lyrics.Lines(LyricsIndex).HighlightRanges
-                    wtb.WipeTextBlock.TextEffects.Add(New TextEffect(Nothing, BlacklistCharactersHighlightColor, Nothing, range.Key, range.Value))
+                For Each range As KeyValuePair(Of Integer, Integer) In _lyrics.Lines(_lyricsIndex).HighlightRanges
+                    wtb.WipeTextBlock.TextEffects.Add(New TextEffect(Nothing, _blacklistCharactersHighlightColor, Nothing, range.Key, range.Value))
                 Next
 
                 RecentLyrics.Add(wtb)
@@ -649,8 +632,8 @@ Namespace ViewModel
                 '    End If
                 'End If
 
-                LyricsIndex += 1
-                If LyricsIndex >= Lyrics.Lines.Count Then
+                _lyricsIndex += 1
+                If _lyricsIndex >= _lyrics.Lines.Count Then
                     LyricTimer.Stop()
                     LastLyricShown = True
                 End If
@@ -664,25 +647,25 @@ Namespace ViewModel
 
         'Private Player As New Windows.Media.MediaPlayer
 
-        Private WithEvents _Player As MediaElement
-        Public Property Player() As MediaElement
+        Private WithEvents _player As MediaElement
+        Public Property Player As MediaElement
             Get
-                Return _Player
+                Return _player
             End Get
-            Set(ByVal value As MediaElement)
-                _Player = value
-                _Player.LoadedBehavior = MediaState.Manual
-                _Player.UnloadedBehavior = MediaState.Manual
+            Set
+                _player = Value
+                _player.LoadedBehavior = MediaState.Manual
+                _player.UnloadedBehavior = MediaState.Manual
             End Set
         End Property
 
-        Public ReadOnly Property PlayerPosition() As TimeSpan
+        Public ReadOnly Property PlayerPosition As TimeSpan
             Get
                 Return Player.Position
             End Get
         End Property
 
-        Public ReadOnly Property MediaLength() As TimeSpan
+        Public ReadOnly Property MediaLength As TimeSpan
             Get
                 If Player.HasAudio AndAlso Player.NaturalDuration.HasTimeSpan Then
                     Return Player.NaturalDuration.TimeSpan
@@ -693,22 +676,22 @@ Namespace ViewModel
         End Property
 
 
-        Public Property Volume() As Double
+        Public Property Volume As Double
             Get
                 Return Player.Volume
             End Get
-            Set(ByVal value As Double)
-                Player.Volume = value
+            Set
+                Player.Volume = Value
                 OnPropertyChanged("Volume")
             End Set
         End Property
 
-        Public Property SpeedRatio() As Double
+        Public Property SpeedRatio As Double
             Get
                 Return Player.SpeedRatio
             End Get
-            Set(ByVal value As Double)
-                Player.SpeedRatio = value
+            Set
+                Player.SpeedRatio = Value
                 OnPropertyChanged("SpeedRatio")
             End Set
         End Property
@@ -716,20 +699,20 @@ Namespace ViewModel
 #End Region
 
 #Region "Play"
-        Private _PlayCommand As ICommand
-        Public ReadOnly Property PlayCommand() As ICommand
+        Private _playCommand As ICommand
+        Public ReadOnly Property PlayCommand As ICommand
             Get
-                If _PlayCommand Is Nothing Then
-                    _PlayCommand = New RelayCommand(New Action(Of Object)(AddressOf Play), New Predicate(Of Object)(AddressOf CanPlay))
+                If _playCommand Is Nothing Then
+                    _playCommand = New RelayCommand(New Action(Of Object)(AddressOf Play), New Predicate(Of Object)(AddressOf CanPlay))
                 End If
-                Return _PlayCommand
+                Return _playCommand
             End Get
         End Property
 
-        Private Sub Play(ByVal obj As Object)
+        Private Sub Play(obj As Object)
 
-            LyricsIndex = 0
-            StartDateTime = Now
+            _lyricsIndex = 0
+            _startDateTime = Now
 
             RankedUsers.Clear()
 
@@ -753,23 +736,23 @@ Namespace ViewModel
 
         End Sub
 
-        Private Function CanPlay(ByVal obj As Object) As Boolean
-            Return IsLoaded AndAlso Not Playing
+        Private Function CanPlay(obj As Object) As Boolean
+            Return _isLoaded AndAlso Not Playing
         End Function
 #End Region
 
 #Region "Stop"
         Private _stopCommand As ICommand
-        Public ReadOnly Property StopCommand() As ICommand
+        Public ReadOnly Property StopCommand As ICommand
             Get
                 If _stopCommand Is Nothing Then
-                    _stopCommand = New RelayCommand(New Action(Of Object)(AddressOf Me.Stop), New Predicate(Of Object)(AddressOf CanStop))
+                    _stopCommand = New RelayCommand(New Action(Of Object)(AddressOf [Stop]), New Predicate(Of Object)(AddressOf CanStop))
                 End If
                 Return _stopCommand
             End Get
         End Property
 
-        Private Sub [Stop](ByVal obj As Object)
+        Private Sub [Stop](obj As Object)
             Playing = False
             OnStopped()
 
@@ -782,26 +765,26 @@ Namespace ViewModel
 
         End Sub
 
-        Private Function CanStop(ByVal obj As Object) As Boolean
+        Private Function CanStop(obj As Object) As Boolean
             Return Playing
         End Function
 #End Region
 
 #Region "Load"
-        Private _LoadCommand As ICommand
-        Public ReadOnly Property LoadCommand() As ICommand
+        Private _loadCommand As ICommand
+        Public ReadOnly Property LoadCommand As ICommand
             Get
-                If _LoadCommand Is Nothing Then
-                    _LoadCommand = New RelayCommand(New Action(Of Object)(AddressOf Me.Load), New Predicate(Of Object)(AddressOf Me.CanLoad))
+                If _loadCommand Is Nothing Then
+                    _loadCommand = New RelayCommand(New Action(Of Object)(AddressOf Load), New Predicate(Of Object)(AddressOf CanLoad))
                 End If
-                Return _LoadCommand
+                Return _loadCommand
             End Get
         End Property
 
-        Private Sub Load(ByVal obj As Object)
-
-            Dim dialog = New OpenFileDialog
-            dialog.Filter = "*.xml,*.lrc|*.xml;*.lrc|*.xml|*.xml|*.lrc|*.lrc"
+        Private Sub Load(obj As Object)
+            Dim dialog = New OpenFileDialog With {
+                .Filter = "*.xml,*.lrc|*.xml;*.lrc|*.xml|*.xml|*.lrc|*.lrc"
+            }
 
             'Dim xmlFiles = System.IO.Directory.GetFiles("", "*.xml")
             'If xmlFiles.Count > 0 Then
@@ -820,10 +803,10 @@ Namespace ViewModel
                     Exit Sub
                 End If
 
-                Lyrics = l
+                _lyrics = l
 
-                LyricTitle = Lyrics.Title
-                WindowTitle = Lyrics.Title
+                LyricTitle = _lyrics.Title
+                WindowTitle = _lyrics.Title
 
             Else
                 Exit Sub
@@ -832,15 +815,15 @@ Namespace ViewModel
             OnPropertyChanged("BackgroundImage")
             Player.Close()
 
-            If Lyrics.VideoFileName <> "" Then
+            If _lyrics.VideoFileName <> "" Then
                 BackgroundImage = Nothing
-                Player.Source = New Uri(Lyrics.VideoFileName)
-            ElseIf Lyrics.SoundFileName <> "" Then
-                Player.Source = New Uri(Lyrics.SoundFileName)
+                Player.Source = New Uri(_lyrics.VideoFileName)
+            ElseIf _lyrics.SoundFileName <> "" Then
+                Player.Source = New Uri(_lyrics.SoundFileName)
 
             End If
 
-            IsLoaded = True
+            _isLoaded = True
 
             ' 総時間表示、およびメディア形式検証のため Pause で Media を開く
             Player.Pause()
@@ -850,53 +833,53 @@ Namespace ViewModel
 
         End Sub
 
-        Private Function CanLoad(ByVal obj As Object) As Boolean
+        Private Function CanLoad(obj As Object) As Boolean
             Return Not Playing
         End Function
 #End Region
 
 #Region "Connect"
-        Private Connecting As Boolean
+        Private _connecting As Boolean
 
-        Private ReadOnly LiveProgramClientAndRoomLabels As List(Of (client As LiveProgramClient, label As String)) = New List(Of (client As LiveProgramClient, label As String))
+        Private ReadOnly _liveProgramClientAndRoomLabels As New List(Of (client As LiveProgramClient, label As String))
 
-        Private _ConnectCommand As ICommand
-        Public ReadOnly Property ConnectCommand() As ICommand
+        Private _connectCommand As ICommand
+        Public ReadOnly Property ConnectCommand As ICommand
             Get
-                If _ConnectCommand Is Nothing Then
-                    _ConnectCommand = New RelayCommand(New Action(Of Object)(AddressOf Me.Connect), New Predicate(Of Object)(AddressOf CanConnect))
+                If _connectCommand Is Nothing Then
+                    _connectCommand = New RelayCommand(New Action(Of Object)(AddressOf Connect), New Predicate(Of Object)(AddressOf CanConnect))
                 End If
-                Return _ConnectCommand
+                Return _connectCommand
             End Get
         End Property
 
-        Private Async Sub Connect(ByVal obj As Object)
+        Private Async Sub Connect(obj As Object)
             Disconnect()
 
-            If Not Me.LiveProgramId.StartsWith("lv") Then
+            If Not LiveProgramId.StartsWith("lv") Then
                 Exit Sub
             End If
 
-            Connecting = True
+            _connecting = True
 
-            Dim commentServers = If(ConnectAllCommentServers, GetAllCommentServersAsync(), LiveProgramClient.GetCommentServersAsync(Me.LiveProgramId))
+            Dim commentServers = If(ConnectAllCommentServers, GetAllCommentServersAsync(), LiveProgramClient.GetCommentServersAsync(LiveProgramId))
 
             Try
-                For Each server In Await If(ConnectAllCommentServers, GetAllCommentServersAsync(), LiveProgramClient.GetCommentServersAsync(Me.LiveProgramId))
+                For Each server In Await If(ConnectAllCommentServers, GetAllCommentServersAsync(), LiveProgramClient.GetCommentServersAsync(LiveProgramId))
                     Dim client = New LiveProgramClient()
                     AddHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
                     AddHandler client.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
                     AddHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
                     client.ConnectAsync(server)
-                    Me.LiveProgramClientAndRoomLabels.Add((client, server.RoomLabel))
+                    _liveProgramClientAndRoomLabels.Add((client, server.RoomLabel))
                 Next
             Catch ex As Exception When ex.Message = "closed"
-                Me.StatusMessage = $"「{LiveProgramId}」は現在配信中ではありません。"
+                StatusMessage = $"「{LiveProgramId}」は現在配信中ではありません。"
             Catch ex As Exception When ex.Message = "require_community_member"
-                Me.StatusMessage = "ニコ生タイピングは、フォロワー限定 (コミュ限) の配信には接続できません。"
+                StatusMessage = "ニコ生タイピングは、フォロワー限定 (コミュ限) の配信には接続できません。"
             End Try
 
-            Connecting = False
+            _connecting = False
         End Sub
 
         ''' <summary> 
@@ -905,13 +888,13 @@ Namespace ViewModel
         ''' <returns></returns> 
         Private Async Function GetAllCommentServersAsync() As Task(Of IList(Of CommentServer))
             Dim webTask = LiveProgramClient.GetCommentServersAsync(LiveProgramId)
-            Dim liveProgramTask = NicoVideo.NicoVideoWeb.GetLiveProgramAsync(LiveProgramId)
+            Dim liveProgramTask = NicoVideoWeb.GetLiveProgramAsync(LiveProgramId)
 
             Await Task.WhenAll(webTask, liveProgramTask)
 
             Dim commentServers = webTask.Result
             Dim program = liveProgramTask.Result
-            Return If(commentServers.Count = 1 AndAlso Not program.IsOfficial AndAlso TypeOf program.ChannelCommunity Is NicoVideo.Community,
+            Return If(commentServers.Count = 1 AndAlso Not program.IsOfficial AndAlso TypeOf program.ChannelCommunity Is Community,
                 GetAllCommentServers(program, commentServers(0)),
                 webTask.Result)
         End Function
@@ -922,10 +905,10 @@ Namespace ViewModel
         ''' <param name="program">ニコニコミュニティの配信。</param> 
         ''' <param name="basicServer">指定した配信のいずれかのコメントサーバー。</param> 
         ''' <returns></returns> 
-        Private Function GetAllCommentServers(ByVal program As LiveProgram, ByVal basicServer As CommentServer) As IList(Of CommentServer)
+        Private Function GetAllCommentServers(program As LiveProgram, basicServer As CommentServer) As IList(Of CommentServer)
             Dim servers = New List(Of CommentServer)
 
-            For Each room In GetCommunityChannelRooms(DirectCast(program.ChannelCommunity, NicoVideo.Community).Level)
+            For Each room In GetCommunityChannelRooms(DirectCast(program.ChannelCommunity, Community).Level)
                 servers.Add(If(basicServer.Room = room, basicServer, CommentServer.ChangeRoom(basicServer, room)))
             Next
 
@@ -937,7 +920,7 @@ Namespace ViewModel
         ''' </summary>
         ''' <param name="level"></param>
         ''' <returns></returns>
-        Private Function GetCommunityChannelRooms(ByVal level As Integer) As CommunityChannelRoom()
+        Private Function GetCommunityChannelRooms(level As Integer) As CommunityChannelRoom()
             Select Case level
                 Case Is < 50
                     Return {Arena, StandingA}
@@ -958,13 +941,13 @@ Namespace ViewModel
             End Select
         End Function
 
-        Private Function CanConnect(ByVal obj As Object) As Boolean
+        Private Function CanConnect(obj As Object) As Boolean
             If LiveProgramId = "" Then
                 Return False
             End If
 
-            If LiveProgramClientAndRoomLabels.Count = 0 Then
-                If Connecting Then
+            If _liveProgramClientAndRoomLabels.Count = 0 Then
+                If _connecting Then
                     Return False
                 Else
                     Return True
@@ -979,37 +962,37 @@ Namespace ViewModel
 
 #Region "Disconnect"
 
-        Private _DisconnectCommand As ICommand
-        Public ReadOnly Property DisconnectCommand() As ICommand
+        Private _disconnectCommand As ICommand
+        Public ReadOnly Property DisconnectCommand As ICommand
             Get
-                If _DisconnectCommand Is Nothing Then
-                    _DisconnectCommand = New RelayCommand(New Action(Of Object)(AddressOf Me.Disconnect), New Predicate(Of Object)(AddressOf CanDisconnect))
+                If _disconnectCommand Is Nothing Then
+                    _disconnectCommand = New RelayCommand(New Action(Of Object)(AddressOf Disconnect), New Predicate(Of Object)(AddressOf CanDisconnect))
                 End If
-                Return _DisconnectCommand
+                Return _disconnectCommand
             End Get
         End Property
 
-        Private Sub Disconnect(ByVal obj As Object)
+        Private Sub Disconnect(obj As Object)
 
-            If LiveProgramClientAndRoomLabels.Count > 0 Then
-                For Each clientAndLabel In LiveProgramClientAndRoomLabels
+            If _liveProgramClientAndRoomLabels.Count > 0 Then
+                For Each clientAndLabel In _liveProgramClientAndRoomLabels
                     Dim client = clientAndLabel.client
                     RemoveHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
                     RemoveHandler client.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
                     RemoveHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
                     client.Close()
                 Next
-                LiveProgramClientAndRoomLabels.Clear()
+                _liveProgramClientAndRoomLabels.Clear()
 
-                Me.StatusMessage = "切断しました"
+                StatusMessage = "切断しました"
 
-                Me.Connected = False
+                Connected = False
             End If
 
         End Sub
 
-        Private Function CanDisconnect(ByVal obj As Object) As Boolean
-            Return LiveProgramClientAndRoomLabels.Count > 0
+        Private Function CanDisconnect(obj As Object) As Boolean
+            Return _liveProgramClientAndRoomLabels.Count > 0
         End Function
 
         Public Sub Disconnect()
@@ -1019,53 +1002,45 @@ Namespace ViewModel
 #End Region
 
 #Region "GoHome"
-        Private _GoHomeCommand As ICommand
-        Public ReadOnly Property GoHomeCommand() As ICommand
+        Private _goHomeCommand As ICommand
+        Public ReadOnly Property GoHomeCommand As ICommand
             Get
-                If _GoHomeCommand Is Nothing Then
-                    _GoHomeCommand = New RelayCommand(New Action(Of Object)(AddressOf Me.GoHome), New Predicate(Of Object)(AddressOf Me.CanGoHome))
+                If _goHomeCommand Is Nothing Then
+                    _goHomeCommand = New RelayCommand(New Action(Of Object)(AddressOf GoHome), New Predicate(Of Object)(AddressOf CanGoHome))
                 End If
-                Return _GoHomeCommand
+                Return _goHomeCommand
             End Get
         End Property
 
-        Private Sub GoHome(ByVal obj As Object)
+        Private Sub GoHome(obj As Object)
 
         End Sub
 
-        Private Function CanGoHome(ByVal obj As Object) As Boolean
+        Private Function CanGoHome(obj As Object) As Boolean
             Return Not Playing
         End Function
 
 #End Region
 
-        Private _RankedUsers As New ObservableCollection(Of User)
-        Public ReadOnly Property RankedUsers() As ObservableCollection(Of User)
-            Get
-                Return _RankedUsers
-            End Get
-        End Property
-
-
+        Public ReadOnly Property RankedUsers As ObservableCollection(Of User) = New ObservableCollection(Of User)
 
 
         Private WithEvents RankingTimer As New DispatcherTimer
-        Private RankedUsersQueue As New Queue(Of User)
+        Private ReadOnly _rankedUsersQueue As New Queue(Of User)
 
         Public Sub ShowRanking()
-            Dim sb = New System.Text.StringBuilder
 
             RankedUsers.Clear()
-            RankedUsersQueue.Clear()
+            _rankedUsersQueue.Clear()
 
-            Dim maxScore As Integer = 0
-            For Each l In Lyrics.Lines
+            Dim maxScore = 0
+            For Each l In _lyrics.Lines
                 For Each ll In l.Yomi
                     maxScore += ll.Length * 3
                 Next
             Next
 
-            Dim ids = _HighlightUsers.Split(New Char() {","c}, StringSplitOptions.None).Select(Function(id) id.Trim()).ToList
+            Dim ids = _highlightUsers.Split(New Char() {","c}, StringSplitOptions.None).Select(Function(id) id.Trim()).ToList
             For Each m In Member.Keys
                 Member(m).Highlighted = ids.Contains(m)
             Next
@@ -1076,11 +1051,11 @@ Namespace ViewModel
             Next
 
             Dim orderedMember = From m In Member.Values
-                                Where m.RecentCommentDateTime >= StartDateTime
+                                Where m.RecentCommentDateTime >= _startDateTime
                                 Order By m.NormalizedScore Descending, m.TotalScore Descending, m.PreviousRank Ascending
 
 
-            Dim rank As Integer = 1
+            Dim rank = 1
             Dim index As Integer
             Dim prevRank As Integer
 
@@ -1104,7 +1079,7 @@ Namespace ViewModel
                     'data.Score = m.NormalizedScore
                     'data.User = m
 
-                    RankedUsersQueue.Enqueue(m)
+                    _rankedUsersQueue.Enqueue(m)
 
                     prevRank = m.NormalizedScore
                     index += 1
@@ -1115,12 +1090,12 @@ Namespace ViewModel
             ' ランクを逆順にする
             If ReverseRank Then
                 Dim list = New List(Of User)
-                For Each i In RankedUsersQueue
+                For Each i In _rankedUsersQueue
                     list.Insert(0, i)
                 Next
-                RankedUsersQueue.Clear()
+                _rankedUsersQueue.Clear()
                 For Each i In list
-                    RankedUsersQueue.Enqueue(i)
+                    _rankedUsersQueue.Enqueue(i)
                 Next
             End If
 
@@ -1146,10 +1121,10 @@ Namespace ViewModel
 
         End Sub
 
-        Private Sub RankingTimer_Tick(ByVal sender As Object, ByVal e As System.EventArgs) Handles RankingTimer.Tick
+        Private Sub RankingTimer_Tick(sender As Object, e As EventArgs) Handles RankingTimer.Tick
 
-            If RankedUsersQueue.Count > 0 Then
-                RankedUsers.Insert(0, RankedUsersQueue.Dequeue)
+            If _rankedUsersQueue.Count > 0 Then
+                RankedUsers.Insert(0, _rankedUsersQueue.Dequeue)
                 OnRankingAdded()
             Else
                 RankingTimer.Stop()
@@ -1157,7 +1132,7 @@ Namespace ViewModel
 
         End Sub
 
-        Private Sub LiveProgramClient_ConnectCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
+        Private Sub LiveProgramClient_ConnectCompleted(sender As Object, e As AsyncCompletedEventArgs)
             If e.Error Is Nothing Then
                 Exit Sub
             End If
@@ -1176,19 +1151,19 @@ Namespace ViewModel
 
         End Sub
 
-        Private Sub LiveProgramClient_ConnectionStatusChanged(ByVal sender As Object, ByVal e As EventArgs)
+        Private Sub LiveProgramClient_ConnectionStatusChanged(sender As Object, e As EventArgs)
             Dim client = DirectCast(sender, LiveProgramClient)
 
             If client.Connected Then
                 Dim prefix = "接続しました: "
-                Dim label = LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.client Is client).label
-                If Me.StatusMessage IsNot Nothing AndAlso Me.StatusMessage.StartsWith(prefix) Then
-                    Me.StatusMessage &= ", " & label
+                Dim label = _liveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.client Is client).label
+                If StatusMessage IsNot Nothing AndAlso StatusMessage.StartsWith(prefix) Then
+                    StatusMessage &= ", " & label
                 Else
-                    Me.StatusMessage = prefix & label
+                    StatusMessage = prefix & label
                 End If
 
-                Me.Connected = True
+                Connected = True
             Else
                 Disconnect()
             End If
@@ -1197,38 +1172,38 @@ Namespace ViewModel
 
 
 #Region "Show Lyric Command"
-        Private _ShowLyricCommand As ICommand
-        Public ReadOnly Property ShowLyricCommand() As ICommand
+        Private _showLyricCommand As ICommand
+        Public ReadOnly Property ShowLyricCommand As ICommand
             Get
-                If _ShowLyricCommand Is Nothing Then
-                    _ShowLyricCommand = New RelayCommand(New Action(Of Object)(AddressOf ShowLyric), New Predicate(Of Object)(AddressOf CanShowLyric))
+                If _showLyricCommand Is Nothing Then
+                    _showLyricCommand = New RelayCommand(New Action(Of Object)(AddressOf ShowLyric), New Predicate(Of Object)(AddressOf CanShowLyric))
                 End If
-                Return _ShowLyricCommand
+                Return _showLyricCommand
             End Get
         End Property
 
-        Private Sub ShowLyric(ByVal obj As Object)
-
-            Dim window = New LyricWindow
-            window.Lyrics = Lyrics
+        Private Sub ShowLyric(obj As Object)
+            Dim window = New LyricWindow With {
+                .Lyrics = _lyrics
+            }
             window.ShowDialog()
 
         End Sub
 
-        Private Function CanShowLyric(ByVal obj As Object) As Boolean
-            Return IsLoaded
+        Private Function CanShowLyric(obj As Object) As Boolean
+            Return _isLoaded
         End Function
 
 #End Region
 
-        Private Sub _Player_MediaOpened(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles _Player.MediaOpened
+        Private Sub _Player_MediaOpened(sender As Object, e As RoutedEventArgs) Handles _player.MediaOpened
             OnPropertyChanged("MediaLength")
         End Sub
 
-        Private Sub _Player_MediaFailed(ByVal sender As Object, ByVal e As System.Windows.ExceptionRoutedEventArgs) Handles _Player.MediaFailed
+        Private Sub _Player_MediaFailed(sender As Object, e As ExceptionRoutedEventArgs) Handles _player.MediaFailed
             If TypeOf e.ErrorException Is COMException Then
-                Dim fileName = IO.Path.GetFileName(If(Lyrics.SoundFileName, Lyrics.VideoFileName))
-                Dim type = If(Lyrics.SoundFileName IsNot Nothing, "音声", "動画")
+                Dim fileName = Path.GetFileName(If(_lyrics.SoundFileName, _lyrics.VideoFileName))
+                Dim type = If(_lyrics.SoundFileName IsNot Nothing, "音声", "動画")
                 Select Case e.ErrorException.HResult
                     Case MilaverrLoadfailed
                         StatusMessage = $"「{fileName}」はWindows Media Playerで再生できない{type}ファイルです。"
@@ -1241,33 +1216,33 @@ Namespace ViewModel
             End If
         End Sub
 
-        Private Sub _Player_MediaEnded(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles _Player.MediaEnded
+        Private Sub _Player_MediaEnded(sender As Object, e As RoutedEventArgs) Handles _player.MediaEnded
             PlayerTimer.Stop()
         End Sub
 
-        Private Sub PlayerTimer_Tick(ByVal sender As Object, ByVal e As System.EventArgs) Handles PlayerTimer.Tick
+        Private Sub PlayerTimer_Tick(sender As Object, e As EventArgs) Handles PlayerTimer.Tick
             OnPropertyChanged("PlayerPosition")
         End Sub
 
 
 #Region "ClearMessages"
 
-        Private _ClearMessagesCommand As ICommand
+        Private _clearMessagesCommand As ICommand
         Public ReadOnly Property ClearMessagesCommand As ICommand
             Get
-                If _ClearMessagesCommand Is Nothing Then
-                    _ClearMessagesCommand = New RelayCommand(New Action(Of Object)(AddressOf ClearMessages),
+                If _clearMessagesCommand Is Nothing Then
+                    _clearMessagesCommand = New RelayCommand(New Action(Of Object)(AddressOf ClearMessages),
                                                              New Predicate(Of Object)(AddressOf CanClearMessages))
                 End If
-                Return _ClearMessagesCommand
+                Return _clearMessagesCommand
             End Get
         End Property
 
-        Private Sub ClearMessages(ByVal obj As Object)
+        Private Sub ClearMessages(obj As Object)
             Messages.Clear()
         End Sub
 
-        Private Function CanClearMessages(ByVal obj As Object) As Boolean
+        Private Function CanClearMessages(obj As Object) As Boolean
             Return Messages.Count > 0
         End Function
 
@@ -1275,115 +1250,107 @@ Namespace ViewModel
 
 #Region "Font size change"
 
-        Private _ChangeMessageFontSizeCommand As ICommand
-        Public ReadOnly Property ChangeMessageFontSizeCommand() As ICommand
+        Private _changeMessageFontSizeCommand As ICommand
+        Public ReadOnly Property ChangeMessageFontSizeCommand As ICommand
             Get
-                If _ChangeMessageFontSizeCommand Is Nothing Then
-                    _ChangeMessageFontSizeCommand = New RelayCommand(New Action(Of Object)(AddressOf ChangeMessageFontSize),
+                If _changeMessageFontSizeCommand Is Nothing Then
+                    _changeMessageFontSizeCommand = New RelayCommand(New Action(Of Object)(AddressOf ChangeMessageFontSize),
                                                               New Predicate(Of Object)(AddressOf CanChangeMessageFontSize))
                 End If
-                Return _ChangeMessageFontSizeCommand
+                Return _changeMessageFontSizeCommand
             End Get
         End Property
 
-        Private Sub ChangeMessageFontSize(ByVal obj As Object)
+        Private Sub ChangeMessageFontSize(obj As Object)
             Dim d = Convert.ToInt32(obj)
             MessageFontSize += d
         End Sub
 
-        Private Function CanChangeMessageFontSize(ByVal obj As Object) As Boolean
+        Private Function CanChangeMessageFontSize(obj As Object) As Boolean
             Dim d = Convert.ToInt32(obj)
             Return MessageFontSize + d > 10 AndAlso MessageFontSize + d <= 34
         End Function
 
 
-        Private _ChangeLyricFontSizeCommand As ICommand
-        Public ReadOnly Property ChangeLyricFontSizeCommand() As ICommand
+        Private _changeLyricFontSizeCommand As ICommand
+        Public ReadOnly Property ChangeLyricFontSizeCommand As ICommand
             Get
-                If _ChangeLyricFontSizeCommand Is Nothing Then
-                    _ChangeLyricFontSizeCommand = New RelayCommand(New Action(Of Object)(AddressOf ChangeLyricFontSize),
+                If _changeLyricFontSizeCommand Is Nothing Then
+                    _changeLyricFontSizeCommand = New RelayCommand(New Action(Of Object)(AddressOf ChangeLyricFontSize),
                                                               New Predicate(Of Object)(AddressOf CanChangeLyricFontSize))
                 End If
-                Return _ChangeLyricFontSizeCommand
+                Return _changeLyricFontSizeCommand
             End Get
         End Property
 
-        Private Sub ChangeLyricFontSize(ByVal obj As Object)
+        Private Sub ChangeLyricFontSize(obj As Object)
             Dim d = Convert.ToInt32(obj)
             LyricFontSize += d
         End Sub
 
-        Private Function CanChangeLyricFontSize(ByVal obj As Object) As Boolean
+        Private Function CanChangeLyricFontSize(obj As Object) As Boolean
             Dim d = Convert.ToInt32(obj)
             Return LyricFontSize + d > 10 AndAlso LyricFontSize + d <= 34
         End Function
 
 
-        Private _ChangeRankingFontSizeCommand As ICommand
-        Public ReadOnly Property ChangeRankingFontSizeCommand() As ICommand
+        Private _changeRankingFontSizeCommand As ICommand
+        Public ReadOnly Property ChangeRankingFontSizeCommand As ICommand
             Get
-                If _ChangeRankingFontSizeCommand Is Nothing Then
-                    _ChangeRankingFontSizeCommand = New RelayCommand(New Action(Of Object)(AddressOf ChangeRankingFontSize),
+                If _changeRankingFontSizeCommand Is Nothing Then
+                    _changeRankingFontSizeCommand = New RelayCommand(New Action(Of Object)(AddressOf ChangeRankingFontSize),
                                                               New Predicate(Of Object)(AddressOf CanChangeRankingFontSize))
                 End If
-                Return _ChangeRankingFontSizeCommand
+                Return _changeRankingFontSizeCommand
             End Get
         End Property
 
-        Private Sub ChangeRankingFontSize(ByVal obj As Object)
+        Private Sub ChangeRankingFontSize(obj As Object)
             Dim d = Convert.ToInt32(obj)
             RankingFontSize += d
         End Sub
 
-        Private Function CanChangeRankingFontSize(ByVal obj As Object) As Boolean
+        Private Function CanChangeRankingFontSize(obj As Object) As Boolean
             Dim d = Convert.ToInt32(obj)
             Return RankingFontSize + d > 10 AndAlso RankingFontSize + d <= 34
         End Function
 #End Region
 
 
-        Private _ShowSettingsCommand As ICommand
-        Public ReadOnly Property ShowSettingsCommand() As ICommand
+        Private _showSettingsCommand As ICommand
+        Public ReadOnly Property ShowSettingsCommand As ICommand
             Get
-                If _ShowSettingsCommand Is Nothing Then
-                    _ShowSettingsCommand = New RelayCommand(
+                If _showSettingsCommand Is Nothing Then
+                    _showSettingsCommand = New RelayCommand(
                         New Action(Of Object)(Sub()
                                                   OnShowSettings()
                                               End Sub))
                 End If
-                Return _ShowSettingsCommand
+                Return _showSettingsCommand
             End Get
         End Property
 
-        Private _ShowResultsCommand As ICommand
-        Public ReadOnly Property ShowResultsCommand() As ICommand
+        Private _showResultsCommand As ICommand
+        Public ReadOnly Property ShowResultsCommand As ICommand
             Get
-                If _ShowResultsCommand Is Nothing Then
-                    _ShowResultsCommand = New RelayCommand(
+                If _showResultsCommand Is Nothing Then
+                    _showResultsCommand = New RelayCommand(
                         New Action(Of Object)(Sub()
                                                   OnShowResults()
                                               End Sub))
                 End If
-                Return _ShowResultsCommand
+                Return _showResultsCommand
             End Get
         End Property
 
-        Private _WindowSizePattern As Integer = My.Settings.WindowSizePattern
-        Public Property WindowSizePattern As Integer
-            Get
-                Return _WindowSizePattern
-            End Get
-            Set(ByVal value As Integer)
-                _WindowSizePattern = value
-            End Set
-        End Property
+        Public Property WindowSizePattern As Integer = My.Settings.WindowSizePattern
 
         Public Property BlacklistCharactersHighlight As Boolean
             Get
                 Return My.Settings.BlacklistCharactersHighlight
             End Get
-            Set(ByVal value As Boolean)
-                My.Settings.BlacklistCharactersHighlight = value
+            Set
+                My.Settings.BlacklistCharactersHighlight = Value
             End Set
         End Property
 
@@ -1391,8 +1358,8 @@ Namespace ViewModel
             Get
                 Return My.Settings.SplitBlacklistCharacters
             End Get
-            Set(ByVal value As Boolean)
-                My.Settings.SplitBlacklistCharacters = value
+            Set
+                My.Settings.SplitBlacklistCharacters = Value
             End Set
         End Property
 
@@ -1404,8 +1371,8 @@ Namespace ViewModel
             Get
                 Return My.Settings.ShowTimeOnLyricsGrid
             End Get
-            Set(ByVal value As Boolean)
-                My.Settings.ShowTimeOnLyricsGrid = value
+            Set
+                My.Settings.ShowTimeOnLyricsGrid = Value
                 OnPropertyChanged("ShowTimeOnLyricsGrid")
             End Set
         End Property

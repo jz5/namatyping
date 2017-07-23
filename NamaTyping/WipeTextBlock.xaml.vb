@@ -1,4 +1,6 @@
-﻿Imports System.Windows.Media.Animation
+﻿Imports System.Globalization
+Imports System.Text
+Imports System.Windows.Media.Animation
 Imports System.Windows.Threading
 Imports System.Text.RegularExpressions
 
@@ -7,16 +9,16 @@ Public Class WipeTextBlock
 
 
     Private WithEvents MyStoryboard As Storyboard
-    Private WipeDurations As List(Of TimeSpan)
+    Private _wipeDurations As List(Of TimeSpan)
 
-    Private _WipEnabled As Boolean = True
+    Private _wipEnabled As Boolean = True
     Public Property WipeEnabled As Boolean
         Get
-            Return _WipEnabled
+            Return _wipEnabled
         End Get
-        Set(ByVal value As Boolean)
-            _WipEnabled = value
-            If value = True Then
+        Set
+            _wipEnabled = Value
+            If Value = True Then
                 StartGradientStop.Color = Colors.Orange
             Else
                 ' MEMO: ワイプ未対応歌詞のときオレンジ色が表示される問題用
@@ -29,35 +31,35 @@ Public Class WipeTextBlock
         Get
             Return Convert.ToString(GetValue(TextProperty))
         End Get
-        Set(ByVal value As String)
-            SetValue(TextProperty, value)
-            WipeTextBlock.Text = value
+        Set
+            SetValue(TextProperty, Value)
+            WipeTextBlock.Text = Value
         End Set
     End Property
 
-    Public Shared ReadOnly TextProperty As DependencyProperty = _
-                               DependencyProperty.Register("Text", _
-                               GetType(String), GetType(WipeTextBlock), _
+    Public Shared ReadOnly TextProperty As DependencyProperty =
+                               DependencyProperty.Register("Text",
+                               GetType(String), GetType(WipeTextBlock),
                                New FrameworkPropertyMetadata(Nothing))
 
     Public Property TextWithTimeTag As String
         Get
             Return Convert.ToString(GetValue(TextWithTimeTagProperty))
         End Get
-        Set(ByVal value As String)
-            SetValue(TextWithTimeTagProperty, value)
-            Me.Text = Regex.Replace(value, "\[\d{2}:\d{2}:\d{2}\]", "")
-            Wipe(value, TimeSpan.FromMilliseconds(0))
+        Set
+            SetValue(TextWithTimeTagProperty, Value)
+            Text = Regex.Replace(Value, "\[\d{2}:\d{2}:\d{2}\]", "")
+            Wipe(Value, TimeSpan.FromMilliseconds(0))
         End Set
     End Property
 
-    Public Shared ReadOnly TextWithTimeTagProperty As DependencyProperty = _
-                               DependencyProperty.Register("TextWithTimeTag", _
-                               GetType(String), GetType(WipeTextBlock), _
+    Public Shared ReadOnly TextWithTimeTagProperty As DependencyProperty =
+                               DependencyProperty.Register("TextWithTimeTag",
+                               GetType(String), GetType(WipeTextBlock),
                                New FrameworkPropertyMetadata(Nothing))
 
 
-    Public Sub Wipe(ByVal taggedText As String, ByVal offset As TimeSpan)
+    Public Sub Wipe(taggedText As String, offset As TimeSpan)
 
         Parse(taggedText.Replace("　", "  "))
 
@@ -71,8 +73,9 @@ Public Class WipeTextBlock
         WipeAnimationTextEffect.PositionStart = 0
 
 
-        Dim timer = New DispatcherTimer
-        timer.Interval = offset
+        Dim timer = New DispatcherTimer With {
+            .Interval = offset
+        }
         AddHandler timer.Tick, Sub()
                                    timer.Stop()
                                    Wipe(0)
@@ -82,17 +85,17 @@ Public Class WipeTextBlock
     End Sub
 
 
-    Private Sub Wipe(ByVal postion As Integer)
+    Private Sub Wipe(postion As Integer)
         'Console.WriteLine(postion)
 
         MyStoryboard = New Storyboard
 
-        Dim d1 = New DoubleAnimation
-        d1.From = 0
-        d1.To = 1
-
         ' TODO 例外処理
-        d1.Duration = New Duration(WipeDurations(postion))
+        Dim d1 = New DoubleAnimation With {
+            .From = 0,
+            .To = 1,
+            .Duration = New Duration(_wipeDurations(postion))
+        }
 
         Dim d2 = d1.Clone
 
@@ -115,15 +118,15 @@ Public Class WipeTextBlock
 
     End Sub
 
-    Private Sub MyStoryboard_Completed(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyStoryboard.Completed
+    Private Sub MyStoryboard_Completed(sender As Object, e As EventArgs) Handles MyStoryboard.Completed
 
         Do
             WipedTextEffect.PositionCount += 1
 
-            If WipeAnimationTextEffect.PositionStart < Me.Text.Length - 1 Then
+            If WipeAnimationTextEffect.PositionStart < Text.Length - 1 Then
                 WipeAnimationTextEffect.PositionStart += 1
 
-                If WipeDurations(WipeAnimationTextEffect.PositionStart).TotalMilliseconds > 0 Then
+                If _wipeDurations(WipeAnimationTextEffect.PositionStart).TotalMilliseconds > 0 Then
                     Wipe(WipeAnimationTextEffect.PositionStart)
                     Exit Do
                 End If
@@ -134,10 +137,10 @@ Public Class WipeTextBlock
 
     End Sub
 
-    Private Sub Parse(ByVal taggedText As String)
+    Private Sub Parse(taggedText As String)
         Dim durations = New List(Of TimeSpan)
 
-        Dim sb As New System.Text.StringBuilder
+        Dim sb As New StringBuilder
         Dim matches = Regex.Matches(taggedText, "(?<tag>\[(?<min>\d{2}):(?<sec>\d{2}):(?<csec>\d{2})\])(?<lyric>((?!\[\d{2}:\d{2}:\d{2}\]).)*)")
 
         Dim previousLyric As String = Nothing
@@ -169,11 +172,11 @@ Public Class WipeTextBlock
         Next
 
 
-        Me.Text = sb.ToString
-        WipeDurations = durations
+        Text = sb.ToString
+        _wipeDurations = durations
     End Sub
 
-    Private Function GetTextWidths(ByVal text As String) As List(Of Double)
+    Private Function GetTextWidths(text As String) As List(Of Double)
 
         Dim widths = New List(Of Double)
         For i = 0 To text.Length - 1
@@ -183,16 +186,15 @@ Public Class WipeTextBlock
                 Continue For
             End If
 
-            Dim ft = New FormattedText(text(i), Globalization.CultureInfo.CurrentCulture,
-                                       Me.FlowDirection,
-                                       New Typeface(Me.FontFamily, Me.FontStyle, Me.FontWeight, Me.FontStretch), Me.FontSize, New SolidColorBrush(Colors.Black))
+            Dim ft = New FormattedText(text(i), CultureInfo.CurrentCulture, FlowDirection,
+                                       New Typeface(FontFamily, Me.FontStyle, Me.FontWeight, Me.FontStretch), Me.FontSize, New SolidColorBrush(Colors.Black))
             widths.Add(ft.Width)
         Next
 
         Return widths
     End Function
 
-    Private Function GetDurations(ByVal totalDuration As TimeSpan, ByVal charWidths As List(Of Double)) As List(Of TimeSpan)
+    Private Function GetDurations(totalDuration As TimeSpan, charWidths As List(Of Double)) As List(Of TimeSpan)
 
         Dim sum = charWidths.Sum
         Dim durations = New List(Of TimeSpan)

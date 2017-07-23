@@ -1,8 +1,10 @@
-﻿Public Class ScreenControl
+﻿Imports Pronama.NamaTyping.ViewModel
+
+Public Class ScreenControl
 
 
 
-    Private Sub ToolBar_Loaded(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+    Private Sub ToolBar_Loaded(sender As Object, e As RoutedEventArgs)
         'Dim toolBar = DirectCast(sender, ToolBar)
         'Dim grid = toolBar.Template.FindName("OverflowGrid", toolBar)
         'If grid IsNot Nothing Then
@@ -10,16 +12,16 @@
         'End If
     End Sub
 
-    Private Sub ToolBar_IsVisibleChanged(ByVal sender As System.Object, ByVal e As System.Windows.DependencyPropertyChangedEventArgs)
+    Private Sub ToolBar_IsVisibleChanged(sender As Object, e As DependencyPropertyChangedEventArgs)
         Dim toolBar = DirectCast(sender, ToolBar)
         Dim grid = toolBar.Template.FindName("OverflowGrid", toolBar)
         If grid IsNot Nothing Then
-            DirectCast(grid, FrameworkElement).Visibility = System.Windows.Visibility.Collapsed
+            DirectCast(grid, FrameworkElement).Visibility = Visibility.Collapsed
         End If
     End Sub
 
-    Private Sub LyricLineCountComboBox_Loaded(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles LyricLineCountComboBox.Loaded
-        If Me.DataContext Is Nothing Then
+    Private Sub LyricLineCountComboBox_Loaded(sender As Object, e As RoutedEventArgs) Handles LyricLineCountComboBox.Loaded
+        If DataContext Is Nothing Then
             Exit Sub
         End If
 
@@ -28,13 +30,13 @@
             LyricLineCountComboBox.Items.Add(i)
         Next
 
-        Dim viewModel = DirectCast(Me.DataContext, ViewModel.MainViewModel)
+        Dim viewModel = DirectCast(DataContext, MainViewModel)
         LyricLineCountComboBox.SelectedIndex = viewModel.RecentLyricLineCount - 1
 
     End Sub
 
-    Private Sub LyricLineCountComboBox_SelectionChanged(ByVal sender As Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs) Handles LyricLineCountComboBox.SelectionChanged
-        If Me.DataContext Is Nothing Then
+    Private Sub LyricLineCountComboBox_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles LyricLineCountComboBox.SelectionChanged
+        If DataContext Is Nothing Then
             Exit Sub
         End If
 
@@ -42,7 +44,7 @@
             Exit Sub
         End If
 
-        Dim viewModel = DirectCast(Me.DataContext, ViewModel.MainViewModel)
+        Dim viewModel = DirectCast(DataContext, MainViewModel)
         viewModel.RecentLyricLineCount = LyricLineCountComboBox.SelectedIndex + 1
 
     End Sub

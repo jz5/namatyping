@@ -24,7 +24,7 @@ Public Class RelayCommand
     ''' Creates a new command that can always execute.
     ''' </summary>
     ''' <param name="execute">The execution logic.</param>
-    Public Sub New(ByVal execute As Action(Of Object))
+    Public Sub New(execute As Action(Of Object))
         Me.New(execute, Nothing)
     End Sub
 
@@ -33,7 +33,7 @@ Public Class RelayCommand
     ''' </summary>
     ''' <param name="execute">The execution logic.</param>
     ''' <param name="canExecute">The execution status logic.</param>
-    Public Sub New(ByVal execute As Action(Of Object), ByVal canExecute As Predicate(Of Object))
+    Public Sub New(execute As Action(Of Object), canExecute As Predicate(Of Object))
         If execute Is Nothing Then
             Throw New ArgumentNullException("execute")
         End If
@@ -46,23 +46,23 @@ Public Class RelayCommand
 
 #Region "ICommand Members"
 
-    <DebuggerStepThrough()> _
-    Public Function CanExecute(ByVal parameter As Object) As Boolean Implements ICommand.CanExecute
-        Return If(_canExecute Is Nothing, True, _canExecute(parameter))
+    <DebuggerStepThrough>
+    Public Function CanExecute(parameter As Object) As Boolean Implements ICommand.CanExecute
+        Return (_canExecute Is Nothing) OrElse _canExecute(parameter)
     End Function
 
     Public Custom Event CanExecuteChanged As EventHandler Implements ICommand.CanExecuteChanged
-        AddHandler(ByVal value As EventHandler)
+        AddHandler(value As EventHandler)
             AddHandler CommandManager.RequerySuggested, value
         End AddHandler
-        RemoveHandler(ByVal value As EventHandler)
+        RemoveHandler(value As EventHandler)
             RemoveHandler CommandManager.RequerySuggested, value
         End RemoveHandler
-        RaiseEvent(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        RaiseEvent(sender As Object, e As EventArgs)
         End RaiseEvent
     End Event
 
-    Public Sub Execute(ByVal parameter As Object) Implements ICommand.Execute
+    Public Sub Execute(parameter As Object) Implements ICommand.Execute
         _execute(parameter)
     End Sub
 

@@ -1,6 +1,4 @@
-﻿Imports System.Collections.ObjectModel
-Imports System.Net
-Imports System.Xml.Linq
+﻿Imports System.Net
 
 Namespace LiveStreaming
 
@@ -13,64 +11,18 @@ Namespace LiveStreaming
 
         Public Property UserId As String
 
-        'Private _UserId As String
-        'Public ReadOnly Property UserId() As String
-        '    Get
-        '        Return _UserId
-        '    End Get
-        'End Property
-
         Public Property Text As String
-
-        'Private _Text As String
-        'Public ReadOnly Property Text() As String
-        '    Get
-        '        Return _Text
-        '    End Get
-        'End Property
 
         Public Property No As Integer
 
-        'Private _No As Integer
-        'Public ReadOnly Property No() As Integer
-        '    Get
-        '        Return _No
-        '    End Get
-        'End Property
-
         Public Property Thread As Long
-
-        'Private _Thread As Long
-        'Public ReadOnly Property Thread() As Long
-        '    Get
-        '        Return _Thread
-        '    End Get
-        'End Property
 
         Public Property Source As ChatSource
 
-        'Private _Source As ChatSource
-        'Public ReadOnly Property Source() As ChatSource
-        '    Get
-        '        Return _Source
-        '    End Get
-        'End Property
-
         Public Property DateTime As DateTime
-        'Private _DateTime As DateTime
-        'Public ReadOnly Property DateTime() As DateTime
-        '    Get
-        '        Return _DateTime
-        '    End Get
-        'End Property
 
         Public Property UnixTime As Long
-        'Private _UnixTime As Long
-        'Public ReadOnly Property UnixTime As Long
-        '    Get
-        '        Return _UnixTime
-        '    End Get
-        'End Property
+
 
         'Public Property ContainsNGWords As Boolean
         'Public ReadOnly Property ContainsNGWords() As Boolean
@@ -114,28 +66,11 @@ Namespace LiveStreaming
         'End Property
 
         Public Property Mail As String
-        'Private _Mail As String
-        'Public ReadOnly Property Mail As String
-        '    Get
-        '        Return _Mail
-        '    End Get
-        'End Property
 
         Public Property Anonymous As Boolean
-        'Private _Anonymous As Boolean
-        'Public ReadOnly Property Anonymous As Boolean
-        '    Get
-        '        Return _Anonymous
-        '    End Get
-        'End Property
 
         Public Property VPos As Integer
-        'Private _VPos As Integer
-        'Public ReadOnly Property VPos As Integer
-        '    Get
-        '        Return _VPos
-        '    End Get
-        'End Property
+
 
         Property Score As Integer
 #End Region
@@ -144,12 +79,12 @@ Namespace LiveStreaming
 
         End Sub
 
-        Friend Sub New(ByVal xmlText As String)
+        Friend Sub New(xmlText As String)
             MyBase.New(xmlText)
             Parse(XElement.Parse(xmlText))
         End Sub
 
-        Private Sub Parse(ByVal xml As XElement)
+        Private Sub Parse(xml As XElement)
 #If SILVERLIGHT Then
             Text = System.Windows.Browser.HttpUtility.HtmlDecode(xml.Value)
 #ElseIf WINDOWSPHONE Then

@@ -43,7 +43,7 @@ Friend NotInheritable Class ReplacementWordsGenerator
     ''' <param name="outputPath">保存先のパス。<c>Nothing</c>の場合、<c>inputPath</c>の拡張子を変更したファイル名で保存され、そのパスが入ります。</param>
     ''' <param name="errorMessage">保存先のフォルダがファイルを保存できる状態でなかった場合のエラーメッセージ。</param>
     ''' <returns>保存に成功した場合に<c>True</c>を返します。</returns>
-    Friend Shared Function TryGenerate(ByVal inputPath As String, Optional ByRef outputPath As String = Nothing, Optional ByRef errorMessage As String = Nothing) As Boolean
+    Friend Shared Function TryGenerate(inputPath As String, Optional ByRef outputPath As String = Nothing, Optional ByRef errorMessage As String = Nothing) As Boolean
         Dim outputDirectoryPath = Path.GetDirectoryName(If(outputPath, inputPath))
         If (New DirectoryInfo(outputDirectoryPath).Attributes And FileAttributes.ReadOnly) > 0 Then
             errorMessage = "フォルダは読み取り専用です。"
@@ -69,9 +69,9 @@ Friend NotInheritable Class ReplacementWordsGenerator
     ''' <param name="uniquePath">重複しないファイルパス。生成に失敗した場合は、最後に存在確認を行ったファイルパスが入ります。</param>
     ''' <returns></returns>
     Private Shared Function TryConvertUniqueFileName(
-        ByVal directoryPath As String,
-        ByVal fileNameWithoutExtension As String,
-        ByVal extension As String,
+        directoryPath As String,
+        fileNameWithoutExtension As String,
+        extension As String,
         ByRef uniquePath As String
     ) As Boolean
         uniquePath = Path.Combine(directoryPath, fileNameWithoutExtension & extension)
@@ -101,11 +101,11 @@ Friend NotInheritable Class ReplacementWordsGenerator
     ''' </summary>
     ''' <param name="input"></param>
     ''' <returns></returns>
-    Private Shared Function StripTags(ByVal input As String) As String
+    Private Shared Function StripTags(input As String) As String
         Return Regex.Replace(input, "\[\d{2}:\d{2}:\d{2}\]|^@.*", "", RegexOptions.Multiline)
     End Function
 
-    Private Shared Function Generate(ByVal lrycs As String) As String
+    Private Shared Function Generate(lrycs As String) As String
         Dim replacementWords = New HashSet(Of String)
 
         Dim node = Tagger.ParseToNode(lrycs)

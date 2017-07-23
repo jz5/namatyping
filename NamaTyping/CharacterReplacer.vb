@@ -61,7 +61,7 @@ Friend NotInheritable Class CharacterReplacer
         Get
             Return _Updated
         End Get
-        Private Set(ByVal value As DateTime)
+        Private Set
             _Updated = value
         End Set
     End Property
@@ -120,7 +120,7 @@ Friend NotInheritable Class CharacterReplacer
     ''' </summary>
     ''' <param name="lyrics">タイムタグ付きの歌詞。</param>
     ''' <returns></returns>
-    Friend Function SplitWords(ByVal lyrics As String) As String
+    Friend Function SplitWords(lyrics As String) As String
         Return PatternForReplacement.Replace(lyrics, "$0" & EscapeForReplacementPattern(My.Settings.BlacklistCharactersSeparator))
     End Function
 
@@ -129,7 +129,7 @@ Friend NotInheritable Class CharacterReplacer
     ''' </summary>
     ''' <param name="lyrics">タイムタグ付きの歌詞。</param>
     ''' <returns></returns>
-    Friend Function ReplaceUnsplittableWords(ByVal lyrics As String) As String
+    Friend Function ReplaceUnsplittableWords(lyrics As String) As String
         For Each pair As KeyValuePair(Of String, String) In Variants
             lyrics = lyrics.Replace(pair.Key, pair.Value)
         Next
@@ -141,7 +141,7 @@ Friend NotInheritable Class CharacterReplacer
     ''' </summary>
     ''' <param name="lyrics">タイムタグなしの歌詞。</param>
     ''' <returns>一致箇所のリスト (キーが開始位置、値が長さ)。範囲が重なっている場合があります。</returns>
-    Friend Function Matches(ByVal lyrics As String) As Dictionary(Of Integer, Integer)
+    Friend Function Matches(lyrics As String) As Dictionary(Of Integer, Integer)
         Dim ranges = New Dictionary(Of Integer, Integer)
         For Each match As Match In HighlightPattern.Matches(lyrics)
             ranges.Add(match.Index, match.Length + match.Groups("last").Length)
@@ -193,7 +193,7 @@ Friend NotInheritable Class CharacterReplacer
     ''' </remarks>
     ''' <param name="str"></param>
     ''' <returns></returns>
-    Private Function EscapeForReplacementPattern(ByVal str As String) As String
+    Private Function EscapeForReplacementPattern(str As String) As String
         Return str.Replace("$", "$$")
     End Function
 
@@ -233,7 +233,7 @@ Friend NotInheritable Class CharacterReplacer
     ''' 文書から必要なデータを取り出します。
     ''' </summary>
     ''' <param name="doc">『NGワード置換ファイル生成』から出力された文書。</param>
-    Private Sub LoadSubstitutionList(ByVal doc As XmlDocument)
+    Private Sub LoadSubstitutionList(doc As XmlDocument)
         Dim resolver = New XmlNamespaceManager(doc.NameTable)
         resolver.AddNamespace("subst", NCVSubstNamespace)
         resolver.AddNamespace("blacklist", BlacklistNamespace)
@@ -244,8 +244,8 @@ Friend NotInheritable Class CharacterReplacer
             Regex.Replace(patternTemplate, "\(\?=([^()]*(?:(?:(?<open>\()[^()]*)+(?:(?<close-open>\))[^()]*)+)*)\)", "(?=(?<last>$1))").Replace("[\s　]*", LetterOrDigitPatternString.Replace("[", "[^") & "*")
         )
 
-        For Each Subst As XmlElement In doc.SelectNodes("//subst:subst_client[@blacklist:type='unsplittable']", resolver)
-            Variants(Subst.GetElementsByTagName("old", NCVSubstNamespace)(0).InnerText) = Subst.GetElementsByTagName("new", NCVSubstNamespace)(0).InnerText
+        For Each subst As XmlElement In doc.SelectNodes("//subst:subst_client[@blacklist:type='unsplittable']", resolver)
+            Variants(subst.GetElementsByTagName("old", NCVSubstNamespace)(0).InnerText) = subst.GetElementsByTagName("new", NCVSubstNamespace)(0).InnerText
         Next
     End Sub
 

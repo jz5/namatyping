@@ -1,29 +1,32 @@
 ﻿Imports System.Xml
 Imports System.ServiceModel.Syndication
+Imports System.Windows.Threading
+Imports Pronama.NamaTyping.ViewModel
 
 Class Application
 
     ' Startup、Exit、DispatcherUnhandledException などのアプリケーション レベルのイベントは、
     ' このファイルで処理できます。
 
-    Private WithEvents ViewModel As ViewModel.MainViewModel
+    Private WithEvents ViewModel As MainViewModel
     Private WithEvents ScreenWindow As ScreenWindow
     Private WithEvents ConsoleWindow As ConsoleWindow
     Private WithEvents ScoringResultWindow As ScoringResultWindow
 
-    Protected Overrides Sub OnStartup(ByVal e As StartupEventArgs)
+    Protected Overrides Sub OnStartup(e As StartupEventArgs)
         MyBase.OnStartup(e)
 
-        If Not System.Diagnostics.Debugger.IsAttached Then
+        If Not Debugger.IsAttached Then
             ' 「デバッグなしで開始」していれば
             AddHandler DispatcherUnhandledException, AddressOf Application_DispatcherUnhandledException
             AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf CurrentDomain_UnhandledException
         End If
 
-        ViewModel = New ViewModel.MainViewModel
+        ViewModel = New MainViewModel
 
-        ScreenWindow = New ScreenWindow
-        ScreenWindow.DataContext = ViewModel
+        ScreenWindow = New ScreenWindow With {
+            .DataContext = ViewModel
+        }
         ScreenWindow.ScreenControl.DataContext = ViewModel
         ScreenWindow.Topmost = My.Settings.Topmost
         If Not Double.IsNaN(My.Settings.WindowLeft) Then
@@ -83,11 +86,11 @@ Class Application
 
     End Sub
 
-    Private Sub ConsoleWindow_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles ConsoleWindow.Closed
+    Private Sub ConsoleWindow_Closed(sender As Object, e As EventArgs) Handles ConsoleWindow.Closed
         ConsoleWindow = Nothing
     End Sub
 
-    Private Sub ScreenWindow_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles ScreenWindow.Closed
+    Private Sub ScreenWindow_Closed(sender As Object, e As EventArgs) Handles ScreenWindow.Closed
         SaveSettings()
 
         ScreenWindow = Nothing
@@ -100,7 +103,7 @@ Class Application
         ViewModel.Disconnect()
     End Sub
 
-    Private Sub ViewModel_MessageAdded(ByVal sender As Object, ByVal e As System.EventArgs) Handles ViewModel.MessageAdded
+    Private Sub ViewModel_MessageAdded(sender As Object, e As EventArgs) Handles ViewModel.MessageAdded
         If ScreenWindow Is Nothing Then
             Exit Sub
         End If
@@ -108,18 +111,19 @@ Class Application
     End Sub
 
 
-    Private Sub ViewModel_RankingAdded(ByVal sender As Object, ByVal e As System.EventArgs) Handles ViewModel.RankingAdded
+    Private Sub ViewModel_RankingAdded(sender As Object, e As EventArgs) Handles ViewModel.RankingAdded
         If ScreenWindow Is Nothing Then
             Exit Sub
         End If
         ScreenWindow.ScrollRanking()
     End Sub
 
-    Private Sub ViewModel_ShowResults(ByVal sender As Object, ByVal e As System.EventArgs) Handles ViewModel.ShowResults
+    Private Sub ViewModel_ShowResults(sender As Object, e As EventArgs) Handles ViewModel.ShowResults
 
         If ScoringResultWindow Is Nothing Then
-            ScoringResultWindow = New ScoringResultWindow
-            ScoringResultWindow.DataContext = ViewModel.RankedUsers
+            ScoringResultWindow = New ScoringResultWindow With {
+                .DataContext = ViewModel.RankedUsers
+            }
             ScoringResultWindow.Show()
         Else
             ScoringResultWindow.Activate()
@@ -127,11 +131,12 @@ Class Application
 
     End Sub
 
-    Private Sub ViewModel_ShowSettings(ByVal sender As Object, ByVal e As System.EventArgs) Handles ViewModel.ShowSettings
+    Private Sub ViewModel_ShowSettings(sender As Object, e As EventArgs) Handles ViewModel.ShowSettings
 
         If ConsoleWindow Is Nothing Then
-            ConsoleWindow = New ConsoleWindow
-            ConsoleWindow.DataContext = ViewModel
+            ConsoleWindow = New ConsoleWindow With {
+                .DataContext = ViewModel
+            }
             ConsoleWindow.Show()
 
         Else
@@ -140,16 +145,14 @@ Class Application
 
     End Sub
 
-    Private Sub ScoringResultWindow_Closed(ByVal sender As Object, ByVal e As System.EventArgs) Handles ScoringResultWindow.Closed
+    Private Sub ScoringResultWindow_Closed(sender As Object, e As EventArgs) Handles ScoringResultWindow.Closed
         ScoringResultWindow = Nothing
     End Sub
 
-    Private MessagesGridHeight As Double
-
-    Private Sub ViewModel_Played(ByVal sender As Object, ByVal e As System.EventArgs) Handles ViewModel.Played
+    Private Sub ViewModel_Played(sender As Object, e As EventArgs) Handles ViewModel.Played
     End Sub
 
-    Private Sub ViewModel_Stopped(ByVal sender As Object, ByVal e As System.EventArgs) Handles ViewModel.Stopped
+    Private Sub ViewModel_Stopped(sender As Object, e As EventArgs) Handles ViewModel.Stopped
     End Sub
 
     ''' <summary>
@@ -180,7 +183,7 @@ Class Application
     ''' <summary>
     ''' WPF UIスレッドにおける未処理例外のイベントハンドラ。
     ''' </summary>
-    Private Sub Application_DispatcherUnhandledException(sender As Object, e As System.Windows.Threading.DispatcherUnhandledExceptionEventArgs)
+    Private Sub Application_DispatcherUnhandledException(sender As Object, e As DispatcherUnhandledExceptionEventArgs)
         e.Handled = True
         ShowExceptionAndShutdown(e.Exception)
     End Sub
@@ -202,8 +205,7 @@ Class Application
     ''' </summary>
     Private Sub ShowExceptionAndShutdown(ex As Exception)
         MessageBox.Show(
-            $"問題が発生したため、アプリケーションを終了します。{vbNewLine}{vbNewLine}例外情報 (Ctrl+Cでコピー可能):{vbNewLine}{ex}",
-            My.Application.Info.Title,
+            $"問題が発生したため、アプリケーションを終了します。{vbNewLine}{vbNewLine}例外情報 (Ctrl+Cでコピー可能):{vbNewLine}{ex}", Info.Title,
             MessageBoxButton.OK,
             MessageBoxImage.Error
         )

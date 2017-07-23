@@ -1,32 +1,27 @@
 ﻿Public Class User
 
-    Private _Name As String = ""
-    Public Property Name() As String
+    Private _name As String = ""
+    Public Property Name As String
         Get
-            If _Name = "" Then
+            If _name = "" Then
                 Return "名無し"
             End If
-            Return _Name
+            Return _name
         End Get
-        Set(ByVal value As String)
-            _Name = value
+        Set
+            _name = Value
         End Set
     End Property
 
     Public Property Id As String
-    Public Property Highlighted() As Boolean
-    Public Property Premium() As Integer
-    Public Property RawScore() As Integer
+    Public Property Highlighted As Boolean
+    Public Property Premium As Integer
+    Public Property RawScore As Integer
 
-    Private _NormalizedScore As Integer
-    Public ReadOnly Property NormalizedScore() As Integer
-        Get
-            Return _NormalizedScore
-        End Get
-    End Property
+    Public Property NormalizedScore As Integer
 
-    Public Sub NormalizeScore(ByVal totalScore As Integer)
-        _NormalizedScore = Convert.ToInt32(RawScore / totalScore * 1000.0)
+    Public Sub NormalizeScore(totalScore As Integer)
+        NormalizedScore = Convert.ToInt32(RawScore / totalScore * 1000.0)
     End Sub
 
     Public Property Rank As Integer? = Nothing
@@ -34,14 +29,14 @@
 
     Public ReadOnly Property Score As Integer
         Get
-            Return _NormalizedScore
+            Return NormalizedScore
         End Get
     End Property
 
-    Private _TotalScore As Integer
+    Private _totalScore As Integer
     Public ReadOnly Property TotalScore As Integer
         Get
-            Return _TotalScore + NormalizedScore
+            Return _totalScore + NormalizedScore
         End Get
     End Property
 
@@ -52,9 +47,9 @@
     '    End Get
     'End Property
 
-    Public Property LyricsIndex() As Integer
-    Public Property LyricsSubIndex() As Integer
-    Public Property RecentCommentDateTime() As DateTime
+    Public Property LyricsIndex As Integer
+    Public Property LyricsSubIndex As Integer
+    Public Property RecentCommentDateTime As DateTime
 
     Public Sub Clear()
 
@@ -70,7 +65,7 @@
         End If
         Rank = Nothing
 
-        _TotalScore += NormalizedScore
+        _totalScore += NormalizedScore
 
         RawScore = 0
         LyricsIndex = 0
@@ -78,7 +73,7 @@
         _ScoringResults.Clear()
     End Sub
 
-    Private _ScoringResults As New List(Of ScoringResult)
+    Private ReadOnly _scoringResults As New List(Of ScoringResult)
     Public ReadOnly Property ScoringResults As IList(Of ScoringResult)
         Get
             Return _ScoringResults

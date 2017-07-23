@@ -1,4 +1,4 @@
-Imports Microsoft.VisualBasic
+ï»¿Imports Microsoft.VisualBasic
 Imports System
 Imports System.ComponentModel
 Imports System.Diagnostics
@@ -21,20 +21,7 @@ Namespace ViewModel
 
 #Region "DisplayName"
 
-        ''' <summary>
-        ''' Returns the user-friendly name of this object.
-        ''' Child classes can set this property to a new value,
-        ''' or override it to determine the value on-demand.
-        ''' </summary>
-        Private privateDisplayName As String
-        Public Overridable Property DisplayName() As String
-            Get
-                Return privateDisplayName
-            End Get
-            Protected Set(ByVal value As String)
-                privateDisplayName = value
-            End Set
-        End Property
+        Public Overridable Property DisplayName As String
 
 #End Region ' DisplayName
 
@@ -45,8 +32,8 @@ Namespace ViewModel
         ''' a public property with the specified name. This 
         ''' method does not exist in a Release build.
         ''' </summary>
-        <Conditional("DEBUG"), DebuggerStepThrough()> _
-        Public Sub VerifyPropertyName(ByVal propertyName As String)
+        <Conditional("DEBUG"), DebuggerStepThrough> _
+        Public Sub VerifyPropertyName(propertyName As String)
             ' Verify that the property name matches a real,  
             ' public, instance property on this object.
             If TypeDescriptor.GetProperties(Me)(propertyName) Is Nothing Then
@@ -60,21 +47,7 @@ Namespace ViewModel
             End If
         End Sub
 
-        ''' <summary>
-        ''' Returns whether an exception is thrown, or if a Debug.Fail() is used
-        ''' when an invalid property name is passed to the VerifyPropertyName method.
-        ''' The default value is false, but subclasses used by unit tests might 
-        ''' override this property's getter to return true.
-        ''' </summary>
-        Private privateThrowOnInvalidPropertyName As Boolean
-        Protected Overridable Property ThrowOnInvalidPropertyName() As Boolean
-            Get
-                Return privateThrowOnInvalidPropertyName
-            End Get
-            Set(ByVal value As Boolean)
-                privateThrowOnInvalidPropertyName = value
-            End Set
-        End Property
+        Protected Overridable Property ThrowOnInvalidPropertyName As Boolean
 
 #End Region ' Debugging Aides
 
@@ -89,7 +62,7 @@ Namespace ViewModel
         ''' Raises this object's PropertyChanged event.
         ''' </summary>
         ''' <param name="propertyName">The property that has a new value.</param>
-        Protected Overridable Sub OnPropertyChanged(ByVal propertyName As String)
+        Protected Overridable Sub OnPropertyChanged(propertyName As String)
             Me.VerifyPropertyName(propertyName)
 
             Dim handler As PropertyChangedEventHandler = Me.PropertyChangedEvent
@@ -102,31 +75,31 @@ Namespace ViewModel
 #End Region ' INotifyPropertyChanged Members
 
 #Region "IDisposable Support"
-        Private disposedValue As Boolean ' d•¡‚·‚éŒÄ‚Ño‚µ‚ğŒŸo‚·‚é‚É‚Í
+        Private _disposedValue As Boolean ' é‡è¤‡ã™ã‚‹å‘¼ã³å‡ºã—ã‚’æ¤œå‡ºã™ã‚‹ã«ã¯
 
         ' IDisposable
-        Protected Overridable Sub Dispose(ByVal disposing As Boolean)
-            If Not Me.disposedValue Then
+        Protected Overridable Sub Dispose(disposing As Boolean)
+            If Not Me._disposedValue Then
                 If disposing Then
-                    ' TODO: ƒ}ƒl[ƒWó‘Ô‚ğ”jŠü‚µ‚Ü‚· (ƒ}ƒl[ƒW ƒIƒuƒWƒFƒNƒg)B
+                    ' TODO: ãƒãƒãƒ¼ã‚¸çŠ¶æ…‹ã‚’ç ´æ£„ã—ã¾ã™ (ãƒãƒãƒ¼ã‚¸ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ)ã€‚
                 End If
 
-                ' TODO: ƒAƒ“ƒ}ƒl[ƒW ƒŠƒ\[ƒX (ƒAƒ“ƒ}ƒl[ƒW ƒIƒuƒWƒFƒNƒg) ‚ğ‰ğ•ú‚µA‰º‚Ì Finalize() ‚ğƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ü‚·B
-                ' TODO: ‘å‚«‚ÈƒtƒB[ƒ‹ƒh‚ğ null ‚Éİ’è‚µ‚Ü‚·B
+                ' TODO: ã‚¢ãƒ³ãƒãƒãƒ¼ã‚¸ ãƒªã‚½ãƒ¼ã‚¹ (ã‚¢ãƒ³ãƒãƒãƒ¼ã‚¸ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ) ã‚’è§£æ”¾ã—ã€ä¸‹ã® Finalize() ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ã¾ã™ã€‚
+                ' TODO: å¤§ããªãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’ null ã«è¨­å®šã—ã¾ã™ã€‚
             End If
-            Me.disposedValue = True
+            Me._disposedValue = True
         End Sub
 
-        ' TODO: ã‚Ì Dispose(ByVal disposing As Boolean) ‚ÉƒAƒ“ƒ}ƒl[ƒW ƒŠƒ\[ƒX‚ğ‰ğ•ú‚·‚éƒR[ƒh‚ª‚ ‚éê‡‚É‚Ì‚İAFinalize() ‚ğƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ü‚·B
+        ' TODO: ä¸Šã® Dispose(ByVal disposing As Boolean) ã«ã‚¢ãƒ³ãƒãƒãƒ¼ã‚¸ ãƒªã‚½ãƒ¼ã‚¹ã‚’è§£æ”¾ã™ã‚‹ã‚³ãƒ¼ãƒ‰ãŒã‚ã‚‹å ´åˆã«ã®ã¿ã€Finalize() ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ã¾ã™ã€‚
         'Protected Overrides Sub Finalize()
-        '    ' ‚±‚ÌƒR[ƒh‚ğ•ÏX‚µ‚È‚¢‚Å‚­‚¾‚³‚¢BƒNƒŠ[ƒ“ƒAƒbƒv ƒR[ƒh‚ğã‚Ì Dispose(ByVal disposing As Boolean) ‚É‹Lq‚µ‚Ü‚·B
+        '    ' ã“ã®ã‚³ãƒ¼ãƒ‰ã‚’å¤‰æ›´ã—ãªã„ã§ãã ã•ã„ã€‚ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ— ã‚³ãƒ¼ãƒ‰ã‚’ä¸Šã® Dispose(ByVal disposing As Boolean) ã«è¨˜è¿°ã—ã¾ã™ã€‚
         '    Dispose(False)
         '    MyBase.Finalize()
         'End Sub
 
-        ' ‚±‚ÌƒR[ƒh‚ÍA”jŠü‰Â”\‚Èƒpƒ^[ƒ“‚ğ³‚µ‚­À‘•‚Å‚«‚é‚æ‚¤‚É Visual Basic ‚É‚æ‚Á‚Ä’Ç‰Á‚³‚ê‚Ü‚µ‚½B
+        ' ã“ã®ã‚³ãƒ¼ãƒ‰ã¯ã€ç ´æ£„å¯èƒ½ãªãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’æ­£ã—ãå®Ÿè£…ã§ãã‚‹ã‚ˆã†ã« Visual Basic ã«ã‚ˆã£ã¦è¿½åŠ ã•ã‚Œã¾ã—ãŸã€‚
         Public Sub Dispose() Implements IDisposable.Dispose
-            ' ‚±‚ÌƒR[ƒh‚ğ•ÏX‚µ‚È‚¢‚Å‚­‚¾‚³‚¢BƒNƒŠ[ƒ“ƒAƒbƒv ƒR[ƒh‚ğã‚Ì Dispose(ByVal disposing As Boolean) ‚É‹Lq‚µ‚Ü‚·B
+            ' ã“ã®ã‚³ãƒ¼ãƒ‰ã‚’å¤‰æ›´ã—ãªã„ã§ãã ã•ã„ã€‚ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ— ã‚³ãƒ¼ãƒ‰ã‚’ä¸Šã® Dispose(ByVal disposing As Boolean) ã«è¨˜è¿°ã—ã¾ã™ã€‚
             Dispose(True)
             GC.SuppressFinalize(Me)
         End Sub

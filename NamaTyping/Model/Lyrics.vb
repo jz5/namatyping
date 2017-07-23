@@ -1,4 +1,7 @@
-﻿Imports System.Text.RegularExpressions
+﻿Imports System.IO
+Imports System.Text
+Imports System.Text.RegularExpressions
+Imports System.Xml
 Imports <xmlns="http://www.w3.org/2005/Atom">
 Imports <xmlns:ntype="http://namaalert.jp/namatyping">
 Imports Pronama.NamaTyping.TextEncoding
@@ -31,37 +34,37 @@ Namespace Model
             ".jpg", ".jpeg", ".png", ".bmp"
         }
 
-        Private _ReplacementWords As New Dictionary(Of String, String)
-        Public ReadOnly Property ReplacementWords() As IDictionary(Of String, String)
+        Private ReadOnly _replacementWords As New Dictionary(Of String, String)
+        Public ReadOnly Property ReplacementWords As IDictionary(Of String, String)
             Get
-                Return _ReplacementWords
+                Return _replacementWords
             End Get
         End Property
 
-        Private _Lines As New List(Of LyricLine)
-        Public ReadOnly Property Lines() As IList(Of LyricLine)
+        Private ReadOnly _lines As New List(Of LyricLine)
+        Public ReadOnly Property Lines As IList(Of LyricLine)
             Get
-                Return _Lines
+                Return _lines
             End Get
         End Property
 
-        Private _NgWords As New Dictionary(Of String, String)
+        Private ReadOnly _ngWords As New Dictionary(Of String, String)
         Public ReadOnly Property NgWords As IDictionary(Of String, String)
             Get
-                Return _NgWords
+                Return _ngWords
             End Get
         End Property
 
-        Private Shared _CharacterReplacer As CharacterReplacer
+        Private Shared _characterReplacer As CharacterReplacer
         Friend Shared Property CharacterReplacer As CharacterReplacer
             Get
-                If _CharacterReplacer Is Nothing Then
-                    _CharacterReplacer = New CharacterReplacer()
+                If _characterReplacer Is Nothing Then
+                    _characterReplacer = New CharacterReplacer()
                 End If
-                Return _CharacterReplacer
+                Return _characterReplacer
             End Get
-            Set(value As CharacterReplacer)
-                _CharacterReplacer = value
+            Set
+                _characterReplacer = Value
             End Set
         End Property
 
@@ -71,8 +74,8 @@ Namespace Model
         Property ReplacementWordsFileName As String
         Property NgWordsFileName As String
         Property LyricsFileName As String
-        Property Encoding As System.Text.Encoding
-        Property ReplacementWordsFileEncoding As System.Text.Encoding
+        Property Encoding As Encoding
+        Property ReplacementWordsFileEncoding As Encoding
 
         Property Title As String
         Property Offset As Double = 0
@@ -86,7 +89,7 @@ Namespace Model
         ''' <param name="file">存在するXMLファイル、またはlrcファイルのパス。</param>
         ''' <param name="errorMessage">読み込みに失敗した場合のエラーメッセージ。</param>
         ''' <returns>読み込みに成功していれば<c>True</c>を返します。</returns>
-        Public Function TryLoad(ByVal file As String, Optional ByRef errorMessage As String = Nothing) As Boolean
+        Public Function TryLoad(file As String, Optional ByRef errorMessage As String = Nothing) As Boolean
 
             Dim success = False
             If file.ToUpper.EndsWith(".XML") Then
@@ -111,10 +114,10 @@ Namespace Model
         End Function
 
         Public Sub Reload()
-            If Not System.IO.File.Exists(ReplacementWordsFileName) Then
+            If Not File.Exists(ReplacementWordsFileName) Then
                 Exit Sub
             End If
-            If Not System.IO.File.Exists(LyricsFileName) Then
+            If Not File.Exists(LyricsFileName) Then
                 Exit Sub
             End If
 
@@ -126,7 +129,7 @@ Namespace Model
                     ReplacementWords.Add(values)
                 Next
                 MessageBox.Show(
-                    $"「{System.IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません",
+                    $"「{Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません",
                     My.Application.Info.Title,
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
@@ -141,23 +144,23 @@ Namespace Model
             End Get
         End Property
 
-        Private Function TryLoadFromXml(ByVal file As String, Optional ByRef errorMessage As String = Nothing) As Boolean
+        Private Function TryLoadFromXml(file As String, Optional ByRef errorMessage As String = Nothing) As Boolean
 
             Dim doc As XDocument
             Try
                 doc = XDocument.Load(file)
-            Catch ex As System.Xml.XmlException
-                errorMessage = $"「{System.IO.Path.GetFileName(file)}」の読み込みに失敗しました: {ex.Message}"
+            Catch ex As XmlException
+                errorMessage = $"「{IO.Path.GetFileName(file)}」の読み込みに失敗しました: {ex.Message}"
                 Return False
             End Try
-            Dim path = System.IO.Path.GetDirectoryName(file)
+            Dim path = IO.Path.GetDirectoryName(file)
 
             For Each entry In doc...<entry>
                 Title = entry.<title>.Value
 
                 If entry.<ntype:encoding>.Value IsNot Nothing Then
                     Try
-                        Encoding = System.Text.Encoding.GetEncoding(entry.<ntype:encoding>.Value)
+                        Encoding = Encoding.GetEncoding(entry.<ntype:encoding>.Value)
                         ReplacementWordsFileEncoding = Encoding
                     Catch ex As ArgumentException When ex.ParamName = "name"
                         ' ignore
@@ -184,12 +187,12 @@ Namespace Model
                         errorMessage = "次の <link> タグに href 属性が存在しません: " & New XElement(link.Name.LocalName, link.Elements(), link.Attributes()).ToString()
                         Return False
                     End If
-                    If link.@href.IndexOfAny(System.IO.Path.GetInvalidPathChars()) <> -1 Then
+                    If link.@href.IndexOfAny(IO.Path.GetInvalidPathChars()) <> -1 Then
                         errorMessage = $"href 属性値「{link.@href}」には、パスに使えない文字が含まれています。"
                         Return False
                     End If
-                    Dim f = System.IO.Path.Combine(path, link.@href)
-                    If Not System.IO.File.Exists(f) Then
+                    Dim f = IO.Path.Combine(path, link.@href)
+                    If Not IO.File.Exists(f) Then
                         Continue For
                     End If
 
@@ -224,7 +227,7 @@ Namespace Model
                 If Exists Then
                     LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
                     If Not TryLoadLyrics(LyricsFileName, Encoding) Then
-                        errorMessage = $"「{System.IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません"
+                        errorMessage = $"「{IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません"
                         Return False
                     End If
                     Return True
@@ -238,29 +241,29 @@ Namespace Model
         End Function
 
         ' for old format
-        Private Function TryLoadFromLyrics(ByVal file As String, Optional ByRef errorMessage As String = Nothing) As Boolean
-            Dim path = System.IO.Path.GetDirectoryName(file)
-            Dim fileNameWithoutExtenstion = System.IO.Path.GetFileNameWithoutExtension(file)
+        Private Function TryLoadFromLyrics(file As String, Optional ByRef errorMessage As String = Nothing) As Boolean
+            Dim path = IO.Path.GetDirectoryName(file)
+            Dim fileNameWithoutExtenstion = IO.Path.GetFileNameWithoutExtension(file)
 
             Title = fileNameWithoutExtenstion
 
-            Dim replFile = System.IO.Path.Combine(path, fileNameWithoutExtenstion & ".rep.txt")
-            If System.IO.File.Exists(replFile) Then
+            Dim replFile = IO.Path.Combine(path, fileNameWithoutExtenstion & ".rep.txt")
+            If IO.File.Exists(replFile) Then
                 ReplacementWordsFileName = replFile
             End If
 
-            replFile = System.IO.Path.Combine(path, fileNameWithoutExtenstion & ".repl.txt")
-            If System.IO.File.Exists(replFile) Then
+            replFile = IO.Path.Combine(path, fileNameWithoutExtenstion & ".repl.txt")
+            If IO.File.Exists(replFile) Then
                 ReplacementWordsFileName = replFile
             End If
 
 
-            Dim lrcFile = System.IO.Path.Combine(path, fileNameWithoutExtenstion & ".lrc")
-            If System.IO.File.Exists(lrcFile) Then
+            Dim lrcFile = IO.Path.Combine(path, fileNameWithoutExtenstion & ".lrc")
+            If IO.File.Exists(lrcFile) Then
                 LyricsFileName = lrcFile
             End If
 
-            For Each fileInfo In New System.IO.DirectoryInfo(path).GetFiles(fileNameWithoutExtenstion & ".*")
+            For Each fileInfo In New DirectoryInfo(path).GetFiles(fileNameWithoutExtenstion & ".*")
                 Dim extension = fileInfo.Name.Substring(fileNameWithoutExtenstion.Length).ToLower()
                 If VideoFileExtensions.Contains(extension) Then
                     VideoFileName = fileInfo.FullName
@@ -274,7 +277,7 @@ Namespace Model
             If Exists Then
                 LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
                 If Not TryLoadLyrics(LyricsFileName, Encoding) Then
-                    errorMessage = $"「{System.IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません"
+                    errorMessage = $"「{IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません"
                     Return False
                 End If
                 Return True
@@ -285,12 +288,12 @@ Namespace Model
 
 
 
-        Private Sub LoadReplacementWords(ByVal file As String, ByRef encoding As System.Text.Encoding)
+        Private Sub LoadReplacementWords(file As String, ByRef encoding As Encoding)
             ReplacementWords.Clear()
 
-            Dim lines = ReadLinesWithoutBlankLines(ReadAllText(file, encoding))
+            Dim readLines = ReadLinesWithoutBlankLines(ReadAllText(file, encoding))
 
-            Dim sortedLines = From l In lines Order By l.Length Descending
+            Dim sortedLines = From l In readLines Order By l.Length Descending
 
             For Each l In sortedLines
                 If Not l.Contains(",") Then
@@ -312,7 +315,7 @@ Namespace Model
 
         End Sub
 
-        Private Function TryLoadLyrics(ByVal file As String, ByRef encoding As System.Text.Encoding) As Boolean
+        Private Function TryLoadLyrics(file As String, ByRef encoding As Encoding) As Boolean
             Dim rawLines = New List(Of String)
 
             For Each l In ReadLinesWithoutBlankLines(CharacterReplacer.ReplaceUnsplittableWords(ReadAllText(file, encoding)))
@@ -413,7 +416,7 @@ Namespace Model
         ''' <seealso cref="WipeTextBlock.Wipe"/>
         ''' <param name="i">0から始まる行番号。</param>
         ''' <returns><see cref="WipeEnabled"/>が設定されていれば、和字間隔 (U+3000) をスペース (U+0020) に置き換えた文字列。</returns>
-        Private Function GetWipeText(ByVal i As Integer) As String
+        Private Function GetWipeText(i As Integer) As String
             Dim text = Lines(i).Text
             If WipeEnabled Then
                 text = text.Replace("　", "  ")

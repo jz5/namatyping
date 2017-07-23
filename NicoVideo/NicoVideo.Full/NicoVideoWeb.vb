@@ -104,7 +104,7 @@ Public Class NicoVideoWeb
         Dim tcs = New TaskCompletionSource(Of LiveProgram)
 
         Dim client = New WebClient With {
-            .Encoding = System.Text.Encoding.UTF8}
+            .Encoding = Text.Encoding.UTF8}
 
         AddHandler client.DownloadStringCompleted,
             Sub(sender As Object, e As DownloadStringCompletedEventArgs)

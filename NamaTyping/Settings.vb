@@ -42,7 +42,7 @@ Partial Friend NotInheritable Class MySettings
     ''' <summary>
     ''' <see cref="Upgrade"/>を呼び出し済みなら真。
     ''' </summary>
-    Private AlreadyUpgraded As Boolean = False
+    Private _alreadyUpgraded As Boolean = False
 
     Protected Overrides Sub OnSettingsLoaded(sender As Object, e As SettingsLoadedEventArgs)
         MyBase.OnSettingsLoaded(sender, e)
@@ -55,15 +55,15 @@ Partial Friend NotInheritable Class MySettings
     ''' 旧バージョンのユーザー設定を引き継ぎます。
     ''' </summary>
     Public Overrides Sub Upgrade()
-        If Not AlreadyUpgraded Then
-            AlreadyUpgraded = True
+        If Not _alreadyUpgraded Then
+            _alreadyUpgraded = True
 
             If Version = "" Then
                 MyBase.Upgrade()
 
-                Dim OldVersion As Version = Nothing
-                If (System.Version.TryParse(Version, OldVersion)) Then
-                    CopyOldVersionFiles(OldVersion.ToString())
+                Dim oldVersion As Version = Nothing
+                If (System.Version.TryParse(Version, oldVersion)) Then
+                    CopyOldVersionFiles(oldVersion.ToString())
 
                     'If OldVersion.Major < 3 Then
                     '    マイグレーション処理
@@ -80,7 +80,7 @@ Partial Friend NotInheritable Class MySettings
     ''' 旧バージョンの設定ファイル保存フォルダに存在する user.config 以外のファイルを、現バージョンのフォルダにコピーします。
     ''' </summary>
     ''' <param name="oldVersion">旧バージョン番号。</param>
-    Private Sub CopyOldVersionFiles(ByVal oldVersion As String)
+    Private Sub CopyOldVersionFiles(oldVersion As String)
         Dim oldParentPath = Path.Combine(Path.GetDirectoryName(ParentPath), oldVersion)
         If oldParentPath <> ParentPath Then
             Dim exclusionFileName = Path.GetFileName(FilePath)
@@ -101,7 +101,7 @@ Partial Friend NotInheritable Class MySettings
     ''' <summary>
     ''' 値の範囲を矯正します。
     ''' </summary>
-    Protected Sub CorrectRange()
+    Private Sub CorrectRange()
         If MessageFontSize < MinFontSize Then
             MessageFontSize = MinFontSize
         End If

@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.CompilerServices
+Imports System.Text
 Imports System.Text.RegularExpressions
 
 Module ExtensionModule
@@ -43,19 +44,19 @@ Module ExtensionModule
 
     'End Function
 
-    Private Alphanumerics As New Dictionary(Of Char, Char)
-    Private KanaDictionary As New Dictionary(Of Char, Char)
+    Private ReadOnly Alphanumerics As New Dictionary(Of Char, Char)
+    Private ReadOnly KanaDictionary As New Dictionary(Of Char, Char)
 
     Sub New()
-        Const wideChars As String = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９"
-        Const harfChars As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        Const wideChars = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９"
+        Const harfChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
         For i = 0 To wideChars.Length - 1
             Alphanumerics.Add(wideChars(i), harfChars(i))
         Next
 
-        Const katakana As String = "ヲァィゥェォャュョッアイウエオナニヌネノマミムメモヤユヨラリルレロワンカキクケコサシスセソタチツテトハヒフヘホガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポヴヰヱ"
-        Const hiragana As String = "をぁぃぅぇぉゃゅょっあいうえおなにぬねのまみむめもやゆよらりるれろわんかきくけこさしすせそたちつてとはひふへほがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゔゐゑ"
+        Const katakana = "ヲァィゥェォャュョッアイウエオナニヌネノマミムメモヤユヨラリルレロワンカキクケコサシスセソタチツテトハヒフヘホガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポヴヰヱ"
+        Const hiragana = "をぁぃぅぇぉゃゅょっあいうえおなにぬねのまみむめもやゆよらりるれろわんかきくけこさしすせそたちつてとはひふへほがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゔゐゑ"
 
         For i = 0 To katakana.Length - 1
             KanaDictionary.Add(katakana(i), hiragana(i))
@@ -63,10 +64,10 @@ Module ExtensionModule
     End Sub
 
 
-    <Extension()>
-    Public Function ToLyricsWords(ByVal text As String, removeSymbols As Boolean) As String
+    <Extension>
+    Public Function ToLyricsWords(text As String, removeSymbols As Boolean) As String
 
-        Dim builder = New System.Text.StringBuilder
+        Dim builder = New StringBuilder
         For Each c In text
 
             If Char.IsLetterOrDigit(c) Then
@@ -91,8 +92,8 @@ Module ExtensionModule
 
     End Function
 
-    <Extension()>
-    Public Function ToHiragana(ByVal text As String, Optional ByVal replacementTable As IDictionary(Of String, String) = Nothing) As String
+    <Extension>
+    Public Function ToHiragana(text As String, Optional ByVal replacementTable As IDictionary(Of String, String) = Nothing) As String
 
         If replacementTable IsNot Nothing Then
             For Each word In replacementTable
@@ -100,7 +101,7 @@ Module ExtensionModule
             Next
         End If
 
-        Dim newText = New System.Text.StringBuilder
+        Dim newText = New StringBuilder
         For Each c In text
             If KanaDictionary.ContainsKey(c) Then
                 newText.Append(KanaDictionary(c))
@@ -112,7 +113,7 @@ Module ExtensionModule
 
     End Function
 
-    <Extension()>
+    <Extension>
     Public Function ToTimeSpan(timeTag As String) As TimeSpan
 
         Dim m = Regex.Match(timeTag, "\[(?<min>\d{2}):(?<sec>\d{2}):(?<csec>\d{2})\]")
