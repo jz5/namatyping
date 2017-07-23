@@ -6,6 +6,7 @@ Imports Pronama.NicoVideo.LiveStreaming
 Imports Pronama.NicoVideo.LiveStreaming.CommunityChannelRoom
 Imports System.Text.RegularExpressions
 Imports System.Threading.Tasks
+Imports System.Runtime.InteropServices
 
 Namespace ViewModel
 
@@ -27,6 +28,21 @@ Namespace ViewModel
         ''' 運営NGワードの強調色。
         ''' </summary>
         Private ReadOnly BlacklistCharactersHighlightColor As Brush = Brushes.Red
+
+        ''' <summary>
+        ''' <see cref="MediaElement"/>で Media 読み込み時、対応していないメディア形式だった場合に
+        ''' 発生する<see cref="MediaElement.MediaFailed"/>における<see cref="COMException.ErrorCode"/>の値。
+        ''' </summary>
+        ''' <remarks>
+        ''' 正式な定数名は不明。
+        ''' </remarks>
+        Private Const MilaverrLoadfailed = &HC00D11B1
+
+        ''' <summary>
+        ''' <see cref="MediaElement.SpeedRatio"/>設定時、速度変更に対応していないメディア形式だった場合に
+        ''' 発生する<see cref="MediaElement.MediaFailed"/>における<see cref="COMException.ErrorCode"/>の値。
+        ''' </summary>
+        Private Const MilaverrUnexpectedwmpfailure = &H8898050C
 
 #Region "Properties"
 
@@ -378,7 +394,7 @@ Namespace ViewModel
 
             If (e.Comment.Source <> ChatSource.Broadcaster OrElse
                     TypeOf sender Is LiveProgramClient AndAlso LiveProgramClientAndRoomLabels.Count > 1 AndAlso
-                        Not LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.Item1 Is sender).Item2.StartsWith("立ち見")) AndAlso
+                        Not LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.client Is sender).label.StartsWith("立ち見")) AndAlso
                 e.Comment.Source <> ChatSource.General AndAlso
                 e.Comment.Source <> ChatSource.Premium Then
                 Exit Sub
@@ -842,7 +858,7 @@ Namespace ViewModel
 #Region "Connect"
         Private Connecting As Boolean
 
-        Private ReadOnly LiveProgramClientAndRoomLabels As List(Of Tuple(Of LiveProgramClient, String)) = New List(Of Tuple(Of LiveProgramClient, String))
+        Private ReadOnly LiveProgramClientAndRoomLabels As List(Of (client As LiveProgramClient, label As String)) = New List(Of (client As LiveProgramClient, label As String))
 
         Private _ConnectCommand As ICommand
         Public ReadOnly Property ConnectCommand() As ICommand
@@ -868,15 +884,15 @@ Namespace ViewModel
                     Sub(e)
                         If e.Exception IsNot Nothing Then
                             Me.StatusMessage = "エラー: " & e.Exception.InnerException.Message
-                            Exit Sub
+                        Else
+                            For Each server In e.Result
+                                Dim client = New LiveProgramClient()
+                                AddHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
+                                AddHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
+                                client.ConnectAsync(server)
+                                Me.LiveProgramClientAndRoomLabels.Add((client, server.RoomLabel))
+                            Next
                         End If
-                        For Each server In e.Result
-                            Dim client = New LiveProgramClient()
-                            AddHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
-                            AddHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
-                            client.ConnectAsync(server)
-                            Me.LiveProgramClientAndRoomLabels.Add(Tuple.Create(client, server.RoomLabel))
-                        Next
                         Connecting = False
                     End Sub)
 
@@ -977,7 +993,7 @@ Namespace ViewModel
 
             If LiveProgramClientAndRoomLabels.Count > 0 Then
                 For Each clientAndLabel In LiveProgramClientAndRoomLabels
-                    Dim client = clientAndLabel.Item1
+                    Dim client = clientAndLabel.client
                     RemoveHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
                     RemoveHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
                     client.Close()
@@ -1163,7 +1179,7 @@ Namespace ViewModel
 
             If client.Connected Then
                 Dim prefix = "接続しました: "
-                Dim label = LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.Item1 Is client).Item2
+                Dim label = LiveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.client Is client).label
                 If Me.StatusMessage IsNot Nothing AndAlso Me.StatusMessage.StartsWith(prefix) Then
                     Me.StatusMessage &= ", " & label
                 Else
@@ -1207,12 +1223,20 @@ Namespace ViewModel
             OnPropertyChanged("MediaLength")
         End Sub
 
-        Private Sub _Player_MediaFailed(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles _Player.MediaFailed
-            StatusMessage = String.Format(
-                "「{0}」はWindows Media Playerで再生できない{1}ファイルです。",
-                My.Computer.FileSystem.GetName(If(Lyrics.SoundFileName, Lyrics.VideoFileName)),
-                If(Lyrics.SoundFileName IsNot Nothing, "音声", "動画")
-            )
+        Private Sub _Player_MediaFailed(ByVal sender As Object, ByVal e As System.Windows.ExceptionRoutedEventArgs) Handles _Player.MediaFailed
+            If TypeOf e.ErrorException Is COMException Then
+                Dim fileName = IO.Path.GetFileName(If(Lyrics.SoundFileName, Lyrics.VideoFileName))
+                Dim type = If(Lyrics.SoundFileName IsNot Nothing, "音声", "動画")
+                Select Case e.ErrorException.HResult
+                    Case MilaverrLoadfailed
+                        StatusMessage = $"「{fileName}」はWindows Media Playerで再生できない{type}ファイルです。"
+                        Exit Sub
+                    Case MilaverrUnexpectedwmpfailure
+                        StatusMessage = $"「{fileName}」はWindows Media Playerで早送りできない{type}ファイルです。"
+                        Exit Sub
+                End Select
+                Throw e.ErrorException
+            End If
         End Sub
 
         Private Sub _Player_MediaEnded(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles _Player.MediaEnded

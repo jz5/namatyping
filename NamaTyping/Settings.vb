@@ -37,7 +37,7 @@ Partial Friend NotInheritable Class MySettings
     ''' ユーザー設定ファイル (user.config) が保存されているフォルダのパス。
     ''' </summary>
     ''' <returns></returns>
-    Friend ReadOnly Property ParentPath As String = My.Computer.FileSystem.GetParentPath(FilePath)
+    Friend ReadOnly Property ParentPath As String = Path.GetDirectoryName(FilePath)
 
     ''' <summary>
     ''' <see cref="Upgrade"/>を呼び出し済みなら真。
@@ -81,17 +81,17 @@ Partial Friend NotInheritable Class MySettings
     ''' </summary>
     ''' <param name="oldVersion">旧バージョン番号。</param>
     Private Sub CopyOldVersionFiles(ByVal oldVersion As String)
-        Dim oldParentPath = My.Computer.FileSystem.CombinePath(My.Computer.FileSystem.GetParentPath(ParentPath), oldVersion)
+        Dim oldParentPath = Path.Combine(Path.GetDirectoryName(ParentPath), oldVersion)
         If oldParentPath <> ParentPath Then
-            Dim exclusionFileName = My.Computer.FileSystem.GetName(FilePath)
+            Dim exclusionFileName = Path.GetFileName(FilePath)
             Dim oldDirectory = New DirectoryInfo(oldParentPath)
             For Each entry As FileSystemInfo In oldDirectory.EnumerateFileSystemInfos()
                 If entry.Name <> exclusionFileName Then
-                    Dim newEntryPath = My.Computer.FileSystem.CombinePath(ParentPath, My.Computer.FileSystem.GetName(entry.Name))
+                    Dim newEntryPath = Path.Combine(ParentPath, Path.GetFileName(entry.Name))
                     If (entry.Attributes And FileAttributes.Directory) = FileAttributes.Directory Then
                         My.Computer.FileSystem.CopyDirectory(entry.FullName, newEntryPath)
                     Else
-                        My.Computer.FileSystem.CopyFile(entry.FullName, newEntryPath)
+                        File.Copy(entry.FullName, newEntryPath)
                     End If
                 End If
             Next

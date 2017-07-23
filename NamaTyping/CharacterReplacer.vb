@@ -1,5 +1,6 @@
 ﻿Imports System.Xml
 Imports System.Text.RegularExpressions
+Imports System.IO
 
 ''' <summary>
 ''' ニコニコ生放送の運営NGワードに関する処理を行います。
@@ -104,7 +105,7 @@ Friend NotInheritable Class CharacterReplacer
     ''' 外部から取得したNGワード置換ファイルの保存先。
     ''' </summary>
     ''' <returns></returns>
-    Private ReadOnly Property FilePath As String = My.Computer.FileSystem.CombinePath(My.Settings.ParentPath, "SubstList.xml")
+    Private ReadOnly Property FilePath As String = Path.Combine(My.Settings.ParentPath, "SubstList.xml")
 
     Friend Sub New()
         If My.Settings.BlacklistCharactersSeparator.Length = 0 OrElse Regex.IsMatch(My.Settings.BlacklistCharactersSeparator, LetterOrDigitPatternString) Then
@@ -200,7 +201,7 @@ Friend NotInheritable Class CharacterReplacer
     ''' NGワード置換ファイルを読み込みます。
     ''' </summary>
     Private Sub Load()
-        If My.Computer.FileSystem.FileExists(FilePath) Then
+        If File.Exists(FilePath) Then
             Dim doc = New XmlDocument
             Try
                 doc.Load(FilePath)

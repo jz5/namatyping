@@ -44,8 +44,8 @@ Friend NotInheritable Class ReplacementWordsGenerator
     ''' <param name="errorMessage">保存先のフォルダがファイルを保存できる状態でなかった場合のエラーメッセージ。</param>
     ''' <returns>保存に成功した場合に<c>True</c>を返します。</returns>
     Friend Shared Function TryGenerate(ByVal inputPath As String, Optional ByRef outputPath As String = Nothing, Optional ByRef errorMessage As String = Nothing) As Boolean
-        Dim outputDirectoryPath = My.Computer.FileSystem.GetParentPath(If(outputPath, inputPath))
-        If (My.Computer.FileSystem.GetDirectoryInfo(outputDirectoryPath).Attributes And FileAttributes.ReadOnly) > 0 Then
+        Dim outputDirectoryPath = Path.GetDirectoryName(If(outputPath, inputPath))
+        If (New DirectoryInfo(outputDirectoryPath).Attributes And FileAttributes.ReadOnly) > 0 Then
             errorMessage = "フォルダは読み取り専用です。"
             Return False
         End If
@@ -56,7 +56,7 @@ Friend NotInheritable Class ReplacementWordsGenerator
             Return False
         End If
 
-        My.Computer.FileSystem.WriteAllText(outputPath, Generate(StripTags(TextEncoding.ReadAllText(inputPath))), False)
+        File.WriteAllText(outputPath, Generate(StripTags(TextEncoding.ReadAllText(inputPath))))
         Return True
     End Function
 
@@ -86,8 +86,8 @@ Friend NotInheritable Class ReplacementWordsGenerator
 
             For i = 2 To MaxDuplicateFileName
                 Dim fileName = $"{fileNameWithoutNumber}({i}){extension}"
+                uniquePath = Path.Combine(directoryPath, fileName)
                 If Not filenames.Contains(fileName) Then
-                    uniquePath = Path.Combine(directoryPath, fileName)
                     Return True
                 End If
             Next
