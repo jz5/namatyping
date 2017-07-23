@@ -26,8 +26,13 @@ Public Class ScoringResultWindow
 
         Try
             Clipboard.SetText(sb.ToString)
-        Catch ex As Exception
-            ' Ignore
+        Catch ex As Runtime.InteropServices.ExternalException
+            MessageBox.Show(
+                "クリップボードへのコピーに失敗しました。別のアプリケーションがクリップボードを使用中です。",
+                My.Application.Info.Title,
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning
+            )
         End Try
 
     End Sub

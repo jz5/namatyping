@@ -84,37 +84,34 @@ Public Class WipeTextBlock
 
     Private Sub Wipe(ByVal postion As Integer)
         'Console.WriteLine(postion)
-        Try
-            MyStoryboard = New Storyboard
 
-            Dim d1 = New DoubleAnimation
-            d1.From = 0
-            d1.To = 1
+        MyStoryboard = New Storyboard
 
-            ' TODO 例外処理
-            d1.Duration = New Duration(WipeDurations(postion))
+        Dim d1 = New DoubleAnimation
+        d1.From = 0
+        d1.To = 1
 
-            Dim d2 = d1.Clone
+        ' TODO 例外処理
+        d1.Duration = New Duration(WipeDurations(postion))
 
-            MyStoryboard.Children.Add(d1)
-            MyStoryboard.Children.Add(d2)
+        Dim d2 = d1.Clone
 
-            'Storyboard.SetTarget(d1, StartGradientStop)
-            Storyboard.SetTargetProperty(d1, New PropertyPath(GradientStop.OffsetProperty))
-            Storyboard.SetTargetName(d1, "StartGradientStop")
+        MyStoryboard.Children.Add(d1)
+        MyStoryboard.Children.Add(d2)
 
-
-
-            'Storyboard.SetTarget(d2, EndGradientStop)
-            Storyboard.SetTargetProperty(d2, New PropertyPath(GradientStop.OffsetProperty))
-            Storyboard.SetTargetName(d2, "EndGradientStop")
+        'Storyboard.SetTarget(d1, StartGradientStop)
+        Storyboard.SetTargetProperty(d1, New PropertyPath(GradientStop.OffsetProperty))
+        Storyboard.SetTargetName(d1, "StartGradientStop")
 
 
 
-            MyStoryboard.Begin(Me)
-        Catch ex As Exception
+        'Storyboard.SetTarget(d2, EndGradientStop)
+        Storyboard.SetTargetProperty(d2, New PropertyPath(GradientStop.OffsetProperty))
+        Storyboard.SetTargetName(d2, "EndGradientStop")
 
-        End Try
+
+
+        MyStoryboard.Begin(Me)
 
     End Sub
 
@@ -126,15 +123,10 @@ Public Class WipeTextBlock
             If WipeAnimationTextEffect.PositionStart < Me.Text.Length - 1 Then
                 WipeAnimationTextEffect.PositionStart += 1
 
-                Try
-                    If WipeDurations(WipeAnimationTextEffect.PositionStart).TotalMilliseconds > 0 Then
-                        Wipe(WipeAnimationTextEffect.PositionStart)
-                        Exit Do
-                    End If
-                Catch ex As Exception
+                If WipeDurations(WipeAnimationTextEffect.PositionStart).TotalMilliseconds > 0 Then
+                    Wipe(WipeAnimationTextEffect.PositionStart)
                     Exit Do
-                End Try
-
+                End If
             Else
                 Exit Do
             End If

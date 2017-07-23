@@ -159,7 +159,7 @@ Namespace Model
                     Try
                         Encoding = System.Text.Encoding.GetEncoding(entry.<ntype:encoding>.Value)
                         ReplacementWordsFileEncoding = Encoding
-                    Catch ex As ArgumentException
+                    Catch ex As ArgumentException When ex.ParamName = "name"
                         ' ignore
                     End Try
                 End If
