@@ -343,6 +343,23 @@ Partial Friend NotInheritable Class MySettings
     End Property
     
     '''<summary>
+    '''経過時間と総時間を、歌詞表示領域の右上にも表示する
+    '''</summary>
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("経過時間と総時間を、歌詞表示領域の右上にも表示する"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("True"),  _
+     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
+    Public Property ShowTimeOnLyricsGrid() As Boolean
+        Get
+            Return CType(Me("ShowTimeOnLyricsGrid"),Boolean)
+        End Get
+        Set
+            Me("ShowTimeOnLyricsGrid") = value
+        End Set
+    End Property
+    
+    '''<summary>
     '''ウィンドウの横位置のキャッシュ。
     '''</summary>
     <Global.System.Configuration.UserScopedSettingAttribute(),  _

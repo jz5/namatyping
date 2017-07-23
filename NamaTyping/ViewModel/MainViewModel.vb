@@ -1400,5 +1400,15 @@ Namespace ViewModel
 
         Public Property ConnectAllCommentServers As Boolean = My.Settings.ConnectAllCommentServers
 
+        Public Property ShowTimeOnLyricsGrid As Boolean
+            Get
+                Return My.Settings.ShowTimeOnLyricsGrid
+            End Get
+            Set(ByVal value As Boolean)
+                My.Settings.ShowTimeOnLyricsGrid = value
+                OnPropertyChanged("ShowTimeOnLyricsGrid")
+            End Set
+        End Property
+
     End Class
 End Namespace

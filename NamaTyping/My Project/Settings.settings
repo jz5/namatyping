@@ -53,6 +53,9 @@
     <Setting Name="ConnectAllCommentServers" Description="すべての部屋からコメントを取得する。" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="ShowTimeOnLyricsGrid" Description="経過時間と総時間を、歌詞表示領域の右上にも表示する" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
     <Setting Name="WindowLeft" Description="ウィンドウの横位置のキャッシュ。" Type="System.Double" Scope="User">
       <Value Profile="(Default)">NaN</Value>
     </Setting>

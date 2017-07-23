@@ -234,6 +234,14 @@
             <Rectangle Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
                            Fill="Black" Opacity="{Binding BottomGridOpacity}" />
 
+            <!-- 再生時間 -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Background="#77FFFFFF" TextElement.FontSize="20"
+                                Visibility="{Binding ShowTimeOnLyricsGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="{Binding PlayerPosition, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
+                <TextBlock Text="/" Margin="0" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding MediaLength, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
+            </StackPanel>
+
             <!-- Lyrics -->
             <Grid Name="LyricsGrid" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             	<i:Interaction.Triggers>
