@@ -798,8 +798,11 @@ Namespace ViewModel
                 Dim l = New Lyrics
 
                 Dim errorMessage As String = Nothing
-                If Not l.TryLoad(dialog.FileName, errorMessage) Then
+                Dim result = l.TryLoad(dialog.FileName, errorMessage)
+                If errorMessage IsNot Nothing Then
                     StatusMessage = errorMessage
+                End If
+                If Not result Then
                     Exit Sub
                 End If
 

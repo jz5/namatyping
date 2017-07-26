@@ -158,11 +158,7 @@ Public Class WipeTextBlock
 
             If i > 0 Then
 
-                If ts.Subtract(previousTimeSpan) > TimeSpan.FromSeconds(0) Then
-                    durations.AddRange(GetDurations(ts.Subtract(previousTimeSpan), GetTextWidths(previousLyric)))
-                Else
-                    ' TODO invalid tag
-                End If
+                durations.AddRange(GetDurations(ts.Subtract(previousTimeSpan), GetTextWidths(previousLyric)))
 
             End If
 

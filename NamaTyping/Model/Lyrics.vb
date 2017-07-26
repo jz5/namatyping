@@ -87,7 +87,7 @@ Namespace Model
         ''' ファイルを読み込みます。
         ''' </summary>
         ''' <param name="file">存在するXMLファイル、またはlrcファイルのパス。</param>
-        ''' <param name="errorMessage">読み込みに失敗した場合のエラーメッセージ。</param>
+        ''' <param name="errorMessage">読み込みに失敗した場合のエラーメッセージ、または成功したものの問題があった場合の警告メッセージ。</param>
         ''' <returns>読み込みに成功していれば<c>True</c>を返します。</returns>
         Public Function TryLoad(file As String, Optional ByRef errorMessage As String = Nothing) As Boolean
 
@@ -226,7 +226,7 @@ Namespace Model
 
                 If Exists Then
                     LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
-                    If Not TryLoadLyrics(LyricsFileName, Encoding) Then
+                    If Not TryLoadLyrics(LyricsFileName, Encoding, errorMessage) Then
                         errorMessage = $"「{IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません"
                         Return False
                     End If
@@ -276,7 +276,7 @@ Namespace Model
 
             If Exists Then
                 LoadReplacementWords(ReplacementWordsFileName, ReplacementWordsFileEncoding)
-                If Not TryLoadLyrics(LyricsFileName, Encoding) Then
+                If Not TryLoadLyrics(LyricsFileName, Encoding, errorMessage) Then
                     errorMessage = $"「{IO.Path.GetFileName(LyricsFileName)}」にはタイムタグで始まる行がありません"
                     Return False
                 End If
@@ -315,7 +315,7 @@ Namespace Model
 
         End Sub
 
-        Private Function TryLoadLyrics(file As String, ByRef encoding As Encoding) As Boolean
+        Private Function TryLoadLyrics(file As String, ByRef encoding As Encoding, Optional ByRef errorMessage As String = "") As Boolean
             Dim rawLines = New List(Of String)
 
             For Each l In ReadLinesWithoutBlankLines(CharacterReplacer.ReplaceUnsplittableWords(ReadAllText(file, encoding)))
@@ -333,6 +333,8 @@ Namespace Model
             If rawLines.Count = 0 Then
                 Return False
             End If
+
+            rawLines = TrimInvalidTimeTags(rawLines, errorMessage)
 
             rawLines = ComplementLineEndTimeTag(rawLines)
 
@@ -404,6 +406,52 @@ Namespace Model
 
             Return True
 
+        End Function
+
+        ''' <summary>
+        ''' 不正なタイムタグを取り除きます。
+        ''' </summary>
+        ''' <param name="lyrics"></param>
+        ''' <param name="warningMessage">不正なタイムタグがあった場合の警告メッセージ。</param>
+        ''' <returns></returns>
+        ''' <remarks>
+        ''' 同じ行内で、一つ前のタイムタグより値が小さいタイムタグを取り除きます。
+        ''' </remarks>
+        Private Function TrimInvalidTimeTags(lyrics As IEnumerable(Of String), ByRef warningMessage As String) As List(Of String)
+            Dim lyricsWithValidTimeTagOnly = New List(Of String)
+            Dim warningMessages = New List(Of String)
+
+            For Each words In lyrics
+                Dim matches = Regex.Matches(words, "\[(?<min>\d{2}):(?<sec>\d{2}):(?<csec>\d{2})\]")
+                Dim invalidTimeTagOffsets = New List(Of Integer)
+                Dim previousTimeSpan As TimeSpan
+
+                For i = 0 To matches.Count - 1
+                    Dim m = matches(i)
+
+                    Dim ts = New TimeSpan(0, 0, Convert.ToInt32(m.Groups("min").Value), Convert.ToInt32(m.Groups("sec").Value), Convert.ToInt32(m.Groups("csec").Value) * 10)
+
+                    If i > 0 AndAlso ts < previousTimeSpan Then
+                        ' 不正なタイムタグであれば
+                        invalidTimeTagOffsets.Insert(0, m.Index)
+                        warningMessages.Add($"{m.Value} は、一つ前の {matches(i - 1).Value} よりも小さい値のタイムタグです。")
+                    Else
+                        previousTimeSpan = ts
+                    End If
+                Next
+
+                Dim wordsWithValidTimeTagOnly = words
+                For Each o In invalidTimeTagOffsets
+                    wordsWithValidTimeTagOnly = wordsWithValidTimeTagOnly.Remove(o, "[xx:xx:xx]".Length)
+                Next
+                lyricsWithValidTimeTagOnly.Add(wordsWithValidTimeTagOnly)
+            Next
+
+            If warningMessages.Count > 0 Then
+                warningMessage = String.Join(vbNewLine, warningMessages)
+            End If
+
+            Return lyricsWithValidTimeTagOnly
         End Function
 
         ''' <summary>
