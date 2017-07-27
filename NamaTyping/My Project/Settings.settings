@@ -68,5 +68,8 @@
     <Setting Name="SubstitutionListDownloadURL" Description="NGワード置換ファイルを手動でダウンロードするURL。" Type="System.String" Scope="Application">
       <Value Profile="(Default)">https://id.pokemori.jp/niconico-live-ncv</Value>
     </Setting>
+    <Setting Name="RecentMessagesCount" Description="表示しているログを切り詰める際に、残しておく件数。" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

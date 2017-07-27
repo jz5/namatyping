@@ -714,6 +714,7 @@ Namespace ViewModel
             _lyricsIndex = 0
             _startDateTime = Now
 
+            TruncateOldMessages(My.Settings.RecentMessagesCount)
             RankedUsers.Clear()
 
 
@@ -1376,6 +1377,16 @@ Namespace ViewModel
                 OnPropertyChanged("ShowTimeOnLyricsGrid")
             End Set
         End Property
+
+        ''' <summary>
+        ''' 表示しているログを、指定件数だけ残して切り詰めます。
+        ''' </summary>
+        ''' <param name="count"></param>
+        Private Sub TruncateOldMessages(count As Integer)
+            For i = 1 To Messages.Count - count
+                Messages.RemoveAt(0)
+            Next
+        End Sub
 
     End Class
 End Namespace
