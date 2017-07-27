@@ -44,7 +44,8 @@
     <DefineTrace>true</DefineTrace>
     <IncrementalBuild>true</IncrementalBuild>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>NamaTyping.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <NoWarn>42314</NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -53,14 +54,15 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <IncrementalBuild>false</IncrementalBuild>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>NamaTyping.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <NoWarn>42314</NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <Prefer32Bit>false</Prefer32Bit>
@@ -395,4 +397,18 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NMeCab.0.06.4\build\NMeCab.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NMeCab.0.06.4\build\NMeCab.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y /i /s /e "$(ProjectDir)dic" "dic"
+RMDIR /S /Q "$(TargetDir)de"
+RMDIR /S /Q "$(TargetDir)en"
+RMDIR /S /Q "$(TargetDir)es"
+RMDIR /S /Q "$(TargetDir)fr"
+RMDIR /S /Q "$(TargetDir)it"
+RMDIR /S /Q "$(TargetDir)ja"
+RMDIR /S /Q "$(TargetDir)ko"
+RMDIR /S /Q "$(TargetDir)ru"
+RMDIR /S /Q "$(TargetDir)zh-Hans"
+RMDIR /S /Q "$(TargetDir)zh-Hant"
+DEL "$(TargetDir)Ude.NetStandard.pdb"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
