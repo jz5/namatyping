@@ -334,11 +334,7 @@ Namespace Model
                 Return False
             End If
 
-            For i = 0 To rawLines.Count - 2
-                If Not Regex.IsMatch(rawLines(i), "\[\d{2}:\d{2}:\d{2}\]$") Then
-                    rawLines(i) &= rawLines(i + 1).Substring(0, "[xx:xx:xx]".Length)
-                End If
-            Next
+            rawLines = ComplementLineEndTimeTag(rawLines)
 
             Lines.Clear()
 
@@ -408,6 +404,40 @@ Namespace Model
 
             Return True
 
+        End Function
+
+        ''' <summary>
+        ''' 行末にタイムタグを補完します。
+        ''' </summary>
+        ''' <param name="lyrics"></param>
+        ''' <returns></returns>
+        Private Function ComplementLineEndTimeTag(lyrics As IEnumerable(Of String)) As List(Of String)
+            Dim lyricsComplementedTimeTag = New List(Of String)
+
+            For i = 0 To lyrics.Count - 1
+                Dim validTimeTag = ""
+
+                Dim missingEndTimeTag = Regex.Match(lyrics(i), "(?<last>\[\d{2}:\d{2}:\d{2}\])(?:(?!\[\d{2}:\d{2}:\d{2}\]).)+$")
+                If missingEndTimeTag.Success Then
+                    ' 行末にタイムタグがなければ
+                    If i < lyrics.Count - 1 Then
+                        ' 最終行でなければ
+                        Dim tag = lyrics(i + 1).Substring(0, "[xx:xx:xx]".Length)
+                        If tag.ToTimeSpan() >= missingEndTimeTag.Groups("last").Value.ToTimeSpan() Then
+                            ' 次行の行頭のタイムタグの値が、直近のタイムタグの値以上であれば
+                            validTimeTag = tag
+                        End If
+                    End If
+
+                    If validTimeTag = "" Then
+                        validTimeTag = missingEndTimeTag.Groups("last").Value
+                    End If
+                End If
+
+                lyricsComplementedTimeTag.Add(lyrics(i) & validTimeTag)
+            Next
+
+            Return lyricsComplementedTimeTag
         End Function
 
         ''' <summary>
