@@ -172,7 +172,7 @@
 
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" ToolTip="音量" Margin="5 0 0 0">
                         <Image Source="Images/speaker-volume.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                        <Slider Width="80" Margin="5 0 5 0" Value="{Binding Volume}" VerticalAlignment="Center" Maximum="1" Minimum="0" LargeChange="0.2" />
+                        <Slider Width="275" Margin="5 0 5 0" Value="{Binding Volume}" VerticalAlignment="Center" Maximum="1" Minimum="0" LargeChange="0.2" />
                     </StackPanel>
 
                 </ToolBar>
