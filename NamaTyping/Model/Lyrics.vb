@@ -335,7 +335,7 @@ Namespace Model
             End If
 
             For i = 0 To rawLines.Count - 2
-                If Not rawLines(i).EndsWith("]") Then
+                If Not Regex.IsMatch(rawLines(i), "\[\d{2}:\d{2}:\d{2}\]$") Then
                     rawLines(i) &= rawLines(i + 1).Substring(0, "[xx:xx:xx]".Length)
                 End If
             Next
