@@ -610,7 +610,7 @@ Namespace ViewModel
 
                 Dim binding = New Binding("LyricFontSize") With {.Source = Me}
                 wtb.SetBinding(WipeTextBlock.FontSizeProperty, binding)
-                If _lyrics.WipeEnabled Then
+                If _lyrics.WipeEnabled AndAlso _lyrics.Lines(_lyricsIndex).Text <> "" Then
                     wtb.TextWithTimeTag = _lyrics.Lines(_lyricsIndex).TextWithTimeTag
                 Else
                     wtb.WipeEnabled = False
