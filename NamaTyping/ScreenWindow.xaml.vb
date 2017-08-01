@@ -8,6 +8,17 @@ Imports Pronama.NamaTyping.TextEncoding
 Imports Pronama.NamaTyping.ViewModel
 
 Partial Public Class ScreenWindow
+
+    ''' <summary>
+    ''' 何%より小さい音量で、音量調整バーのツールチップに小数点以下を表示するか。
+    ''' </summary>
+    Private Const SmallVolumePercentageThreshold = 10
+
+    ''' <summary>
+    ''' 音量調整バーのツールチップに百分率で表示する小数点以下の桁数。
+    ''' </summary>
+    Private Const SmallVolumePercentagePrecision = 1
+
     Public ReadOnly Property ScreenControl As ScreenControl = New ScreenControl
 
 
@@ -65,6 +76,13 @@ Partial Public Class ScreenWindow
                 Exit Sub
             End If
         Next
+    End Sub
+
+    Private Sub VolumeSlider_ValueChanged(sender As Object, e As RoutedPropertyChangedEventArgs(Of Double)) Handles VolumeSlider.ValueChanged
+        Dim slider = DirectCast(sender, Slider)
+        Dim precision = If(e.NewValue < SmallVolumePercentageThreshold, SmallVolumePercentagePrecision, 0)
+        slider.AutoToolTipPrecision = precision
+        slider.ToolTip = Math.Round(e.NewValue, precision)
     End Sub
 
     Private Sub LiveIdTextBox_GotFocus(sender As Object, e As RoutedEventArgs) Handles LiveIdTextBox.GotFocus
