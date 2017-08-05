@@ -20,7 +20,7 @@ Friend NotInheritable Class ReplacementWordsGenerator
     ''' <summary>
     ''' NAIST Japanese Dictionaryにおいて、<see cref="MeCabNode.CharType"/>に一致する値。
     ''' </summary>
-    Private Enum CharacterCategory
+    Private Enum CharacterCategory As UInteger
         [Default]
         Space
         Kanji
@@ -110,7 +110,7 @@ Friend NotInheritable Class ReplacementWordsGenerator
 
         Dim node = Tagger.ParseToNode(lrycs)
         While node IsNot Nothing
-            If node.CharType = CharacterCategory.Kanji OrElse node.CharType = CharacterCategory.Kanjinumeric Then
+            If {CharacterCategory.Numeric, CharacterCategory.Kanji, CharacterCategory.Kanjinumeric}.Contains(DirectCast(node.CharType, CharacterCategory)) Then
                 Dim feature = node.Feature.Split(","c)
                 If (feature.Length > YomiIndex) Then
                     replacementWords.Add(node.Surface & "," & feature(YomiIndex).ToHiragana() & vbCrLf)
