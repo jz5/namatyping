@@ -307,8 +307,8 @@ Namespace Model
                 End If
 
                 values(0) = values(0).Trim().ToLyricsWords(False)
-                If values(0) = "" Then
-                    ' 検索文字列が空白文字のみで構成されていれば
+                If values(0) = "" OrElse values(0).Contains(" ") Then
+                    ' 検索文字列が空白文字のみで構成されている、または記号類が含まれていれば
                     ' 無効
                     Continue For
                 End If
