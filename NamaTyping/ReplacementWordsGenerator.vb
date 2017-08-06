@@ -111,7 +111,10 @@ Friend NotInheritable Class ReplacementWordsGenerator
         Dim node = Tagger.ParseToNode(lrycs)
         While node IsNot Nothing
             If node.CharType = CharacterCategory.Kanji OrElse node.CharType = CharacterCategory.Kanjinumeric Then
-                replacementWords.Add(node.Surface & "," & node.Feature.Split(","c)(YomiIndex).ToHiragana() & vbCrLf)
+                Dim feature = node.Feature.Split(","c)
+                If (feature.Length > YomiIndex) Then
+                    replacementWords.Add(node.Surface & "," & feature(YomiIndex).ToHiragana() & vbCrLf)
+                End If
             End If
             node = node.Next
         End While
