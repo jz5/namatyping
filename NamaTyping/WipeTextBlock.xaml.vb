@@ -11,6 +11,11 @@ Public Class WipeTextBlock
     Private WithEvents MyStoryboard As Storyboard
     Private _wipeDurations As List(Of TimeSpan)
 
+    ''' <summary>
+    ''' ワイプ表示を一旦停止する文字インデックスと停止時間。
+    ''' </summary>
+    Private _wipePauseDurations As Dictionary(Of Integer, TimeSpan) = New Dictionary(Of Integer, TimeSpan)
+
     Private _wipEnabled As Boolean = True
     Public Property WipeEnabled As Boolean
         Get
@@ -118,12 +123,16 @@ Public Class WipeTextBlock
 
     End Sub
 
-    Private Sub MyStoryboard_Completed(sender As Object, e As EventArgs) Handles MyStoryboard.Completed
+    Private Async Sub MyStoryboard_Completed(sender As Object, e As EventArgs) Handles MyStoryboard.Completed
 
         Do
             WipedTextEffect.PositionCount += 1
 
             If WipeAnimationTextEffect.PositionStart < Text.Length - 1 Then
+                If _wipePauseDurations.ContainsKey(WipeAnimationTextEffect.PositionStart + 1) Then
+                    Await Threading.Tasks.Task.Delay(_wipePauseDurations(WipeAnimationTextEffect.PositionStart + 1))
+                End If
+
                 WipeAnimationTextEffect.PositionStart += 1
 
                 If _wipeDurations(WipeAnimationTextEffect.PositionStart).TotalMilliseconds > 0 Then
@@ -158,10 +167,12 @@ Public Class WipeTextBlock
 
             If i > 0 Then
 
-                If ts.Subtract(previousTimeSpan) > TimeSpan.FromSeconds(0) Then
-                    durations.AddRange(GetDurations(ts.Subtract(previousTimeSpan), GetTextWidths(previousLyric)))
+                Dim duration = ts.Subtract(previousTimeSpan)
+                If previousLyric = "" Then
+                    ' 連続したタイムタグなら
+                    _wipePauseDurations.Add(durations.Count, duration)
                 Else
-                    ' TODO invalid tag
+                    durations.AddRange(GetDurations(duration, GetTextWidths(previousLyric)))
                 End If
 
             End If

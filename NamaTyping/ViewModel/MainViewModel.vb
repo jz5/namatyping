@@ -610,7 +610,7 @@ Namespace ViewModel
 
                 Dim binding = New Binding("LyricFontSize") With {.Source = Me}
                 wtb.SetBinding(WipeTextBlock.FontSizeProperty, binding)
-                If _lyrics.WipeEnabled Then
+                If _lyrics.WipeEnabled AndAlso _lyrics.Lines(_lyricsIndex).Text <> "" Then
                     wtb.TextWithTimeTag = _lyrics.Lines(_lyricsIndex).TextWithTimeTag
                 Else
                     wtb.WipeEnabled = False
@@ -799,8 +799,11 @@ Namespace ViewModel
                 Dim l = New Lyrics
 
                 Dim errorMessage As String = Nothing
-                If Not l.TryLoad(dialog.FileName, errorMessage) Then
+                Dim result = l.TryLoad(dialog.FileName, errorMessage)
+                If errorMessage IsNot Nothing Then
                     StatusMessage = errorMessage
+                End If
+                If Not result Then
                     Exit Sub
                 End If
 
