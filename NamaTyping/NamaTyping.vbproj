@@ -130,6 +130,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converter\DoubleToPercentageConverter.vb" />
     <Compile Include="Converter\NullToUnsetValueConverter.vb" />
     <Compile Include="ReplacementWordsGenerator.vb" />
     <Compile Include="TextEncoding.vb" />

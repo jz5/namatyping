@@ -12,6 +12,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converter:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
         <converter:NegationBooleanToVisibilityConverter x:Key="NegationBooleanToVisibilityConverter" />
+        <converter:DoubleToPercentageConverter x:Key="DoubleToPercentageConverter" />
         <Storyboard x:Key="FadeStoryboard">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="StatusTextBox">
                 <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
@@ -172,7 +173,8 @@
 
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" ToolTip="音量" Margin="5 0 0 0">
                         <Image Source="Images/speaker-volume.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                        <Slider Width="80" Margin="5 0 5 0" Value="{Binding Volume}" VerticalAlignment="Center" Maximum="1" Minimum="0" LargeChange="0.2" />
+                        <Slider x:Name="VolumeSlider" Width="275" Margin="5 0 5 0" Value="{Binding Volume, Converter={StaticResource DoubleToPercentageConverter}}"
+                                VerticalAlignment="Center" Maximum="100" Minimum="0" LargeChange="20" AutoToolTipPlacement="TopLeft" />
                     </StackPanel>
 
                 </ToolBar>
