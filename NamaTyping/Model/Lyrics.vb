@@ -291,11 +291,9 @@ Namespace Model
         Private Sub LoadReplacementWords(file As String, ByRef encoding As Encoding)
             ReplacementWords.Clear()
 
-            Dim readLines = ReadLinesWithoutBlankLines(ReadAllText(file, encoding))
+            Dim words = New Dictionary(Of String, String)
 
-            Dim sortedLines = From l In readLines Order By l.Length Descending
-
-            For Each l In sortedLines
+            For Each l In ReadLinesWithoutBlankLines(ReadAllText(file, encoding))
                 If Not l.Contains(",") Then
                     Continue For
                 End If
@@ -306,11 +304,25 @@ Namespace Model
                     Continue For
                 End If
 
-                If Not ReplacementWords.ContainsKey(values(0)) Then
-                    ReplacementWords.Add(values(0).Trim, values(1).Trim)
+                values(0) = values(0).Trim().ToLyricsWords(False)
+                If values(0) = "" OrElse values(0).Contains(" ") Then
+                    ' 検索文字列が空白文字のみで構成されている、または記号類が含まれていれば
+                    ' 無効
+                    Continue For
+                End If
+
+                If Not words.ContainsKey(values(0)) Then
+                    values(1) = values(1).ToLyricsWords(True)
+                    If values(1) <> "" Then
+                        words.Add(values(0), values(1))
+                    End If
                 Else
                     ' MEMO: 風クスの同じ単語がある場合
                 End If
+            Next
+
+            For Each values In From l In words Order By l.Key.Length Descending
+                ReplacementWords.Add(values)
             Next
 
         End Sub
