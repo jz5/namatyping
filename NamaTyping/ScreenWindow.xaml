@@ -42,6 +42,7 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
         <ToolBarPanel>
@@ -67,6 +68,11 @@
 
                 <ToggleButton ToolTip="最前面に表示" IsChecked="{Binding Topmost, ElementName=ScreenWindow}">
                     <Image Source="Images/pin.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                </ToggleButton>
+
+                <ToggleButton ToolTip="一人プレイ用 ツールバーの表示" Margin="5 0 0 0"
+							  x:Name="SinglePlayBarToggleButton">
+                    <Image Source="Images/ui-status-bar-blue.png" Width="16" Height="16" SnapsToDevicePixels="True" />
                 </ToggleButton>
 
                 <ToggleButton ToolTip="テスト ツールバーの表示" Margin="5 0 0 0"
@@ -182,6 +188,18 @@
         </ToolBarPanel>
 
         <ToolBarPanel Grid.Row="3">
+            <ToolBar ToolBarTray.IsLocked="True" MaxWidth="{Binding ElementName=ScreenWindowsFormsHost, Path=Width}"
+                     Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=SinglePlayBarToggleButton}">
+                <ToolBar.Resources>
+                    <Style TargetType="{x:Type ToolBarPanel}">
+                        <Setter Property="Orientation" Value="Vertical"/>
+                    </Style>
+                </ToolBar.Resources>
+                <TextBox x:Name="SinglePlayMessageTextBox" HorizontalAlignment="Stretch" KeyDown="MessageTextBox_KeyDown" />
+            </ToolBar>
+        </ToolBarPanel>
+
+        <ToolBarPanel Grid.Row="4">
 
             <ToolBar ToolBarTray.IsLocked="True" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=BarToggleButton}">
                 <Button ToolTip="置換後 歌詞表示" Command="{Binding ShowLyricCommand}">
@@ -253,7 +271,7 @@
 
         </ToolBarPanel>
 
-        <StatusBar Grid.Row="4">
+        <StatusBar Grid.Row="5">
             <StatusBarItem x:Name="statusBarItem" MaxWidth="{Binding ElementName=ScreenWindowsFormsHost, Path=Width}">
                 <TextBox IsReadOnly="True" x:Name="StatusTextBox" Text="{Binding StatusMessage}"
 						 BorderThickness="0" Background="Transparent" VerticalAlignment="Center"

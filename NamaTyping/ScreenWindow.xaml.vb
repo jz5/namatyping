@@ -116,8 +116,10 @@ Partial Public Class ScreenWindow
             Exit Sub
         End If
 
+        Dim textBox = DirectCast(sender, TextBox)
+
         Dim comment = New LiveCommentMessage With {.UserId = UserComboBox.SelectedIndex.ToString,
-                .Text = MessageTextBox.Text}
+                .Text = textBox.Text}
         comment.No = _commentNo
         _commentNo -= 1
 
@@ -129,9 +131,34 @@ Partial Public Class ScreenWindow
         End Select
         DirectCast(DataContext, MainViewModel).InjectComment(comment)
 
-        MessageTextBox.Clear()
+        textBox.Clear()
     End Sub
 
+    Private SinglePlayMessageTextBoxWatermark As String = "（コメント受信をエミュレートします。コメントサーバーへの送信は行いません。）"
+
+    Private Sub SinglePlayMessageTextBox_Loaded(sender As Object, e As RoutedEventArgs) Handles SinglePlayMessageTextBox.Loaded
+        SinglePlayMessageTextBox.Foreground = New SolidColorBrush(Colors.Gray)
+        SinglePlayMessageTextBox.Text = SinglePlayMessageTextBoxWatermark
+    End Sub
+
+    Private Sub SinglePlayMessageTextBox_GotFocus(sender As Object, e As RoutedEventArgs) Handles SinglePlayMessageTextBox.GotFocus
+
+        SinglePlayMessageTextBox.Foreground = New SolidColorBrush(Colors.Black)
+
+        If SinglePlayMessageTextBox.Text = SinglePlayMessageTextBoxWatermark Then
+            SinglePlayMessageTextBox.Text = ""
+        End If
+    End Sub
+
+    'Private Sub SinglePlayMessageTextBox_LostFocus(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles SinglePlayMessageTextBox.LostFocus
+
+    '    If SinglePlayMessageTextBox.Text.Length = 0 Then
+    '        SinglePlayMessageTextBox.Foreground = New SolidColorBrush(Colors.Gray)
+    '        SinglePlayMessageTextBox.Text = SinglePlayMessageTextBoxWatermark
+
+    '    End If
+
+    'End Sub
 
     Private MessageTextBoxWatermark As String = "（動作確認用。コメント送信は行いません。）"
 
