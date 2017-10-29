@@ -56,6 +56,9 @@
     <Setting Name="ShowTimeOnLyricsGrid" Description="経過時間と総時間を、歌詞表示領域の右上にも表示する" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="MakeLyricsBottomMarginLarge" Description="歌詞の下の余白を大きくする" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
     <Setting Name="WindowLeft" Description="ウィンドウの横位置のキャッシュ。" Type="System.Double" Scope="User">
       <Value Profile="(Default)">NaN</Value>
     </Setting>

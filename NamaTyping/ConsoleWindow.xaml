@@ -25,6 +25,8 @@
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding BottomGridOpacity, StringFormat=0.00}" />
             </StackPanel>
 
+            <CheckBox Content="歌詞の下の余白を大きくする" IsChecked="{Binding MakeLyricsBottomMarginLarge}" Margin="0,0,0,10" />
+
             <CheckBox Content="再生時間を、歌詞表示領域にも表示する" IsChecked="{Binding ShowTimeOnLyricsGrid}" Margin="0,0,0,10" />
 
             <CheckBox Content="すべてから部屋のコメントを取得する" IsChecked="{Binding ConnectAllCommentServers}" />

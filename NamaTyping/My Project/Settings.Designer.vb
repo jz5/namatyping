@@ -360,6 +360,23 @@ Partial Friend NotInheritable Class MySettings
     End Property
     
     '''<summary>
+    '''歌詞の下の余白を大きくする
+    '''</summary>
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("歌詞の下の余白を大きくする"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("False"),  _
+     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
+    Public Property MakeLyricsBottomMarginLarge() As Boolean
+        Get
+            Return CType(Me("MakeLyricsBottomMarginLarge"),Boolean)
+        End Get
+        Set
+            Me("MakeLyricsBottomMarginLarge") = value
+        End Set
+    End Property
+    
+    '''<summary>
     '''ウィンドウの横位置のキャッシュ。
     '''</summary>
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
