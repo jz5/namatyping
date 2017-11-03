@@ -1381,6 +1381,16 @@ Namespace ViewModel
             End Set
         End Property
 
+        Public Property MakeLyricsBottomMarginLarge As Boolean
+            Get
+                Return My.Settings.MakeLyricsBottomMarginLarge
+            End Get
+            Set
+                My.Settings.MakeLyricsBottomMarginLarge = Value
+                OnPropertyChanged("MakeLyricsBottomMarginLarge")
+            End Set
+        End Property
+
         ''' <summary>
         ''' 表示しているログを、指定件数だけ残して切り詰めます。
         ''' </summary>

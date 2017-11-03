@@ -243,7 +243,7 @@
             </StackPanel>
 
             <!-- Lyrics -->
-            <Grid Name="LyricsGrid" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid Name="LyricsGrid" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
             	<i:Interaction.Triggers>
             		<ic:DataTrigger Binding="{Binding Playing}" Value="True">
             			<ic:GoToStateAction StateName="ShowLyrics"/>
@@ -255,7 +255,15 @@
                         <RowDefinition />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ItemsControl ItemsSource="{Binding RecentLyrics}" x:Name="LyricItemsControl">
+                    <ItemsControl ItemsSource="{Binding RecentLyrics}">
+                        <i:Interaction.Triggers>
+                            <ic:DataTrigger Binding="{Binding MakeLyricsBottomMarginLarge}" Value="True">
+                                <ic:ChangePropertyAction PropertyName="Margin" Value="0 0 0 36"/>
+                            </ic:DataTrigger>
+                            <ic:DataTrigger Binding="{Binding MakeLyricsBottomMarginLarge}" Value="False">
+                                <ic:ChangePropertyAction PropertyName="Margin"/>
+                            </ic:DataTrigger>
+                        </i:Interaction.Triggers>
                         <ItemsControl.Template>
                             <ControlTemplate>
                                 <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
@@ -295,7 +303,7 @@
                             <Style TargetType="{x:Type ToolBarPanel}">
                                 <Setter Property="Visibility" Value="Collapsed" />
                                 <Style.Triggers>
-                                    <DataTrigger  Binding="{Binding IsMouseOver, ElementName=LyricItemsControl}" Value="True">
+                                    <DataTrigger  Binding="{Binding IsMouseOver, ElementName=LyricsGrid}" Value="True">
                                         <Setter Property="Visibility" Value="Visible" />
                                     </DataTrigger>
                                     <Trigger Property="IsMouseOver" Value="True">
