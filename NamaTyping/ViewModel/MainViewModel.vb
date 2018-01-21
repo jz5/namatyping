@@ -17,6 +17,11 @@ Namespace ViewModel
     Public Class MainViewModel
         Inherits ViewModelBase
 
+        ''' <summary>
+        ''' 歌詞表示以外の処理では、始めから存在しない文字として扱う歌詞ファイル中の記号の正規表現文字列。
+        ''' </summary>
+        Friend Const RemoveSymbols As String = "['’.]+"
+
         Public Property Dispatcher As Dispatcher
 
         ''' <summary>
