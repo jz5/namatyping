@@ -3,6 +3,7 @@ Imports System.Text
 Imports System.Windows.Media.Animation
 Imports System.Windows.Threading
 Imports System.Text.RegularExpressions
+Imports System.Threading.Tasks
 
 
 Public Class WipeTextBlock
@@ -90,8 +91,12 @@ Public Class WipeTextBlock
     End Sub
 
 
-    Private Sub Wipe(postion As Integer)
+    Private Async Sub Wipe(postion As Integer)
         'Console.WriteLine(postion)
+
+        If postion = 0 Then
+            Await Pause(0)
+        End If
 
         MyStoryboard = New Storyboard
 
@@ -129,9 +134,7 @@ Public Class WipeTextBlock
             WipedTextEffect.PositionCount += 1
 
             If WipeAnimationTextEffect.PositionStart < Text.Length - 1 Then
-                If _wipePauseDurations.ContainsKey(WipeAnimationTextEffect.PositionStart + 1) Then
-                    Await Threading.Tasks.Task.Delay(_wipePauseDurations(WipeAnimationTextEffect.PositionStart + 1))
-                End If
+                Await Pause(WipeAnimationTextEffect.PositionStart + 1)
 
                 WipeAnimationTextEffect.PositionStart += 1
 
@@ -145,6 +148,16 @@ Public Class WipeTextBlock
         Loop
 
     End Sub
+
+    ''' <summary>
+    ''' 指定された文字インデックスが<see cref="_wipePauseDurations"/>に含まれていれば、その値の時間後に完了します。
+    ''' </summary>
+    ''' <param name="position">文字インデックス。</param>
+    Private Async Function Pause(position As Integer) As Task
+        If _wipePauseDurations.ContainsKey(position) Then
+            Await Threading.Tasks.Task.Delay(_wipePauseDurations(position))
+        End If
+    End Function
 
     Private Sub Parse(taggedText As String)
         Dim durations = New List(Of TimeSpan)
