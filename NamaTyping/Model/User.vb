@@ -16,12 +16,13 @@
     ''' <summary>
     ''' ユーザー毎に固有の設定。
     ''' </summary>
-    Public Property SettingFlags As String
+    Public Property SettingFlags As String = ""
 
     ''' <summary>
     ''' 設定名と<see cref="SettingFlags">に含まれるフラグの組。
     ''' </summary>
     Friend Shared ReadOnly Property SettingFlagList As New Dictionary(Of String, Char) From {
+        {"improve english lyrics", "e"c}
     }
 
     Public Property Id As String
