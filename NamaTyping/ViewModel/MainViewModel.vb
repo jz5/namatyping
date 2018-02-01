@@ -355,7 +355,8 @@ Namespace ViewModel
 
         Private Sub AddMessage(no As Integer, message As String, kind As MessageKind)
 
-            If (kind = MessageKind.System AndAlso ShowPointMessages) OrElse
+            If kind = MessageKind.None OrElse
+                (kind = MessageKind.System AndAlso ShowPointMessages) OrElse
                 (kind = MessageKind.Filtered AndAlso ShowFilteredMessages) OrElse
                 (kind = MessageKind.Other AndAlso ShowOtherMessages) OrElse
                 (kind = MessageKind.NameEntry AndAlso ShowNameEntryMessages) Then
