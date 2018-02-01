@@ -428,7 +428,16 @@ Namespace ViewModel
 
             Dim name = comment.Text.Substring(1).Replace(vbCr, " ").Replace(vbLf, " ").Replace(vbTab, " ").Replace("　", " ").Trim
 
-
+            ' コメントユーザー固有の設定
+            Dim settingFlags = ""
+            Dim m = Regex.Match(name, "(?<name>.+)\s*[[［](?<flags>.+)[\]］]\s*$")
+            If m.Success Then
+                Dim flags = Regex.Replace(m.Groups.Item("flags").Value.Normalize(NormalizationForm.FormKC), "\s+", "")
+                If flags <> "" Then
+                    settingFlags = String.Join("", From flag In NamaTyping.User.SettingFlagList.Values Where flags.Contains(flag) Select flag)
+                End If
+                name = m.Groups("name").Value
+            End If
 
             'If comment.ContainsNGWords Then
             '    name = "名無し（NGコメ）"
@@ -438,16 +447,35 @@ Namespace ViewModel
             End If
             'End If
 
+            Dim user As User
+            Dim settingFlagsChanged = False
             If Not Member.ContainsKey(comment.UserId) Then
                 ' ユーザー追加 MEMO ユーザー追加場所は2か所
-                Dim user = New User With {.Name = name, .Premium = comment.Source, .Id = comment.UserId}
+                user = New User With {.Name = name, .SettingFlags = settingFlags, .Premium = comment.Source, .Id = comment.UserId}
                 Member.Add(comment.UserId, user)
 
                 AddMessage(comment.No, "名前設定: " & user.Name, MessageKind.NameEntry)
+                If settingFlags <> "" Then
+                    settingFlagsChanged = True
+                End If
             Else
                 ' 名前変更
-                AddMessage(comment.No, "名前変更: " & Member(comment.UserId).Name & " → " & name, MessageKind.NameEntry)
-                Member(comment.UserId).Name = name
+                user = Member(comment.UserId)
+                AddMessage(comment.No, "名前変更: " & user.Name & " → " & name, MessageKind.NameEntry)
+                user.Name = name
+                If settingFlags <> user.SettingFlags Then
+                    user.SettingFlags = settingFlags
+                    settingFlagsChanged = True
+                End If
+            End If
+
+            If settingFlagsChanged Then
+                Dim settings = If(
+                    user.SettingFlags <> "",
+                    String.Join("", From flag In User.SettingFlagList Where user.SettingFlags.Contains(flag.Value) Select $"「{flag.Key}」"),
+                    "設定を削除"
+                )
+                AddMessage(comment.No, $"ユーザー設定変更: {user.Name}: {settings}", MessageKind.None)
             End If
 
             Return True
