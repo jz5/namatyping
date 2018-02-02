@@ -370,6 +370,30 @@ Namespace ViewModel
 
         End Sub
 
+        ''' <summary>
+        ''' 既定の設定で画面内に収まるログの行数。
+        ''' </summary>
+        Private Const DefaultShownLogLineCount = 7
+
+        ''' <summary>
+        ''' 最新<see cref="DefaultShownLogLineCount">件のログにバージョン情報が含まれていなければ追加します。
+        ''' </summary>
+        Public Sub ShowVersionInformation()
+            Dim version = FileVersionInfo.GetVersionInfo(
+                Reflection.Assembly.GetExecutingAssembly().Location
+            ).FileVersion
+
+            Dim versionInfo = $"{My.Application.Info.Title} {version}"
+
+            For Each message In Messages.Reverse().Take(DefaultShownLogLineCount)
+                If message = $"0: {versionInfo}" Then
+                    Exit Sub
+                End If
+            Next
+
+            AddMessage(0, versionInfo, MessageKind.None)
+        End Sub
+
         Private Member As New Dictionary(Of String, User)
 
         Public Sub InjectComment(comment As LiveCommentMessage)
@@ -1175,6 +1199,7 @@ Namespace ViewModel
                 OnRankingAdded()
             Else
                 RankingTimer.Stop()
+                ShowVersionInformation()
             End If
 
         End Sub
