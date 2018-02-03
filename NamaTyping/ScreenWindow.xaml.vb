@@ -216,34 +216,17 @@ Partial Public Class ScreenWindow
 
         Dim w As Integer
         Dim h As Integer
-        Dim s As Stretch
 
         Select Case SizeComboBox.SelectedIndex
             Case 0
                 w = 640
                 h = 360
-                s = Stretch.Uniform
 
                 ScreenControl.MyImage.Height = 360
                 ScreenControl.MyMediaElement.Height = 360
-            Case 1
-                w = 640
-                h = 360
-                s = Stretch.UniformToFill
-
-                ScreenControl.MyImage.Height = 480
-                ScreenControl.MyMediaElement.Height = 480
-            Case 2
-                w = 640
-                h = 480
-                s = Stretch.Uniform
-
-                ScreenControl.MyImage.Height = 480
-                ScreenControl.MyMediaElement.Height = 480
             Case Else
                 w = 640
                 h = 480
-                s = Stretch.UniformToFill
 
                 ScreenControl.MyImage.Height = 480
                 ScreenControl.MyMediaElement.Height = 480
@@ -258,13 +241,21 @@ Partial Public Class ScreenWindow
         ScreenControl.Height = h
 
         ScreenControl.MyImage.Width = w
-        ScreenControl.MyImage.Stretch = s
 
         ScreenControl.MyMediaElement.Width = w
-        ScreenControl.MyMediaElement.Stretch = s
 
 
         'Uniform
+    End Sub
+
+
+    Private Sub StretchComboBox_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+        Dim s = DirectCast([Enum].Parse(
+            GetType(Stretch),
+            DirectCast(DirectCast(StretchComboBox.SelectedItem, ComboBoxItem).Tag, String)
+        ), Stretch)
+        ScreenControl.MyImage.Stretch = s
+        ScreenControl.MyMediaElement.Stretch = s
     End Sub
 
     ''' <summary>

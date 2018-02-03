@@ -1349,21 +1349,15 @@ Namespace ViewModel
 
         Public ReadOnly Property WindowSizePattern As Integer
             Get
-                If My.Settings.WindowWidth = 640 AndAlso My.Settings.WindowHeight = 360 AndAlso
-                    DirectCast(My.Settings.MediaStretch, Stretch) = Stretch.Uniform Then
+                If My.Settings.WindowWidth = 640 AndAlso My.Settings.WindowHeight = 360 Then
                     Return 0
-                ElseIf My.Settings.WindowWidth = 640 AndAlso My.Settings.WindowHeight = 360 AndAlso
-                    DirectCast(My.Settings.MediaStretch, Stretch) = Stretch.UniformToFill Then
+                Else
                     Return 1
-                ElseIf My.Settings.WindowWidth = 640 AndAlso My.Settings.WindowHeight = 480 AndAlso
-                    DirectCast(My.Settings.MediaStretch, Stretch) = Stretch.Uniform Then
-                    Return 2
-                ElseIf My.Settings.WindowWidth = 640 AndAlso My.Settings.WindowHeight = 480 AndAlso
-                    DirectCast(My.Settings.MediaStretch, Stretch) = Stretch.UniformToFill Then
-                    Return 3
                 End If
             End Get
         End Property
+
+        Public ReadOnly Property MediaStretch As Integer = My.Settings.MediaStretch
 
         Public Property BlacklistCharactersHighlight As Boolean
             Get

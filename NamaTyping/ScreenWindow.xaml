@@ -96,20 +96,26 @@
                     </StackPanel>
                 </Button>
 
-                <ComboBox Width="120" SelectionChanged="ComboBox_SelectionChanged" 
+                <ComboBox Width="80" SelectionChanged="ComboBox_SelectionChanged"
                           Name="SizeComboBox"
                           SelectedIndex="{Binding WindowSizePattern, Mode=OneTime}">
                     <ComboBoxItem>
-                        <TextBlock Padding="3,0,0,0">640x360 Uniform</TextBlock>
+                        <TextBlock Padding="3,0,0,0">640x360</TextBlock>
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <TextBlock Padding="3,0,0,0">640x360 Fill</TextBlock>
+                        <TextBlock Padding="3,0,0,0">640x480</TextBlock>
                     </ComboBoxItem>
-                    <ComboBoxItem>
-                        <TextBlock Padding="5,0,0,0">640x480 Uniform</TextBlock>
+                </ComboBox>
+
+                <ComboBox Width="60" SelectionChanged="StretchComboBox_SelectionChanged" 
+                          Name="StretchComboBox"
+                          SelectedValuePath="Tag"
+                          SelectedValue="{Binding MediaStretch, Mode=OneTime}">
+                    <ComboBoxItem Tag="2">
+                        <TextBlock Padding="3,0,0,0">Uniform</TextBlock>
                     </ComboBoxItem>
-                    <ComboBoxItem>
-                        <TextBlock Padding="5,0,0,0">640x480 Fill</TextBlock>
+                    <ComboBoxItem Tag="3">
+                        <TextBlock Padding="3,0,0,0">Fill</TextBlock>
                     </ComboBoxItem>
                 </ComboBox>
 
