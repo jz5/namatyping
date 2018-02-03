@@ -23,9 +23,19 @@ Partial Friend NotInheritable Class MySettings
     Public Const MaxRecentLyricLineCount As Integer = 10
 
     ''' <summary>
-    ''' ウィンドウサイズなどのパターン数。
+    ''' メディア表示領域の幅のパターン。
     ''' </summary>
-    Protected Const WindowSizePatternCount As Integer = 4
+    Private ReadOnly WindowWidths As Integer() = {640}
+
+    ''' <summary>
+    ''' メディア表示領域の高さのパターン。
+    ''' </summary>
+    Private ReadOnly WindowHeights As Integer() = {360, 480}
+
+    ''' <summary>
+    ''' メディアの拡大方法のパターン。
+    ''' </summary>
+    Private ReadOnly MediaStretches As Stretch() = {Stretch.Uniform, Stretch.UniformToFill}
 
     ''' <summary>
     ''' ユーザー設定ファイル (user.config) のパス。
@@ -65,9 +75,26 @@ Partial Friend NotInheritable Class MySettings
                 If (System.Version.TryParse(Version, oldVersion)) Then
                     CopyOldVersionFiles(oldVersion.ToString())
 
-                    'If OldVersion.Major < 3 Then
-                    '    マイグレーション処理
-                    'End If
+                    If oldVersion.CompareTo(New Version(2, 5, 1, 0)) < 0 Then
+                        Select Case WindowSizePattern
+                            Case 0
+                                WindowWidth = 640
+                                WindowHeight = 360
+                                MediaStretch = Stretch.Uniform
+                            Case 1
+                                WindowWidth = 640
+                                WindowHeight = 360
+                                MediaStretch = Stretch.UniformToFill
+                            Case 2
+                                WindowWidth = 640
+                                WindowHeight = 480
+                                MediaStretch = Stretch.Uniform
+                            Case 3
+                                WindowWidth = 640
+                                WindowHeight = 480
+                                MediaStretch = Stretch.UniformToFill
+                        End Select
+                    End If
                 End If
 
                 Version = My.Application.Info.Version.ToString()
@@ -132,8 +159,14 @@ Partial Friend NotInheritable Class MySettings
         If RecentLyricLineCount > MaxRecentLyricLineCount Then
             RecentLyricLineCount = MaxRecentLyricLineCount
         End If
-        If WindowSizePattern < 0 OrElse WindowSizePatternCount <= WindowSizePattern Then
-            WindowSizePattern = CType(Properties.Item("WindowSizePattern").DefaultValue, Integer)
+        If Not WindowWidths.Contains(WindowWidth) Then
+            WindowWidth = DirectCast(Properties.Item("WindowWidth").DefaultValue, Integer)
+        End If
+        If Not WindowHeights.Contains(WindowHeight) Then
+            WindowHeight = DirectCast(Properties.Item("WindowHeight").DefaultValue, Integer)
+        End If
+        If Not MediaStretches.Contains(DirectCast(MediaStretch, Stretch)) Then
+            MediaStretch = DirectCast(Properties.Item("MediaStretch").DefaultValue, Integer)
         End If
     End Sub
 End Class

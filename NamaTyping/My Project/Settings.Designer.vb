@@ -275,10 +275,10 @@ Partial Friend NotInheritable Class MySettings
     End Property
     
     '''<summary>
-    '''ウィンドウサイズなどのパターン (0〜3)。
+    '''WindowWidth、WindowHeight、MediaStretchへの分離前の設定項目 (〜アセンブリバージョン 2.5.0.0)
     '''</summary>
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
-     Global.System.Configuration.SettingsDescriptionAttribute("ウィンドウサイズなどのパターン (0〜3)。"),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("WindowWidth、WindowHeight、MediaStretchへの分離前の設定項目 (〜アセンブリバージョン 2.5.0.0)"),  _
      Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
      Global.System.Configuration.DefaultSettingValueAttribute("2"),  _
      Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
@@ -288,6 +288,57 @@ Partial Friend NotInheritable Class MySettings
         End Get
         Set
             Me("WindowSizePattern") = value
+        End Set
+    End Property
+    
+    '''<summary>
+    '''メディア表示領域の幅。
+    '''</summary>
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("メディア表示領域の幅。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("640"),  _
+     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
+    Public Property WindowWidth() As Integer
+        Get
+            Return CType(Me("WindowWidth"),Integer)
+        End Get
+        Set
+            Me("WindowWidth") = value
+        End Set
+    End Property
+    
+    '''<summary>
+    '''メディア表示領域の高さ。
+    '''</summary>
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("メディア表示領域の高さ。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("480"),  _
+     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
+    Public Property WindowHeight() As Integer
+        Get
+            Return CType(Me("WindowHeight"),Integer)
+        End Get
+        Set
+            Me("WindowHeight") = value
+        End Set
+    End Property
+    
+    '''<summary>
+    '''メディアの拡大/縮小方法 (2か3)。
+    '''</summary>
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("メディアの拡大/縮小方法 (2か3)。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("2"),  _
+     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
+    Public Property MediaStretch() As Integer
+        Get
+            Return CType(Me("MediaStretch"),Integer)
+        End Get
+        Set
+            Me("MediaStretch") = value
         End Set
     End Property
     
