@@ -1347,16 +1347,6 @@ Namespace ViewModel
             End Get
         End Property
 
-        Public ReadOnly Property WindowSizePattern As Integer
-            Get
-                If My.Settings.WindowWidth = 640 AndAlso My.Settings.WindowHeight = 360 Then
-                    Return 0
-                Else
-                    Return 1
-                End If
-            End Get
-        End Property
-
         Public ReadOnly Property MediaStretch As Integer = My.Settings.MediaStretch
 
         Public Property BlacklistCharactersHighlight As Boolean

@@ -37,7 +37,7 @@
 		</Grid.Resources>-->
 
         <Grid.RowDefinitions>
-            <RowDefinition />
+            <RowDefinition Height="29" />
             <RowDefinition Height="480" x:Name="MainContentRowDefinition" />
             <RowDefinition />
             <RowDefinition />
@@ -97,13 +97,13 @@
                 </Button>
 
                 <ComboBox Width="80" SelectionChanged="ComboBox_SelectionChanged"
-                          Name="SizeComboBox"
-                          SelectedIndex="{Binding WindowSizePattern, Mode=OneTime}">
+                          KeyUp="ComboBox_KeyUp" LostFocus="ComboBox_LostFocus"
+                          Name="SizeComboBox" IsEditable="True">
                     <ComboBoxItem>
-                        <TextBlock Padding="3,0,0,0">640x360</TextBlock>
+                        <TextBlock Padding="3,0,0,0">640×360</TextBlock>
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <TextBlock Padding="3,0,0,0">640x480</TextBlock>
+                        <TextBlock Padding="3,0,0,0">640×480</TextBlock>
                     </ComboBoxItem>
                 </ComboBox>
 

@@ -8,6 +8,11 @@ Imports System.IO
 
 Partial Friend NotInheritable Class MySettings
     ''' <summary>
+    ''' フォントサイズなどの基準となるメディア表示領域の幅。
+    ''' </summary>
+    Friend Const ReferenceWindowWidth = 640
+
+    ''' <summary>
     ''' フォントサイズの最小値。
     ''' </summary>
     Public Const MinFontSize As Double = 10
@@ -23,14 +28,24 @@ Partial Friend NotInheritable Class MySettings
     Public Const MaxRecentLyricLineCount As Integer = 10
 
     ''' <summary>
-    ''' メディア表示領域の幅のパターン。
+    ''' メディア表示領域の幅の最小値。
     ''' </summary>
-    Private ReadOnly WindowWidths As Integer() = {640}
+    Friend Const MinWindowWidth As Integer = ReferenceWindowWidth
 
     ''' <summary>
-    ''' メディア表示領域の高さのパターン。
+    ''' メディア表示領域の幅の最大値。
     ''' </summary>
-    Private ReadOnly WindowHeights As Integer() = {360, 480}
+    Friend Const MaxWindowWidth As Integer = 3840
+
+    ''' <summary>
+    ''' メディア表示領域の高さの最小値。
+    ''' </summary>
+    Friend Const MinWindowHeight As Integer = 360
+
+    ''' <summary>
+    ''' メディア表示領域の高さの最大値。
+    ''' </summary>
+    Friend Const MaxWindowHeight As Integer = 2160
 
     ''' <summary>
     ''' メディアの拡大方法のパターン。
@@ -159,11 +174,17 @@ Partial Friend NotInheritable Class MySettings
         If RecentLyricLineCount > MaxRecentLyricLineCount Then
             RecentLyricLineCount = MaxRecentLyricLineCount
         End If
-        If Not WindowWidths.Contains(WindowWidth) Then
-            WindowWidth = DirectCast(Properties.Item("WindowWidth").DefaultValue, Integer)
+        If WindowWidth < MinWindowWidth Then
+            WindowWidth = MinWindowWidth
         End If
-        If Not WindowHeights.Contains(WindowHeight) Then
-            WindowHeight = DirectCast(Properties.Item("WindowHeight").DefaultValue, Integer)
+        If WindowWidth > MaxWindowWidth Then
+            WindowWidth = MaxWindowWidth
+        End If
+        If WindowHeight < MinWindowHeight Then
+                WindowHeight = MinWindowHeight
+            End If
+        If WindowHeight > MaxWindowHeight Then
+            WindowHeight = MaxWindowHeight
         End If
         If Not MediaStretches.Contains(DirectCast(MediaStretch, Stretch)) Then
             MediaStretch = DirectCast(Properties.Item("MediaStretch").DefaultValue, Integer)
