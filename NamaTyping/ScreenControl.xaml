@@ -8,7 +8,7 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" xmlns:ic="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions" x:Class="ScreenControl"
              mc:Ignorable="d" 
               x:Name="ScreenControl"
-             Width="640" Height="480">
+             Width="800" Height="450">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converter:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
@@ -26,7 +26,7 @@
                       x:Name="MyMediaElement" />
 
         <Viewbox Width="{Binding Width, ElementName=ScreenControl}" Height="{Binding Height, ElementName=ScreenControl}" Stretch="Uniform">
-            <Grid x:Name="Grid" Grid.Row="1" Width="640" Height="480">
+            <Grid x:Name="Grid" Grid.Row="1" Width="640" Height="360">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup x:Name="VisualStateGroup">
                         <VisualStateGroup.Transitions>

@@ -297,7 +297,7 @@ Partial Friend NotInheritable Class MySettings
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
      Global.System.Configuration.SettingsDescriptionAttribute("メディア表示領域の幅。"),  _
      Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-     Global.System.Configuration.DefaultSettingValueAttribute("640"),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("800"),  _
      Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
     Public Property WindowWidth() As Integer
         Get
@@ -314,7 +314,7 @@ Partial Friend NotInheritable Class MySettings
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
      Global.System.Configuration.SettingsDescriptionAttribute("メディア表示領域の高さ。"),  _
      Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-     Global.System.Configuration.DefaultSettingValueAttribute("480"),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("450"),  _
      Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
     Public Property WindowHeight() As Integer
         Get

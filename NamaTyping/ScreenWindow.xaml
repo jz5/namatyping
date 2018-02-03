@@ -100,7 +100,10 @@
                           KeyUp="ComboBox_KeyUp" LostFocus="ComboBox_LostFocus"
                           Name="SizeComboBox" IsEditable="True">
                     <ComboBoxItem>
-                        <TextBlock Padding="3,0,0,0">640×360</TextBlock>
+                        <TextBlock Padding="3,0,0,0">800×450</TextBlock>
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <TextBlock Padding="3,0,0,0">1280×720</TextBlock>
                     </ComboBoxItem>
                     <ComboBoxItem>
                         <TextBlock Padding="3,0,0,0">640×480</TextBlock>
