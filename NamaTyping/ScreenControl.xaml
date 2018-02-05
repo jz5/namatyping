@@ -270,7 +270,7 @@
                                 </ItemsControl.Template>
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Margin="10 5 10 5" VerticalAlignment="Bottom" />
+                                        <StackPanel Margin="10,5,10,6" VerticalAlignment="Bottom" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>
