@@ -37,7 +37,7 @@
 		</Grid.Resources>-->
 
         <Grid.RowDefinitions>
-            <RowDefinition />
+            <RowDefinition Height="29" />
             <RowDefinition Height="480" x:Name="MainContentRowDefinition" />
             <RowDefinition />
             <RowDefinition />
@@ -96,20 +96,29 @@
                     </StackPanel>
                 </Button>
 
-                <ComboBox Width="120" SelectionChanged="ComboBox_SelectionChanged" 
-                          Name="SizeComboBox"
-                          SelectedIndex="{Binding WindowSizePattern, Mode=TwoWay}">
+                <ComboBox Width="80" SelectionChanged="ComboBox_SelectionChanged"
+                          KeyUp="ComboBox_KeyUp" LostFocus="ComboBox_LostFocus"
+                          Name="SizeComboBox" IsEditable="True">
                     <ComboBoxItem>
-                        <TextBlock Padding="3,0,0,0">640x360 Uniform</TextBlock>
+                        <TextBlock Padding="3,0,0,0">800×450</TextBlock>
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <TextBlock Padding="3,0,0,0">640x360 Fill</TextBlock>
+                        <TextBlock Padding="3,0,0,0">1280×720</TextBlock>
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <TextBlock Padding="5,0,0,0">640x480 Uniform</TextBlock>
+                        <TextBlock Padding="3,0,0,0">640×480</TextBlock>
                     </ComboBoxItem>
-                    <ComboBoxItem>
-                        <TextBlock Padding="5,0,0,0">640x480 Fill</TextBlock>
+                </ComboBox>
+
+                <ComboBox Width="60" SelectionChanged="StretchComboBox_SelectionChanged" 
+                          Name="StretchComboBox"
+                          SelectedValuePath="Tag"
+                          SelectedValue="{Binding MediaStretch, Mode=OneTime}">
+                    <ComboBoxItem Tag="2">
+                        <TextBlock Padding="3,0,0,0">Uniform</TextBlock>
+                    </ComboBoxItem>
+                    <ComboBoxItem Tag="3">
+                        <TextBlock Padding="3,0,0,0">Fill</TextBlock>
                     </ComboBoxItem>
                 </ComboBox>
 

@@ -7,7 +7,8 @@
     xmlns:converter="clr-namespace:Pronama.NamaTyping.Converter"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" xmlns:ic="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions" x:Class="ScreenControl"
              mc:Ignorable="d" 
-             d:DesignHeight="480" d:DesignWidth="640">
+              x:Name="ScreenControl"
+             Width="800" Height="450">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converter:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
@@ -16,75 +17,79 @@
     </UserControl.Resources>
 
     <Grid Grid.Row="1">
-    	<VisualStateManager.VisualStateGroups>
-    		<VisualStateGroup x:Name="VisualStateGroup">
-    			<VisualStateGroup.Transitions>
-    				<VisualTransition GeneratedDuration="0"/>
-    			</VisualStateGroup.Transitions>
-    			<VisualState x:Name="ShowTitle">
-    				<Storyboard>
-    					<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="stackPanel">
-    						<EasingDoubleKeyFrame KeyTime="0" Value="0"/>
-    						<EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
-    					</DoubleAnimationUsingKeyFrames>
-    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="RankingGrid">
-    						<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Hidden}"/>
-    					</ObjectAnimationUsingKeyFrames>
-    				</Storyboard>
-    			</VisualState>
-    			<VisualState x:Name="HideTitle">
-    				<Storyboard>
-    					<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="stackPanel">
-    						<EasingDoubleKeyFrame KeyTime="0" Value="1"/>
-    						<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
-    					</DoubleAnimationUsingKeyFrames>
-    				</Storyboard>
-    			</VisualState>
-    			<VisualState x:Name="ShowLyrics">
-    				<Storyboard>
-    					<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="RankingGrid">
-    						<EasingDoubleKeyFrame KeyTime="0" Value="1"/>
-    						<EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
-    						<EasingDoubleKeyFrame KeyTime="0:0:1.1" Value="0.5"/>
-    					</DoubleAnimationUsingKeyFrames>
-    					<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="LyricsGrid">
-    						<EasingDoubleKeyFrame KeyTime="0" Value="0"/>
-    						<EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
-    					</DoubleAnimationUsingKeyFrames>
-    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="RankingGrid">
-    						<DiscreteObjectKeyFrame KeyTime="0:0:1" Value="{x:Static Visibility.Visible}"/>
-    						<DiscreteObjectKeyFrame KeyTime="0:0:1.1" Value="{x:Static Visibility.Collapsed}"/>
-    					</ObjectAnimationUsingKeyFrames>
-    				</Storyboard>
-    			</VisualState>
-    			<VisualState x:Name="ShowRanking">
-    				<Storyboard>
-    					<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="RankingGrid">
-    						<EasingDoubleKeyFrame KeyTime="0" Value="0"/>
-    						<EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0"/>
-    						<EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
-    					</DoubleAnimationUsingKeyFrames>
-    					<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="LyricsGrid">
-    						<EasingDoubleKeyFrame KeyTime="0" Value="1"/>
-    						<EasingDoubleKeyFrame KeyTime="0:0:1" Value="0"/>
-    					</DoubleAnimationUsingKeyFrames>
-    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="RankingGrid">
-    						<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Collapsed}"/>
-    						<DiscreteObjectKeyFrame KeyTime="0:0:0.1" Value="{x:Static Visibility.Visible}"/>
-    						<DiscreteObjectKeyFrame KeyTime="0:0:1" Value="{x:Static Visibility.Visible}"/>
-    					</ObjectAnimationUsingKeyFrames>
-    				</Storyboard>
-    			</VisualState>
-    		</VisualStateGroup>
-    	</VisualStateManager.VisualStateGroups>
-
-        <Image Source="{Binding BackgroundImage, Converter={StaticResource NullToUnsetValueConverter}}" Width="640" Height="480" Stretch="Uniform"
-               HorizontalAlignment="Center" VerticalAlignment="Center"
+        <Image Source="{Binding BackgroundImage, Converter={StaticResource NullToUnsetValueConverter}}"
+               Width="{Binding Width, ElementName=ScreenControl}" Height="{Binding Height, ElementName=ScreenControl}"
+               Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"
                x:Name="MyImage" />
-        <MediaElement  Width="640" Height="480" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"
-                       x:Name="MyMediaElement" />
+        <MediaElement Width="{Binding Width, ElementName=ScreenControl}" Height="{Binding Height, ElementName=ScreenControl}"
+                      Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"
+                      x:Name="MyMediaElement" />
 
-        <!--<StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+        <Viewbox Width="{Binding Width, ElementName=ScreenControl}" Height="{Binding Height, ElementName=ScreenControl}" Stretch="Uniform">
+            <Grid x:Name="Grid" Grid.Row="1" Width="640" Height="360">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="VisualStateGroup">
+                        <VisualStateGroup.Transitions>
+                            <VisualTransition GeneratedDuration="0"/>
+                        </VisualStateGroup.Transitions>
+                        <VisualState x:Name="ShowTitle">
+                            <Storyboard>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="stackPanel">
+                                    <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                    <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="RankingGrid">
+                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Hidden}"/>
+                                </ObjectAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="HideTitle">
+                            <Storyboard>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="stackPanel">
+                                    <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                    <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="ShowLyrics">
+                            <Storyboard>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="RankingGrid">
+                                    <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                    <EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
+                                    <EasingDoubleKeyFrame KeyTime="0:0:1.1" Value="0.5"/>
+                                </DoubleAnimationUsingKeyFrames>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="LyricsGrid">
+                                    <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                    <EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="RankingGrid">
+                                    <DiscreteObjectKeyFrame KeyTime="0:0:1" Value="{x:Static Visibility.Visible}"/>
+                                    <DiscreteObjectKeyFrame KeyTime="0:0:1.1" Value="{x:Static Visibility.Collapsed}"/>
+                                </ObjectAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="ShowRanking">
+                            <Storyboard>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="RankingGrid">
+                                    <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                    <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0"/>
+                                    <EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="LyricsGrid">
+                                    <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                    <EasingDoubleKeyFrame KeyTime="0:0:1" Value="0"/>
+                                </DoubleAnimationUsingKeyFrames>
+                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="RankingGrid">
+                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Collapsed}"/>
+                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.1" Value="{x:Static Visibility.Visible}"/>
+                                    <DiscreteObjectKeyFrame KeyTime="0:0:1" Value="{x:Static Visibility.Visible}"/>
+                                </ObjectAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+
+                <!--<StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
                     <Rectangle Height="30">
                         <Rectangle.Fill>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -96,289 +101,289 @@
                     <Rectangle Fill="Black" Height="30" />
                 </StackPanel>-->
 
-        <Grid  >
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="5" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+                <Grid  >
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="5" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" 
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" 
                                 Visibility="{Binding Connected, Converter={StaticResource NegationBooleanToVisibilityConverter}}" Margin="10 10 15 10">
-                <Image Source="Images/109_AllAnnotations_Warning_24x24_72.png" Width="24" Height="24" SnapsToDevicePixels="True" />
-                <TextBlock Text="未接続" VerticalAlignment="Center" Margin="5 5 0 0" FontSize="18" FontWeight="Bold" Foreground="White">
-                    <TextBlock.Effect>
-                        <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
-                    </TextBlock.Effect>
-                </TextBlock>
-            </StackPanel>
+                        <Image Source="Images/109_AllAnnotations_Warning_24x24_72.png" Width="24" Height="24" SnapsToDevicePixels="True" />
+                        <TextBlock Text="未接続" VerticalAlignment="Center" Margin="5 5 0 0" FontSize="18" FontWeight="Bold" Foreground="White">
+                            <TextBlock.Effect>
+                                <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
+                            </TextBlock.Effect>
+                        </TextBlock>
+                    </StackPanel>
 
 
-            <!-- Messages -->
-            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="MessagesGrid">
-                <ItemsControl x:Name="MessageItemsControl" ItemsSource="{Binding Messages}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                    <ItemsControl.Template>
-                        <ControlTemplate>
-                            <ScrollViewer>
-                                <ScrollViewer.Style>
-                                    <Style TargetType="{x:Type ScrollViewer}">
-                                        <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
+                    <!-- Messages -->
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="MessagesGrid">
+                        <ItemsControl x:Name="MessageItemsControl" ItemsSource="{Binding Messages}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <ItemsControl.Template>
+                                <ControlTemplate>
+                                    <ScrollViewer>
+                                        <ScrollViewer.Style>
+                                            <Style TargetType="{x:Type ScrollViewer}">
+                                                <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
 
-                                </ScrollViewer.Style>
-                                <ItemsPresenter />
-                            </ScrollViewer>
-                        </ControlTemplate>
-                    </ItemsControl.Template>
+                                        </ScrollViewer.Style>
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </ControlTemplate>
+                            </ItemsControl.Template>
 
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Margin="10 5 10 5" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Margin="0" 
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Margin="10 5 10 5" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Margin="0" 
                                                 Foreground="White"
                                                 VerticalAlignment="Bottom"
                                                 Text="{Binding}"
                                                 TextWrapping="Wrap" 
                                                 FontSize="{Binding DataContext.MessageFontSize, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                 FontWeight="Bold">
-                                        
-                                <TextBlock.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
-                                </TextBlock.Effect>
-                            </TextBlock>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
 
-                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 20 0">
-                    <ToolBarPanel Background="Transparent">
-                        <ToolBarPanel.Style>
-                            <Style TargetType="{x:Type ToolBarPanel}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMouseOver, ElementName=MessageItemsControl}" Value="True">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ToolBarPanel.Style>
+                                        <TextBlock.Effect>
+                                            <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
+                                        </TextBlock.Effect>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
-                        <ToolBarTray Background="Transparent" Orientation="Vertical">
-                            <ToolBar Background="Transparent" ToolBarTray.IsLocked="True" Loaded="ToolBar_Loaded" IsVisibleChanged="ToolBar_IsVisibleChanged">
-                                <Button ToolTip="クリア" 
-                                        Command="{Binding ClearMessagesCommand}" Margin=" 0 10 0 0">
-                                    <Image Source="Images/cross-script.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                                </Button>
-
-                                <ToggleButton IsChecked="{Binding ShowNameEntryMessages, UpdateSourceTrigger=PropertyChanged}"
-                                              ToolTip="ユーザー名">
-                                    <Image Source="Images/address-book.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                                </ToggleButton>
-                                <ToggleButton IsChecked="{Binding ShowPointMessages, UpdateSourceTrigger=PropertyChanged}"
-                                              ToolTip="採点メッセージ">
-                                    <Image Source="Images/report--pencil.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                                </ToggleButton>
-                                <ToggleButton IsChecked="{Binding ShowFilteredMessages, UpdateSourceTrigger=PropertyChanged}"
-                                              ToolTip="コメント">
-                                    <Image Source="Images/balloon.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                                </ToggleButton>
-
-                                <Button ToolTip="フォントを大きく"
-                                        Command="{Binding ChangeMessageFontSizeCommand}" CommandParameter="1" Margin=" 0 10 0 0">
-                                    <Image Source="Images/control-090.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                                </Button>
-                                <Button ToolTip="フォントを小さく"
-                                            Command="{Binding ChangeMessageFontSizeCommand}" CommandParameter="-1">
-                                    <Image Source="Images/control-270.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                                </Button>
-                            </ToolBar>
-
-                        </ToolBarTray>
-
-                    </ToolBarPanel>
-
-                </StackPanel>
-
-            </Grid>
-
-            <!-- GridSplitter -->
-            <GridSplitter Height="5" Grid.Row="1"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Center"
-                        ResizeDirection="Rows">
-                <GridSplitter.Style>
-                    <Style TargetType="{x:Type GridSplitter}">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="LightGray" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </GridSplitter.Style>
-            </GridSplitter>
-
-
-            <Rectangle Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
-                           Fill="Black" Opacity="{Binding BottomGridOpacity}" />
-
-            <!-- 再生時間 -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Background="#77FFFFFF" TextElement.FontSize="20"
-                                Visibility="{Binding ShowTimeOnLyricsGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock Text="{Binding PlayerPosition, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
-                <TextBlock Text="/" Margin="0" VerticalAlignment="Center" />
-                <TextBlock Text="{Binding MediaLength, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
-            </StackPanel>
-
-            <!-- Lyrics -->
-            <Grid Name="LyricsGrid" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            	<i:Interaction.Triggers>
-            		<ic:DataTrigger Binding="{Binding Playing}" Value="True">
-            			<ic:GoToStateAction StateName="ShowLyrics"/>
-            		</ic:DataTrigger>
-            	</i:Interaction.Triggers>
-
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <ItemsControl ItemsSource="{Binding RecentLyrics}" x:Name="LyricItemsControl">
-                        <ItemsControl.Template>
-                            <ControlTemplate>
-                                <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
-                                    <ItemsPresenter />
-                                </ScrollViewer>
-                            </ControlTemplate>
-                        </ItemsControl.Template>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Margin="10 5 10 5" VerticalAlignment="Bottom" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                    <Grid Grid.Row="1" Height="26">
-                        <StackPanel x:Name="stackPanel" Orientation="Horizontal" HorizontalAlignment="Right" Opacity="0">
-                        	<i:Interaction.Triggers>
-                                <ic:DataTrigger Binding="{Binding LastLyricShown}" Value="True">
-                        			<ic:GoToStateAction StateName="ShowTitle"/>
-                        		</ic:DataTrigger>
-                                <ic:DataTrigger Value="False" Binding="{Binding LastLyricShown}">
-                        			<ic:GoToStateAction StateName="HideTitle"/>
-                        		</ic:DataTrigger>
-                        	</i:Interaction.Triggers>
-                            <Image Source="Images/music.png" Width="16" Height="16" SnapsToDevicePixels="True" VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding LyricTitle}"  Margin="5" VerticalAlignment="Center" Foreground="White" FontSize="15">
-                                <TextBlock.Effect>
-                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
-                                </TextBlock.Effect>
-                            </TextBlock>
-                        </StackPanel>
-                    </Grid>
-                </Grid>
-
-                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                    <ToolBarPanel Background="Transparent">
-                        <ToolBarPanel.Style>
-                            <Style TargetType="{x:Type ToolBarPanel}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                    <DataTrigger  Binding="{Binding IsMouseOver, ElementName=LyricItemsControl}" Value="True">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ToolBarPanel.Style>
-
-                        <ToolBarTray Background="Transparent"  Margin="0" Orientation="Vertical">
-                            <ToolBar Background="Transparent" ToolBarTray.IsLocked="True" Loaded="ToolBar_Loaded" IsVisibleChanged="ToolBar_IsVisibleChanged">
-                                <Button ToolTip="フォントを大きく"
-                                        Command="{Binding ChangeLyricFontSizeCommand}" CommandParameter="1">
-                                    <Image Source="Images/control-090.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                                </Button>
-                                <Button ToolTip="フォントを小さく"
-                                        Command="{Binding ChangeLyricFontSizeCommand}" CommandParameter="-1">
-                                    <Image Source="Images/control-270.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                                </Button>
-                                
-                                <ComboBox Name="LyricLineCountComboBox" ToolTip="表示行数">
-                                </ComboBox>
-                            </ToolBar>
-
-                        </ToolBarTray>
-
-                    </ToolBarPanel>
-                </StackPanel>
-            </Grid>
-
-
-            <!-- Ranking -->
-            <Grid Grid.Row="2" Name="RankingGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                      >
-            	<i:Interaction.Triggers>
-            		<ic:DataTrigger Binding="{Binding Playing}" Value="False">
-            			<ic:GoToStateAction StateName="ShowRanking"/>
-            		</ic:DataTrigger>
-            	</i:Interaction.Triggers>
-                <ItemsControl ItemsSource="{Binding RankedUsers}" x:Name="RankingItemsControl" >
-                    <ItemsControl.Template>
-                        <ControlTemplate>
-                            <ScrollViewer>
-                                <ScrollViewer.Style>
-                                    <Style TargetType="{x:Type ScrollViewer}">
-                                        <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 20 0">
+                            <ToolBarPanel Background="Transparent">
+                                <ToolBarPanel.Style>
+                                    <Style TargetType="{x:Type ToolBarPanel}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
                                         <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=MessageItemsControl}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
+                                                <Setter Property="Visibility" Value="Visible" />
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
-                                </ScrollViewer.Style>
-                                <ItemsPresenter />
-                            </ScrollViewer>
-                        </ControlTemplate>
-                    </ItemsControl.Template>
+                                </ToolBarPanel.Style>
 
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Margin="10 5 10 5" VerticalAlignment="Top" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" >
-                                    <TextBlock 
+                                <ToolBarTray Background="Transparent" Orientation="Vertical">
+                                    <ToolBar Background="Transparent" ToolBarTray.IsLocked="True" Loaded="ToolBar_Loaded" IsVisibleChanged="ToolBar_IsVisibleChanged">
+                                        <Button ToolTip="クリア" 
+                                        Command="{Binding ClearMessagesCommand}" Margin=" 0 10 0 0">
+                                            <Image Source="Images/cross-script.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                                        </Button>
+
+                                        <ToggleButton IsChecked="{Binding ShowNameEntryMessages, UpdateSourceTrigger=PropertyChanged}"
+                                              ToolTip="ユーザー名">
+                                            <Image Source="Images/address-book.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                                        </ToggleButton>
+                                        <ToggleButton IsChecked="{Binding ShowPointMessages, UpdateSourceTrigger=PropertyChanged}"
+                                              ToolTip="採点メッセージ">
+                                            <Image Source="Images/report--pencil.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                                        </ToggleButton>
+                                        <ToggleButton IsChecked="{Binding ShowFilteredMessages, UpdateSourceTrigger=PropertyChanged}"
+                                              ToolTip="コメント">
+                                            <Image Source="Images/balloon.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                                        </ToggleButton>
+
+                                        <Button ToolTip="フォントを大きく"
+                                        Command="{Binding ChangeMessageFontSizeCommand}" CommandParameter="1" Margin=" 0 10 0 0">
+                                            <Image Source="Images/control-090.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                                        </Button>
+                                        <Button ToolTip="フォントを小さく"
+                                            Command="{Binding ChangeMessageFontSizeCommand}" CommandParameter="-1">
+                                            <Image Source="Images/control-270.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                                        </Button>
+                                    </ToolBar>
+
+                                </ToolBarTray>
+
+                            </ToolBarPanel>
+
+                        </StackPanel>
+
+                    </Grid>
+
+                    <!-- GridSplitter -->
+                    <GridSplitter Height="5" Grid.Row="1"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        ResizeDirection="Rows">
+                        <GridSplitter.Style>
+                            <Style TargetType="{x:Type GridSplitter}">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="LightGray" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </GridSplitter.Style>
+                    </GridSplitter>
+
+
+                    <Rectangle Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                           Fill="Black" Opacity="{Binding BottomGridOpacity}" />
+
+                    <!-- 再生時間 -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Background="#77FFFFFF" TextElement.FontSize="20"
+                                Visibility="{Binding ShowTimeOnLyricsGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="{Binding PlayerPosition, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
+                        <TextBlock Text="/" Margin="0" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding MediaLength, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Lyrics -->
+                    <Grid Name="LyricsGrid" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <i:Interaction.Triggers>
+                            <ic:DataTrigger Binding="{Binding Playing}" Value="True">
+                                <ic:GoToStateAction StateName="ShowLyrics"/>
+                            </ic:DataTrigger>
+                        </i:Interaction.Triggers>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <ItemsControl ItemsSource="{Binding RecentLyrics}" x:Name="LyricItemsControl">
+                                <ItemsControl.Template>
+                                    <ControlTemplate>
+                                        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
+                                            <ItemsPresenter />
+                                        </ScrollViewer>
+                                    </ControlTemplate>
+                                </ItemsControl.Template>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Margin="10 5 10 5" VerticalAlignment="Bottom" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                            <Grid Grid.Row="1" Height="26">
+                                <StackPanel x:Name="stackPanel" Orientation="Horizontal" HorizontalAlignment="Right" Opacity="0">
+                                    <i:Interaction.Triggers>
+                                        <ic:DataTrigger Binding="{Binding LastLyricShown}" Value="True">
+                                            <ic:GoToStateAction StateName="ShowTitle"/>
+                                        </ic:DataTrigger>
+                                        <ic:DataTrigger Value="False" Binding="{Binding LastLyricShown}">
+                                            <ic:GoToStateAction StateName="HideTitle"/>
+                                        </ic:DataTrigger>
+                                    </i:Interaction.Triggers>
+                                    <Image Source="Images/music.png" Width="16" Height="16" SnapsToDevicePixels="True" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding LyricTitle}"  Margin="5" VerticalAlignment="Center" Foreground="White" FontSize="15">
+                                        <TextBlock.Effect>
+                                            <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
+                                        </TextBlock.Effect>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+
+                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                            <ToolBarPanel Background="Transparent">
+                                <ToolBarPanel.Style>
+                                    <Style TargetType="{x:Type ToolBarPanel}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger  Binding="{Binding IsMouseOver, ElementName=LyricItemsControl}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToolBarPanel.Style>
+
+                                <ToolBarTray Background="Transparent"  Margin="0" Orientation="Vertical">
+                                    <ToolBar Background="Transparent" ToolBarTray.IsLocked="True" Loaded="ToolBar_Loaded" IsVisibleChanged="ToolBar_IsVisibleChanged">
+                                        <Button ToolTip="フォントを大きく"
+                                        Command="{Binding ChangeLyricFontSizeCommand}" CommandParameter="1">
+                                            <Image Source="Images/control-090.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                                        </Button>
+                                        <Button ToolTip="フォントを小さく"
+                                        Command="{Binding ChangeLyricFontSizeCommand}" CommandParameter="-1">
+                                            <Image Source="Images/control-270.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                                        </Button>
+
+                                        <ComboBox Name="LyricLineCountComboBox" ToolTip="表示行数">
+                                        </ComboBox>
+                                    </ToolBar>
+
+                                </ToolBarTray>
+
+                            </ToolBarPanel>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <!-- Ranking -->
+                    <Grid Grid.Row="2" Name="RankingGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                      >
+                        <i:Interaction.Triggers>
+                            <ic:DataTrigger Binding="{Binding Playing}" Value="False">
+                                <ic:GoToStateAction StateName="ShowRanking"/>
+                            </ic:DataTrigger>
+                        </i:Interaction.Triggers>
+                        <ItemsControl ItemsSource="{Binding RankedUsers}" x:Name="RankingItemsControl" >
+                            <ItemsControl.Template>
+                                <ControlTemplate>
+                                    <ScrollViewer>
+                                        <ScrollViewer.Style>
+                                            <Style TargetType="{x:Type ScrollViewer}">
+                                                <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ScrollViewer.Style>
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </ControlTemplate>
+                            </ItemsControl.Template>
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Margin="10 5 10 5" VerticalAlignment="Top" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" >
+                                            <TextBlock 
                                             Foreground="White"
                                             VerticalAlignment="Bottom"
                                             Text="{Binding Rank, StringFormat=0位}"
                                             TextWrapping="Wrap" 
                                             FontSize="{Binding DataContext.RankingFontSize, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                             FontWeight="Bold">
-                                        <TextBlock.Effect>
-                                            <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
-                                        </TextBlock.Effect>
-                                    </TextBlock>
-                                    <TextBlock 
+                                                <TextBlock.Effect>
+                                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
+                                                </TextBlock.Effect>
+                                            </TextBlock>
+                                            <TextBlock 
                                             Margin="5 0 0 0"
                                             Foreground="White"
                                             VerticalAlignment="Bottom"
@@ -386,63 +391,63 @@
                                             TextWrapping="Wrap" 
                                             FontSize="{Binding DataContext.RankingFontSize, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                             FontWeight="Bold">
-                                        <TextBlock.Effect>
-                                            <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
-                                        </TextBlock.Effect>
-                                    </TextBlock>
+                                                <TextBlock.Effect>
+                                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
+                                                </TextBlock.Effect>
+                                            </TextBlock>
 
-                                    <TextBlock 
+                                            <TextBlock 
                                             Margin="5 0 0 0"
                                             VerticalAlignment="Bottom"
                                             Text="{Binding Name}"
                                             TextWrapping="Wrap"
                                             FontSize="{Binding DataContext.RankingFontSize, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                             FontWeight="Bold">
-                                            <TextBlock.Effect>
-                                                <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
-                                            </TextBlock.Effect>
-                                            <TextBlock.Style>
-                                                <Style TargetType="{x:Type TextBlock}" >
-                                                    <Setter Property="Foreground" Value="White" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Premium}" Value="3">
-                                                            <Setter Property="Foreground" Value="Red" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Highlighted}" Value="True">
-                                                            <Setter Property="Foreground" Value="Red" />
-                                                        </DataTrigger>
+                                                <TextBlock.Effect>
+                                                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
+                                                </TextBlock.Effect>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="{x:Type TextBlock}" >
+                                                        <Setter Property="Foreground" Value="White" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Premium}" Value="3">
+                                                                <Setter Property="Foreground" Value="Red" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Highlighted}" Value="True">
+                                                                <Setter Property="Foreground" Value="Red" />
+                                                            </DataTrigger>
 
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
 
-                                    </TextBlock>
-                                    <!--<Button ToolTip="採点結果"
+                                            </TextBlock>
+                                            <!--<Button ToolTip="採点結果"
                                         Command="{Binding ShowScoringResultCommand}" CommandParameter="{Binding User}" Width="16" Height="16">
                                         <Image Source="Images/shortcut-small.png" Width="16" Height="16" SnapsToDevicePixels="True" />
                                     </Button>-->
-                                </StackPanel>
+                                        </StackPanel>
 
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
-                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 20 0">
+                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 20 0">
 
-                    <ToolBarPanel Background="Transparent">
-                        <ToolBarPanel.Style>
-                            <Style TargetType="{x:Type ToolBarPanel}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                    <DataTrigger  Binding="{Binding IsMouseOver, ElementName=RankingItemsControl}" Value="True">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </Trigger>
+                            <ToolBarPanel Background="Transparent">
+                                <ToolBarPanel.Style>
+                                    <Style TargetType="{x:Type ToolBarPanel}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger  Binding="{Binding IsMouseOver, ElementName=RankingItemsControl}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </Trigger>
 
-                                    <!--<MultiDataTrigger>
+                                            <!--<MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding ElementName=RankingItemsControl, Path=Visibility}" Value="Visible" />
                                             <Condition Binding="{Binding ElementName=RankingItemsControl, Path=IsMouseOver}" Value="True" />
@@ -457,34 +462,36 @@
                                         <Setter Property="Visibility" Value="Visible" />
                                     </MultiDataTrigger>-->
 
-                                </Style.Triggers>
-                            </Style>
-                        </ToolBarPanel.Style>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToolBarPanel.Style>
 
-                        <ToolBarTray Background="Transparent"  Orientation="Vertical">
+                                <ToolBarTray Background="Transparent"  Orientation="Vertical">
 
-                            <ToolBar Background="Transparent" ToolBarTray.IsLocked="True" Loaded="ToolBar_Loaded" IsVisibleChanged="ToolBar_IsVisibleChanged">
-                                <Button ToolTip="フォントを大きく"
+                                    <ToolBar Background="Transparent" ToolBarTray.IsLocked="True" Loaded="ToolBar_Loaded" IsVisibleChanged="ToolBar_IsVisibleChanged">
+                                        <Button ToolTip="フォントを大きく"
                                         Command="{Binding ChangeRankingFontSizeCommand}" CommandParameter="1">
-                                    <Image Source="Images/control-090.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                                </Button>
-                                <Button ToolTip="フォントを小さく"
+                                            <Image Source="Images/control-090.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                                        </Button>
+                                        <Button ToolTip="フォントを小さく"
                                         Command="{Binding ChangeRankingFontSizeCommand}" CommandParameter="-1">
-                                    <Image Source="Images/control-270.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                                </Button>
-                            </ToolBar>
+                                            <Image Source="Images/control-270.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                                        </Button>
+                                    </ToolBar>
 
-                        </ToolBarTray>
+                                </ToolBarTray>
 
-                    </ToolBarPanel>
-                </StackPanel>
+                            </ToolBarPanel>
+                        </StackPanel>
+
+                    </Grid>
+
+
+                </Grid>
+
+
 
             </Grid>
-
-
-        </Grid>
-
-
-
+        </Viewbox>
     </Grid>
 </UserControl>

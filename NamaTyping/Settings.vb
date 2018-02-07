@@ -8,6 +8,11 @@ Imports System.IO
 
 Partial Friend NotInheritable Class MySettings
     ''' <summary>
+    ''' フォントサイズなどの基準となるメディア表示領域の幅。
+    ''' </summary>
+    Friend Const ReferenceWindowWidth = 640
+
+    ''' <summary>
     ''' フォントサイズの最小値。
     ''' </summary>
     Public Const MinFontSize As Double = 10
@@ -23,9 +28,29 @@ Partial Friend NotInheritable Class MySettings
     Public Const MaxRecentLyricLineCount As Integer = 10
 
     ''' <summary>
-    ''' ウィンドウサイズなどのパターン数。
+    ''' メディア表示領域の幅の最小値。
     ''' </summary>
-    Protected Const WindowSizePatternCount As Integer = 4
+    Friend Const MinWindowWidth As Integer = ReferenceWindowWidth
+
+    ''' <summary>
+    ''' メディア表示領域の幅の最大値。
+    ''' </summary>
+    Friend Const MaxWindowWidth As Integer = 3840
+
+    ''' <summary>
+    ''' メディア表示領域の高さの最小値。
+    ''' </summary>
+    Friend Const MinWindowHeight As Integer = 360
+
+    ''' <summary>
+    ''' メディア表示領域の高さの最大値。
+    ''' </summary>
+    Friend Const MaxWindowHeight As Integer = 2160
+
+    ''' <summary>
+    ''' メディアの拡大方法のパターン。
+    ''' </summary>
+    Private ReadOnly MediaStretches As Stretch() = {Stretch.Uniform, Stretch.UniformToFill}
 
     ''' <summary>
     ''' ユーザー設定ファイル (user.config) のパス。
@@ -65,9 +90,26 @@ Partial Friend NotInheritable Class MySettings
                 If (System.Version.TryParse(Version, oldVersion)) Then
                     CopyOldVersionFiles(oldVersion.ToString())
 
-                    'If OldVersion.Major < 3 Then
-                    '    マイグレーション処理
-                    'End If
+                    If oldVersion.CompareTo(New Version(2, 5, 1, 0)) < 0 Then
+                        Select Case WindowSizePattern
+                            Case 0
+                                WindowWidth = 640
+                                WindowHeight = 360
+                                MediaStretch = Stretch.Uniform
+                            Case 1
+                                WindowWidth = 640
+                                WindowHeight = 360
+                                MediaStretch = Stretch.UniformToFill
+                            Case 2
+                                WindowWidth = 640
+                                WindowHeight = 480
+                                MediaStretch = Stretch.Uniform
+                            Case 3
+                                WindowWidth = 640
+                                WindowHeight = 480
+                                MediaStretch = Stretch.UniformToFill
+                        End Select
+                    End If
                 End If
 
                 Version = My.Application.Info.Version.ToString()
@@ -132,8 +174,20 @@ Partial Friend NotInheritable Class MySettings
         If RecentLyricLineCount > MaxRecentLyricLineCount Then
             RecentLyricLineCount = MaxRecentLyricLineCount
         End If
-        If WindowSizePattern < 0 OrElse WindowSizePatternCount <= WindowSizePattern Then
-            WindowSizePattern = CType(Properties.Item("WindowSizePattern").DefaultValue, Integer)
+        If WindowWidth < MinWindowWidth Then
+            WindowWidth = MinWindowWidth
+        End If
+        If WindowWidth > MaxWindowWidth Then
+            WindowWidth = MaxWindowWidth
+        End If
+        If WindowHeight < MinWindowHeight Then
+                WindowHeight = MinWindowHeight
+            End If
+        If WindowHeight > MaxWindowHeight Then
+            WindowHeight = MaxWindowHeight
+        End If
+        If Not MediaStretches.Contains(DirectCast(MediaStretch, Stretch)) Then
+            MediaStretch = DirectCast(Properties.Item("MediaStretch").DefaultValue, Integer)
         End If
     End Sub
 End Class

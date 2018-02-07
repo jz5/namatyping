@@ -1347,7 +1347,7 @@ Namespace ViewModel
             End Get
         End Property
 
-        Public Property WindowSizePattern As Integer = My.Settings.WindowSizePattern
+        Public ReadOnly Property MediaStretch As Integer = My.Settings.MediaStretch
 
         Public Property BlacklistCharactersHighlight As Boolean
             Get

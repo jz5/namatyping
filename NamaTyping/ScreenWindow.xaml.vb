@@ -38,6 +38,9 @@ Partial Public Class ScreenWindow
         'For Each cg In getters
         '    CookieGetterComboBox.Items.Add(cg)
         'Next
+
+        SizeComboBox.Text = $"{My.Settings.WindowWidth}×{My.Settings.WindowHeight}"
+        ChangeWindowSize(SizeComboBox.Text)
     End Sub
 
     Protected ReadOnly Property ViewModel As MainViewModel
@@ -214,40 +217,58 @@ Partial Public Class ScreenWindow
     Private Sub ComboBox_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
         'RaiseEvent SizeComboBoxSelectionChanged(sender, e)
 
+        If SizeComboBox.SelectedIndex >= 0 Then
+            ChangeWindowSize(CType(CType(SizeComboBox.SelectedItem, ComboBoxItem).Content, TextBlock).Text)
+        End If
+    End Sub
+
+    Private Sub ComboBox_KeyUp(sender As Object, e As KeyEventArgs)
+        If e.Key = Key.Return Then
+            ChangeWindowSize(SizeComboBox.Text)
+        End If
+    End Sub
+
+    Private Sub ComboBox_LostFocus(sender As Object, e As RoutedEventArgs)
+        ChangeWindowSize(SizeComboBox.Text)
+    End Sub
+
+    ''' <summary>
+    ''' メディア表示領域のサイズを変更します。
+    ''' </summary>
+    ''' <param name="size"></param>
+    Private Sub ChangeWindowSize(size As String)
         Dim w As Integer
         Dim h As Integer
-        Dim s As Stretch
 
-        Select Case SizeComboBox.SelectedIndex
-            Case 0
-                w = 640
-                h = 360
-                s = Stretch.Uniform
+        Dim m = Text.RegularExpressions.Regex.Match(
+            size.Normalize(Text.NormalizationForm.FormKC),
+            "(?<width>[0-9.]+)[^0-9.]+(?<height>[0-9.]+)"
+        )
 
-                ScreenControl.MyImage.Height = 360
-                ScreenControl.MyMediaElement.Height = 360
-            Case 1
-                w = 640
-                h = 360
-                s = Stretch.UniformToFill
+        If m.Success Then
+            If Integer.TryParse(m.Groups("width").Value, w) Then
+                Integer.TryParse(m.Groups("height").Value, h)
+            End If
+        End If
 
-                ScreenControl.MyImage.Height = 480
-                ScreenControl.MyMediaElement.Height = 480
-            Case 2
-                w = 640
-                h = 480
-                s = Stretch.Uniform
+        If h = Nothing Then
+            w = CType(My.Settings.Properties.Item("WindowWidth").DefaultValue, Integer)
+            h = CType(My.Settings.Properties.Item("WindowHeight").DefaultValue, Integer)
+        Else
+            If w < MySettings.MinWindowWidth Then
+                w = MySettings.MinWindowWidth
+            ElseIf w > MySettings.MaxWindowWidth Then
+                w = MySettings.MaxWindowWidth
+            End If
+            If h < MySettings.MinWindowHeight Then
+                h = MySettings.MinWindowHeight
+            End If
+            If h > MySettings.MaxWindowHeight Then
+                h = MySettings.MaxWindowHeight
+            End If
+        End If
 
-                ScreenControl.MyImage.Height = 480
-                ScreenControl.MyMediaElement.Height = 480
-            Case Else
-                w = 640
-                h = 480
-                s = Stretch.UniformToFill
-
-                ScreenControl.MyImage.Height = 480
-                ScreenControl.MyMediaElement.Height = 480
-        End Select
+        SizeComboBox.Text = $"{w}×{h}"
 
         MainContentRowDefinition.Height = New GridLength(h)
         If ScreenWindowsFormsHost IsNot Nothing Then
@@ -257,14 +278,18 @@ Partial Public Class ScreenWindow
         ScreenControl.Width = w
         ScreenControl.Height = h
 
-        ScreenControl.MyImage.Width = w
+        ScreenControl.Grid.Width = MySettings.ReferenceWindowWidth
+        ScreenControl.Grid.Height = h / w * MySettings.ReferenceWindowWidth
+    End Sub
+
+
+    Private Sub StretchComboBox_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+        Dim s = DirectCast([Enum].Parse(
+            GetType(Stretch),
+            DirectCast(DirectCast(StretchComboBox.SelectedItem, ComboBoxItem).Tag, String)
+        ), Stretch)
         ScreenControl.MyImage.Stretch = s
-
-        ScreenControl.MyMediaElement.Width = w
         ScreenControl.MyMediaElement.Stretch = s
-
-
-        'Uniform
     End Sub
 
     ''' <summary>
