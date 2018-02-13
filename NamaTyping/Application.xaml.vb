@@ -42,6 +42,8 @@ Class Application
         ViewModel.Dispatcher = ScreenWindow.Dispatcher
         ScreenWindow.Show()
 
+        ViewModel.ShowVersionInformation()
+
 
 #If DEBUG Then
         For i = 0 To 30

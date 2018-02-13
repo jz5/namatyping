@@ -68,7 +68,7 @@ Module ExtensionModule
     Public Function ToLyricsWords(text As String, removeSymbols As Boolean) As String
 
         Dim builder = New StringBuilder
-        For Each c In text
+        For Each c In Regex.Replace(text, ViewModel.MainViewModel.RemoveSymbols, "")
 
             If Char.IsLetterOrDigit(c) Then
 

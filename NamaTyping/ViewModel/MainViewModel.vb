@@ -17,6 +17,11 @@ Namespace ViewModel
     Public Class MainViewModel
         Inherits ViewModelBase
 
+        ''' <summary>
+        ''' 歌詞表示以外の処理では、始めから存在しない文字として扱う歌詞ファイル中の記号の正規表現文字列。
+        ''' </summary>
+        Friend Const RemoveSymbols As String = "['’.]+"
+
         Public Property Dispatcher As Dispatcher
 
         ''' <summary>
@@ -350,7 +355,8 @@ Namespace ViewModel
 
         Private Sub AddMessage(no As Integer, message As String, kind As MessageKind)
 
-            If (kind = MessageKind.System AndAlso ShowPointMessages) OrElse
+            If kind = MessageKind.None OrElse
+                (kind = MessageKind.System AndAlso ShowPointMessages) OrElse
                 (kind = MessageKind.Filtered AndAlso ShowFilteredMessages) OrElse
                 (kind = MessageKind.Other AndAlso ShowOtherMessages) OrElse
                 (kind = MessageKind.NameEntry AndAlso ShowNameEntryMessages) Then
@@ -362,6 +368,30 @@ Namespace ViewModel
                 OnMessageAdded()
             End If
 
+        End Sub
+
+        ''' <summary>
+        ''' 既定の設定で画面内に収まるログの行数。
+        ''' </summary>
+        Private Const DefaultShownLogLineCount = 7
+
+        ''' <summary>
+        ''' 最新<see cref="DefaultShownLogLineCount">件のログにバージョン情報が含まれていなければ追加します。
+        ''' </summary>
+        Public Sub ShowVersionInformation()
+            Dim version = FileVersionInfo.GetVersionInfo(
+                Reflection.Assembly.GetExecutingAssembly().Location
+            ).FileVersion
+
+            Dim versionInfo = $"{My.Application.Info.Title} {version}"
+
+            For Each message In Messages.Reverse().Take(DefaultShownLogLineCount)
+                If message = $"0: {versionInfo}" Then
+                    Exit Sub
+                End If
+            Next
+
+            AddMessage(0, versionInfo, MessageKind.None)
         End Sub
 
         Private Member As New Dictionary(Of String, User)
@@ -422,7 +452,16 @@ Namespace ViewModel
 
             Dim name = comment.Text.Substring(1).Replace(vbCr, " ").Replace(vbLf, " ").Replace(vbTab, " ").Replace("　", " ").Trim
 
-
+            ' コメントユーザー固有の設定
+            Dim settingFlags = ""
+            Dim m = Regex.Match(name, "(?<name>.+)\s*[[［](?<flags>.+)[\]］]\s*$")
+            If m.Success Then
+                Dim flags = Regex.Replace(m.Groups.Item("flags").Value.Normalize(NormalizationForm.FormKC), "\s+", "")
+                If flags <> "" Then
+                    settingFlags = String.Join("", From flag In NamaTyping.User.SettingFlagList.Values Where flags.Contains(flag) Select flag)
+                End If
+                name = m.Groups("name").Value
+            End If
 
             'If comment.ContainsNGWords Then
             '    name = "名無し（NGコメ）"
@@ -432,16 +471,35 @@ Namespace ViewModel
             End If
             'End If
 
+            Dim user As User
+            Dim settingFlagsChanged = False
             If Not Member.ContainsKey(comment.UserId) Then
                 ' ユーザー追加 MEMO ユーザー追加場所は2か所
-                Dim user = New User With {.Name = name, .Premium = comment.Source, .Id = comment.UserId}
+                user = New User With {.Name = name, .SettingFlags = settingFlags, .Premium = comment.Source, .Id = comment.UserId}
                 Member.Add(comment.UserId, user)
 
                 AddMessage(comment.No, "名前設定: " & user.Name, MessageKind.NameEntry)
+                If settingFlags <> "" Then
+                    settingFlagsChanged = True
+                End If
             Else
                 ' 名前変更
-                AddMessage(comment.No, "名前変更: " & Member(comment.UserId).Name & " → " & name, MessageKind.NameEntry)
-                Member(comment.UserId).Name = name
+                user = Member(comment.UserId)
+                AddMessage(comment.No, "名前変更: " & user.Name & " → " & name, MessageKind.NameEntry)
+                user.Name = name
+                If settingFlags <> user.SettingFlags Then
+                    user.SettingFlags = settingFlags
+                    settingFlagsChanged = True
+                End If
+            End If
+
+            If settingFlagsChanged Then
+                Dim settings = If(
+                    user.SettingFlags <> "",
+                    String.Join("", From flag In User.SettingFlagList Where user.SettingFlags.Contains(flag.Value) Select $"「{flag.Key}」"),
+                    "設定を削除"
+                )
+                AddMessage(comment.No, $"ユーザー設定変更: {user.Name}: {settings}", MessageKind.None)
             End If
 
             Return True
@@ -462,6 +520,7 @@ Namespace ViewModel
             ' TODO nest解消
 
             For Each t In texts
+                Dim scored = False
                 Do
                     For i = user.LyricsIndex To _lyricsIndex - 1
 
@@ -513,6 +572,8 @@ Namespace ViewModel
                                     Exit Do
                                 End If
 
+                                scored = True
+
                             Else
                                 Dim yomi = t.ToHiragana(_lyrics.ReplacementWords)
                                 If yomi.StartsWith(_lyrics.Lines(i).Yomi(j)) Then
@@ -558,6 +619,12 @@ Namespace ViewModel
                                     Else
                                         Exit Do
                                     End If
+
+                                    scored = True
+
+                                ElseIf scored And user.SettingFlags.Contains(NamaTyping.User.SettingFlagList("improve english lyrics")) Then
+                                    Exit Do
+
                                 End If
                             End If
 
@@ -1132,6 +1199,7 @@ Namespace ViewModel
                 OnRankingAdded()
             Else
                 RankingTimer.Stop()
+                ShowVersionInformation()
             End If
 
         End Sub
