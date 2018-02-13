@@ -480,6 +480,19 @@ Partial Friend NotInheritable Class MySettings
             Return CType(Me("RecentMessagesCount"),Integer)
         End Get
     End Property
+    
+    '''<summary>
+    '''ランキング表示にかかる秒数の上限。
+    '''</summary>
+    <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("ランキング表示にかかる秒数の上限。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("20")>  _
+    Public ReadOnly Property DurationSecondsLimitDisplayingRanking() As Integer
+        Get
+            Return CType(Me("DurationSecondsLimitDisplayingRanking"),Integer)
+        End Get
+    End Property
 End Class
 
 Namespace My
