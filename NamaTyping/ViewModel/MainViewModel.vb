@@ -139,6 +139,17 @@ Namespace ViewModel
             End Set
         End Property
 
+        Private _SinglePlayTextBoxFontSize As Double = My.Settings.SinglePlayTextBoxFontSize
+        Public Property SinglePlayTextBoxFontSize As Double
+            Get
+                Return _SinglePlayTextBoxFontSize
+            End Get
+            Set
+                _SinglePlayTextBoxFontSize = Value
+                OnPropertyChanged("SinglePlayTextBoxFontSize")
+            End Set
+        End Property
+
         Private _backgroundImage As Uri
         Public Property BackgroundImage As Uri
             Get

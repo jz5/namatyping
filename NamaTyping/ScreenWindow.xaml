@@ -204,7 +204,8 @@
                         <Setter Property="Orientation" Value="Vertical"/>
                     </Style>
                 </ToolBar.Resources>
-                <TextBox x:Name="SinglePlayMessageTextBox" HorizontalAlignment="Stretch" KeyDown="MessageTextBox_KeyDown" />
+                <TextBox x:Name="SinglePlayMessageTextBox" HorizontalAlignment="Stretch" KeyDown="MessageTextBox_KeyDown"
+                         FontSize="{Binding SinglePlayTextBoxFontSize}" />
             </ToolBar>
         </ToolBarPanel>
 
