@@ -18,6 +18,11 @@ Partial Friend NotInheritable Class MySettings
     Public Const MinFontSize As Double = 10
 
     ''' <summary>
+    ''' テキストボックスのフォントサイズの最小値。
+    ''' </summary>
+    Public Const MinTextBoxFontSize As Double = 12
+
+    ''' <summary>
     ''' フォントサイズの最大値。
     ''' </summary>
     Public Const MaxFontSize As Double = 34
@@ -161,6 +166,12 @@ Partial Friend NotInheritable Class MySettings
         End If
         If RankingFontSize > MaxFontSize Then
             RankingFontSize = MaxFontSize
+        End If
+        If SinglePlayTextBoxFontSize < MinTextBoxFontSize Then
+            SinglePlayTextBoxFontSize = MinFontSize
+        End If
+        If SinglePlayTextBoxFontSize > MaxFontSize Then
+            SinglePlayTextBoxFontSize = MaxFontSize
         End If
         If BottomGridOpacity < 0 Then
             BottomGridOpacity = 0

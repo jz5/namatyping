@@ -411,6 +411,23 @@ Partial Friend NotInheritable Class MySettings
     End Property
     
     '''<summary>
+    '''一人プレイ用 ツールバーのテキストボックスのフォントサイズ (12〜34)。
+    '''</summary>
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("一人プレイ用 ツールバーのテキストボックスのフォントサイズ (12〜34)。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("12"),  _
+     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
+    Public Property SinglePlayTextBoxFontSize() As Double
+        Get
+            Return CType(Me("SinglePlayTextBoxFontSize"),Double)
+        End Get
+        Set
+            Me("SinglePlayTextBoxFontSize") = value
+        End Set
+    End Property
+    
+    '''<summary>
     '''ウィンドウの横位置のキャッシュ。
     '''</summary>
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
