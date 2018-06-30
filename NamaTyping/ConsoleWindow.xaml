@@ -50,6 +50,8 @@
                 <TextBlock Text="px" VerticalAlignment="Center" />
             </StackPanel>
 
+            <CheckBox Content="画像・動画をウィンドウ右に分離し、代わりにグリーンバックを表示する" IsChecked="{Binding SeparateMedia}" />
+
         </StackPanel>
 
         <StackPanel Grid.Row="2" Margin="0 15 0 0">

@@ -6,6 +6,7 @@ Imports Microsoft.Win32
 Imports Pronama.NicoVideo.LiveStreaming
 Imports Pronama.NamaTyping.TextEncoding
 Imports Pronama.NamaTyping.ViewModel
+Imports System.ComponentModel
 
 Partial Public Class ScreenWindow
 
@@ -24,7 +25,7 @@ Partial Public Class ScreenWindow
 
     Private ReadOnly _elementHost As New ElementHost
 
-    Public Sub New()
+    Public Sub New(context As MainViewModel)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -39,8 +40,10 @@ Partial Public Class ScreenWindow
         '    CookieGetterComboBox.Items.Add(cg)
         'Next
 
+        DataContext = context
         SizeComboBox.Text = $"{My.Settings.WindowWidth}×{My.Settings.WindowHeight}"
         ChangeWindowSize(SizeComboBox.Text)
+        AddHandler ViewModel.PropertyChanged, AddressOf ViewModel_PropertyChanged
     End Sub
 
     Protected ReadOnly Property ViewModel As MainViewModel
@@ -112,7 +115,7 @@ Partial Public Class ScreenWindow
     End Sub
 
 
-    Private _commentNo As Integer = - 1
+    Private _commentNo As Integer = -1
 
     Private Sub MessageTextBox_KeyDown(sender As Object, e As KeyEventArgs)
         If e.Key <> Key.Enter Then
@@ -232,6 +235,12 @@ Partial Public Class ScreenWindow
         ChangeWindowSize(SizeComboBox.Text)
     End Sub
 
+    Private Sub ViewModel_PropertyChanged(sender As Object, e As PropertyChangedEventArgs)
+        If e.PropertyName = "SeparateMedia" Then
+            ChangeWindowSize(SizeComboBox.Text)
+        End If
+    End Sub
+
     ''' <summary>
     ''' メディア表示領域のサイズを変更します。
     ''' </summary>
@@ -272,16 +281,30 @@ Partial Public Class ScreenWindow
 
         MainContentRowDefinition.Height = New GridLength(h)
         If ScreenWindowsFormsHost IsNot Nothing Then
-            ScreenWindowsFormsHost.Width = w
+            ScreenWindowsFormsHost.Width = w * If(ViewModel.SeparateMedia, 2, 1)
             ScreenWindowsFormsHost.Height = h
         End If
-        ScreenControl.Width = w
-        ScreenControl.Height = h
+        With ScreenControl
+            .Width = w * If(ViewModel.SeparateMedia, 2, 1)
+            .Height = h
 
-        ScreenControl.Grid.Width = MySettings.ReferenceWindowWidth
-        ScreenControl.Grid.Height = h / w * MySettings.ReferenceWindowWidth
+            .Media.Width = w
+            .Media.Height = h
+            .MyImage.Width = w
+            .MyImage.Height = h
+            .MyMediaElement.Width = w
+            .MyMediaElement.Height = h
+
+            .ChromaKey.Width = w
+            .ChromaKey.Height = h
+            .Grid.Width = MySettings.ReferenceWindowWidth
+            .Grid.Height = h / w * MySettings.ReferenceWindowWidth
+
+
+
+            .TimeOnLyricsGrid.Background = New SolidColorBrush(If(ViewModel.SeparateMedia, Color.FromRgb(&HAD, &HAD, &HAD), Color.FromArgb(&H77, &HFF, &HFF, &HFF)))
+        End With
     End Sub
-
 
     Private Sub StretchComboBox_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
         Dim s = DirectCast([Enum].Parse(
