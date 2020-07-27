@@ -27,9 +27,6 @@
 
             <CheckBox Content="再生時間を、歌詞表示領域にも表示する" IsChecked="{Binding ShowTimeOnLyricsGrid}" Margin="0,0,0,10" />
 
-            <CheckBox Content="すべてから部屋のコメントを取得する" IsChecked="{Binding ConnectAllCommentServers}" />
-            <TextBlock Text="※ チャンネル生放送、および公式生放送には未対応" />
-
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10">
                 <TextBlock Text="一人プレイ用 ツールバーのフォントサイズ:" VerticalAlignment="Center" />
                 <ComboBox Width="50" Margin="5 0 0 0"
