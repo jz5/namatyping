@@ -53,12 +53,6 @@
     <Setting Name="MediaStretch" Description="メディアの拡大/縮小方法 (2か3)。" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
-    <Setting Name="BlacklistCharactersHighlight" Description="運営NGワードについて、歌詞の一致部分を強調する。" Roaming="true" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="SplitBlacklistCharacters" Description="運営NGワードについて、歌詞の一致部分に記号を挿入する。" Roaming="true" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="ShowTimeOnLyricsGrid" Description="経過時間と総時間を、歌詞表示領域の右上にも表示する" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -70,12 +64,6 @@
     </Setting>
     <Setting Name="WindowTop" Description="ウィンドウの縦位置のキャッシュ。" Type="System.Double" Scope="User">
       <Value Profile="(Default)">NaN</Value>
-    </Setting>
-    <Setting Name="BlacklistCharactersSeparator" Description="運営NGワードを分断する文字。" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">/</Value>
-    </Setting>
-    <Setting Name="SubstitutionListDownloadURL" Description="NGワード置換ファイルを手動でダウンロードするURL。" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">https://id.pokemori.jp/niconico-live-ncv</Value>
     </Setting>
     <Setting Name="RecentMessagesCount" Description="表示しているログを切り詰める際に、残しておく件数。" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">100</Value>

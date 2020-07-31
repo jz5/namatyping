@@ -24,11 +24,6 @@ Namespace ViewModel
         Public Property Dispatcher As Dispatcher
 
         ''' <summary>
-        ''' 運営NGワードの強調色。
-        ''' </summary>
-        Private ReadOnly _blacklistCharactersHighlightColor As Brush = Brushes.Red
-
-        ''' <summary>
         ''' <see cref="MediaElement"/>で Media 読み込み時、対応していないメディア形式だった場合に
         ''' 発生する<see cref="MediaElement.MediaFailed"/>における<see cref="COMException.ErrorCode"/>の値。
         ''' </summary>
@@ -691,11 +686,6 @@ Namespace ViewModel
                     wtb.WipeEnabled = False
                     wtb.Text = _lyrics.Lines(_lyricsIndex).Text
                 End If
-
-                ' 強調範囲の設定
-                For Each range As KeyValuePair(Of Integer, Integer) In _lyrics.Lines(_lyricsIndex).HighlightRanges
-                    wtb.WipeTextBlock.TextEffects.Add(New TextEffect(Nothing, _blacklistCharactersHighlightColor, Nothing, range.Key, range.Value))
-                Next
 
                 RecentLyrics.Add(wtb)
 
@@ -1360,26 +1350,6 @@ Namespace ViewModel
         End Property
 
         Public ReadOnly Property MediaStretch As Integer = My.Settings.MediaStretch
-
-        Public Property BlacklistCharactersHighlight As Boolean
-            Get
-                Return My.Settings.BlacklistCharactersHighlight
-            End Get
-            Set
-                My.Settings.BlacklistCharactersHighlight = Value
-            End Set
-        End Property
-
-        Public Property SplitBlacklistCharacters As Boolean
-            Get
-                Return My.Settings.SplitBlacklistCharacters
-            End Get
-            Set
-                My.Settings.SplitBlacklistCharacters = Value
-            End Set
-        End Property
-
-        Public ReadOnly Property BlacklistCharactersSeparator As String = My.Settings.BlacklistCharactersSeparator
 
         Public Property ShowTimeOnLyricsGrid As Boolean
             Get
