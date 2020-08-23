@@ -943,6 +943,8 @@ Namespace ViewModel
                 StatusMessage = $"「{LiveProgramId}」は現在配信中ではありません。"
             Catch ex As Exception When ex.Message = "require_community_member"
                 StatusMessage = "ニコ生タイピングは、フォロワー限定 (コミュ限) の配信には接続できません。"
+            Catch ex As Exception When ex.Message = "status_7"
+                StatusMessage = $"「{LiveProgramId}」は見つかりません。"
             End Try
 
             _connecting = False
