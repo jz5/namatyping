@@ -24,9 +24,7 @@ Class Application
 
         ViewModel = New MainViewModel
 
-        ScreenWindow = New ScreenWindow With {
-            .DataContext = ViewModel
-        }
+        ScreenWindow = New ScreenWindow(context:=ViewModel)
         ScreenWindow.ScreenControl.DataContext = ViewModel
         ScreenWindow.Topmost = My.Settings.Topmost
         If Not Double.IsNaN(My.Settings.WindowLeft) Then
@@ -174,9 +172,12 @@ Class Application
         My.Settings.BottomGridOpacity = ViewModel.BottomGridOpacity
         My.Settings.RecentLyricLineCount = ViewModel.RecentLyricLineCount
         My.Settings.Volume = ViewModel.Volume
-        My.Settings.WindowWidth = CType(ScreenWindow.ScreenControl.Width, Integer)
-        My.Settings.WindowHeight = CType(ScreenWindow.ScreenControl.Height, Integer)
+        With ScreenWindow.ScreenControl.Media
+            My.Settings.WindowWidth = CType(.Width, Integer)
+            My.Settings.WindowHeight = CType(.Height, Integer)
+        End With
         My.Settings.MediaStretch = ScreenWindow.ScreenControl.MyImage.Stretch
+        My.Settings.SeparateMedia = ViewModel.SeparateMedia
 
         My.Settings.WindowLeft = ScreenWindow.Left
         My.Settings.WindowTop = ScreenWindow.Top

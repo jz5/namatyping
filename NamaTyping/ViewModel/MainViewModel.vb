@@ -144,6 +144,17 @@ Namespace ViewModel
             End Set
         End Property
 
+        Private _SeparateMedia As Boolean = My.Settings.SeparateMedia
+        Public Property SeparateMedia As Boolean
+            Get
+                Return _SeparateMedia
+            End Get
+            Set
+                _SeparateMedia = Value
+                OnPropertyChanged("SeparateMedia")
+            End Set
+        End Property
+
         Private _backgroundImage As Uri
         Public Property BackgroundImage As Uri
             Get

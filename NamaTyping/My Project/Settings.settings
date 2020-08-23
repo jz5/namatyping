@@ -59,6 +59,9 @@
     <Setting Name="SinglePlayTextBoxFontSize" Description="一人プレイ用 ツールバーのテキストボックスのフォントサイズ (12〜34)。" Roaming="true" Type="System.Double" Scope="User">
       <Value Profile="(Default)">12</Value>
     </Setting>
+    <Setting Name="SeparateMedia" Description="歌詞とメディアを重ねずに表示する。" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
     <Setting Name="WindowLeft" Description="ウィンドウの横位置のキャッシュ。" Type="System.Double" Scope="User">
       <Value Profile="(Default)">NaN</Value>
     </Setting>

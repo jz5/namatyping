@@ -377,6 +377,23 @@ Partial Friend NotInheritable Class MySettings
     End Property
     
     '''<summary>
+    '''歌詞とメディアを重ねずに表示する。
+    '''</summary>
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Configuration.SettingsDescriptionAttribute("歌詞とメディアを重ねずに表示する。"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("False"),  _
+     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
+    Public Property SeparateMedia() As Boolean
+        Get
+            Return CType(Me("SeparateMedia"),Boolean)
+        End Get
+        Set
+            Me("SeparateMedia") = value
+        End Set
+    End Property
+    
+    '''<summary>
     '''ウィンドウの横位置のキャッシュ。
     '''</summary>
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
