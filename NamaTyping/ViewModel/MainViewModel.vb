@@ -938,6 +938,7 @@ Namespace ViewModel
                 AddHandler _liveProgramClient.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
                 AddHandler _liveProgramClient.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
                 _liveProgramClient.ConnectAsync(server)
+                RecommnedDisablingCommentFilter()
             Catch ex As Exception When ex.Message = "closed"
                 StatusMessage = $"「{LiveProgramId}」は現在配信中ではありません。"
             Catch ex As Exception When ex.Message = "require_community_member"
@@ -963,6 +964,13 @@ Namespace ViewModel
             Return False
 
         End Function
+
+        ''' <summary>
+        ''' コメントフィルターの無効化を推奨するメッセージをログへ追加します。
+        ''' </summary>
+        Private Sub RecommnedDisablingCommentFilter()
+            AddMessage(0, "コメントフィルターが有効になっていると、歌詞によってはコメントできません。もし有効になっている場合は、ニコニコ生放送の配信設定画面から無効化してください。", MessageKind.None)
+        End Sub
 
 #End Region
 
