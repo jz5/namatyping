@@ -10,8 +10,6 @@ Imports Microsoft.Phone.Reactive
 #Else
 Imports System.Threading.Tasks
 #End If
-Imports System.Text.RegularExpressions
-Imports Pronama.NicoVideo.LiveStreaming
 
 Namespace LiveStreaming
     Public Class LiveProgramClient
@@ -44,12 +42,12 @@ Namespace LiveStreaming
             Return o
         End Function
 #Else
-        Public Shared Function GetCommentServersAsync(liveId As String) As Task(Of IList(Of CommentServer))
+        Public Shared Function GetCommentServerAsync(liveId As String) As Task(Of CommentServer)
             Dim uri = New Uri(String.Format(CloudAppUriFormat, liveId))
 
             Dim req = HttpWebRequest.Create(uri)
             Dim webTask = Task.Factory.FromAsync(Of WebResponse)(AddressOf req.BeginGetResponse, AddressOf req.EndGetResponse, Nothing) _
-                          .ContinueWith(Of IList(Of CommentServer))(
+                          .ContinueWith(Of CommentServer)(
                               Function(t As Task(Of WebResponse))
                                   Dim response = DirectCast(t.Result, HttpWebResponse)
                                   Dim body As String
@@ -59,7 +57,7 @@ Namespace LiveStreaming
                                       End Using
                                   End Using
 
-                                  Return CreateCommentServers(body)
+                                  Return CreateCommentServer(body)
                               End Function)
 
             Return webTask
@@ -67,7 +65,7 @@ Namespace LiveStreaming
 
 #End If
 
-        Private Shared Function CreateCommentServers(json As String) As IList(Of CommentServer)
+        Private Shared Function CreateCommentServer(json As String) As CommentServer
 
             Dim serializer As DataContractJsonSerializer
             Dim buf() As Byte
@@ -77,7 +75,7 @@ Namespace LiveStreaming
 
             Dim servers = DirectCast(serializer.ReadObject(New System.IO.MemoryStream(buf)), IList(Of CommentServer))
             If servers.Count > 0 Then
-                Return servers
+                Return servers(0)
             End If
 
             serializer = New DataContractJsonSerializer(GetType(ErrorResult))

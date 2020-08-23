@@ -1,4 +1,4 @@
-﻿Imports System.Xml
+Imports System.Xml
 Imports System.ServiceModel.Syndication
 Imports System.Windows.Threading
 Imports Pronama.NamaTyping.ViewModel
@@ -177,7 +177,6 @@ Class Application
         My.Settings.WindowWidth = CType(ScreenWindow.ScreenControl.Width, Integer)
         My.Settings.WindowHeight = CType(ScreenWindow.ScreenControl.Height, Integer)
         My.Settings.MediaStretch = ScreenWindow.ScreenControl.MyImage.Stretch
-        My.Settings.ConnectAllCommentServers = ViewModel.ConnectAllCommentServers
 
         My.Settings.WindowLeft = ScreenWindow.Left
         My.Settings.WindowTop = ScreenWindow.Top

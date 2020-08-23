@@ -55,24 +55,10 @@ Namespace Model
             End Get
         End Property
 
-        Private Shared _characterReplacer As CharacterReplacer
-        Friend Shared Property CharacterReplacer As CharacterReplacer
-            Get
-                If _characterReplacer Is Nothing Then
-                    _characterReplacer = New CharacterReplacer()
-                End If
-                Return _characterReplacer
-            End Get
-            Set
-                _characterReplacer = Value
-            End Set
-        End Property
-
         Property SoundFileName As String
         Property ImageFileName As String
         Property VideoFileName As String
         Property ReplacementWordsFileName As String
-        Property NgWordsFileName As String
         Property LyricsFileName As String
         Property Encoding As Encoding
         Property ReplacementWordsFileEncoding As Encoding
@@ -205,9 +191,6 @@ Namespace Model
                             Case "text/plain"
                                 If f.ToUpper.EndsWith(".REPL.TXT") OrElse f.ToUpper.EndsWith(".REP.TXT") Then
                                     ReplacementWordsFileName = f
-
-                                ElseIf f.ToUpper.EndsWith(".NG.TXT") Then
-                                    NgWordsFileName = f
                                 End If
 
                             Case "image/png", "iamge/png", "image/jpeg", "image/bmp"
@@ -330,7 +313,7 @@ Namespace Model
         Private Function TryLoadLyrics(file As String, ByRef encoding As Encoding, Optional ByRef errorMessage As String = "") As Boolean
             Dim rawLines = New List(Of String)
 
-            For Each l In ReadLinesWithoutBlankLines(CharacterReplacer.ReplaceUnsplittableWords(ReadAllText(file, encoding)))
+            For Each l In ReadLinesWithoutBlankLines(ReadAllText(file, encoding))
                 Dim m = Regex.Match(l, "^\[\d{2}:\d{2}:\d{2}\](?<karaoke>.*\[\d{2}:\d{2}:\d{2}\])?")
                 If m.Success Then
                     rawLines.Add(l)
@@ -376,45 +359,6 @@ Namespace Model
                 l.Text = text
                 Lines.Add(l)
             Next
-
-            ' 運営NGワードの分断
-            If My.Settings.SplitBlacklistCharacters Then
-                Dim textWithTimeTags = CharacterReplacer.SplitWords(String.Join(vbLf, From line In Lines Select line.TextWithTimeTag)).Split(vbLf(0))
-                For i = 0 To Lines.Count - 1
-                    Lines(i).TextWithTimeTag = textWithTimeTags(i)
-                    Lines(i).Text = Regex.Replace(textWithTimeTags(i), "\[\d{2}:\d{2}:\d{2}\]", "")
-                Next
-            End If
-
-            ' 強調範囲の設定
-            If My.Settings.BlacklistCharactersHighlight Then
-                Dim allText = ""
-                Dim startOffsets = New List(Of Integer)
-                For i = 0 To Lines.Count - 1
-                    startOffsets.Add(allText.Length)
-                    allText &= GetWipeText(i)
-                Next
-
-                Dim ranges = CharacterReplacer.Matches(allText)
-                While ranges.Count > 0
-                    Dim range = ranges.First()
-                    For i = 0 To Lines.Count - 1
-                        Dim start = startOffsets(i)
-                        Dim lineLength = GetWipeText(i).Length
-                        If start <= range.Key AndAlso range.Key < start + lineLength Then
-                            Lines(i).HighlightRanges.Add(range.Key - start, range.Value)
-                            ranges.Remove(range.Key)
-
-                            Dim rangeEnd = range.Key + range.Value
-                            Dim nextLineStart = start + lineLength
-                            If rangeEnd > nextLineStart Then
-                                ranges.Add(nextLineStart, rangeEnd - nextLineStart)
-                            End If
-                            Exit For
-                        End If
-                    Next
-                End While
-            End If
 
             Return True
 

@@ -1,4 +1,4 @@
-﻿<Window x:Class="ConsoleWindow"
+<Window x:Class="ConsoleWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="設定 - ニコ生タイピング" SizeToContent="Height"
@@ -27,9 +27,6 @@
 
             <CheckBox Content="再生時間を、歌詞表示領域にも表示する" IsChecked="{Binding ShowTimeOnLyricsGrid}" Margin="0,0,0,10" />
 
-            <CheckBox Content="すべてから部屋のコメントを取得する" IsChecked="{Binding ConnectAllCommentServers}" />
-            <TextBlock Text="※ チャンネル生放送、および公式生放送には未対応" />
-
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10">
                 <TextBlock Text="一人プレイ用 ツールバーのフォントサイズ:" VerticalAlignment="Center" />
                 <ComboBox Width="50" Margin="5 0 0 0"
@@ -54,42 +51,6 @@
             </StackPanel>
 
         </StackPanel>
-
-        <GroupBox Header="運営NGワード" Grid.Row="1" ToolTip="内蔵置換ファイルと外部から取得した置換ファイルが両方ある場合、更新日時が新しい方を読み込みます。" Margin="0,10,0,0">
-            <StackPanel>
-                <CheckBox IsChecked="{Binding BlacklistCharactersHighlight}">
-                    <TextBlock>
-                        <TextBlock Text="歌詞の一致部分"/>を強調
-                    </TextBlock>
-                </CheckBox>
-                <CheckBox IsChecked="{Binding SplitBlacklistCharacters}">
-                    <TextBlock>
-                        <TextBlock Text="〃" Width="{Binding Children[0].Content.Inlines[0].Child.ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
-                                   TextAlignment="Center" />に<TextBlock Text="{Binding BlacklistCharactersSeparator}" Background="Gainsboro" Padding="2,0" Margin="2,0"/>を挿入
-                    </TextBlock>
-                </CheckBox>
-                <Grid HorizontalAlignment="Right">
-                    <Grid.Resources>
-                        <Style x:Key="old" TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="Gray"/>
-                        </Style>
-                    </Grid.Resources>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Right" Padding="0,0,5,0">内蔵置換ファイルの更新日時:</Label>
-                    <TextBlock Name="BuiltinUpdated" Grid.Row="0" Grid.Column="1"/>
-                    <Label Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Right" Padding="0,0,5,0">外部から取得した置換ファイルの更新日時:</Label>
-                    <TextBlock Name="Updated" Grid.Row="1" Grid.Column="1" Text="(未取得)" Style="{StaticResource old}" />
-                </Grid>
-                <Button Content="最新の置換ファイルを取得する" Click="DownloadSubstitutionList" HorizontalAlignment="Left" Padding="10,1" />
-            </StackPanel>
-        </GroupBox>
 
         <StackPanel Grid.Row="2" Margin="0 15 0 0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

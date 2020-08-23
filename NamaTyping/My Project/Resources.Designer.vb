@@ -12,11 +12,6 @@ Option Strict On
 Option Explicit On
 
 Imports System
-Imports System.CodeDom.Compiler
-Imports System.ComponentModel
-Imports System.Globalization
-Imports System.Resources
-Imports System.Runtime.CompilerServices
 
 Namespace My.Resources
     
@@ -27,24 +22,24 @@ Namespace My.Resources
     '''<summary>
     '''  ローカライズされた文字列などを検索するための、厳密に型指定されたリソース クラスです。
     '''</summary>
-    <GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0"),  _
-     DebuggerNonUserCode(),  _
-     CompilerGenerated(),  _
-     HideModuleName()>  _
+    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0"),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute(),  _
+     Global.Microsoft.VisualBasic.HideModuleNameAttribute()>  _
     Friend Module Resources
         
-        Private resourceMan As ResourceManager
+        Private resourceMan As Global.System.Resources.ResourceManager
         
-        Private resourceCulture As CultureInfo
+        Private resourceCulture As Global.System.Globalization.CultureInfo
         
         '''<summary>
         '''  このクラスで使用されているキャッシュされた ResourceManager インスタンスを返します。
         '''</summary>
-        <EditorBrowsable(EditorBrowsableState.Advanced)>  _
-        Friend ReadOnly Property ResourceManager() As ResourceManager
+        <Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
+        Friend ReadOnly Property ResourceManager() As Global.System.Resources.ResourceManager
             Get
-                If ReferenceEquals(resourceMan, Nothing) Then
-                    Dim temp As ResourceManager = New ResourceManager("Pronama.NamaTyping.Resources", GetType(Resources).Assembly)
+                If Object.ReferenceEquals(resourceMan, Nothing) Then
+                    Dim temp As Global.System.Resources.ResourceManager = New Global.System.Resources.ResourceManager("Pronama.NamaTyping.Resources", GetType(Resources).Assembly)
                     resourceMan = temp
                 End If
                 Return resourceMan
@@ -52,33 +47,17 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  厳密に型指定されたこのリソース クラスを使用して、すべての検索リソースに対し、
+        '''  すべてについて、現在のスレッドの CurrentUICulture プロパティをオーバーライドします
         '''  現在のスレッドの CurrentUICulture プロパティをオーバーライドします。
         '''</summary>
-        <EditorBrowsable(EditorBrowsableState.Advanced)>  _
-        Friend Property Culture() As CultureInfo
+        <Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
+        Friend Property Culture() As Global.System.Globalization.CultureInfo
             Get
                 Return resourceCulture
             End Get
             Set
                 resourceCulture = value
             End Set
-        End Property
-        
-        '''<summary>
-        '''  &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-        '''&lt;SubstitutionList xmlns=&quot;http://posite-c.jp/niconamacommentviewer/substitutionlist/&quot; blacklist:updated=&quot;2017-03-19T03:02:00.000Z&quot; xmlns:blacklist=&quot;https://greasyfork.org/scripts/11567&quot;&gt;
-        '''	&lt;subst_client is_regex=&quot;True&quot; status=&quot;True&quot; blacklist:type=&quot;url&quot;&gt;
-        '''		&lt;old&gt;(?:ftp|http|https)://[-0-9A-Za-z!#$&amp;amp;&apos;()*+,./:;=?@_~\[\]%]*?0[0-9-]{8}(?=[0-9])&lt;/old&gt;
-        '''		&lt;new&gt;$0%3&lt;/new&gt;
-        '''	&lt;/subst_client&gt;
-        '''	&lt;subst_client is_regex=&quot;True&quot; status=&quot;True&quot; blacklist:type=&quot;url&quot;&gt;
-        '''		&lt;old&gt;((?:ftp| [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
-        '''</summary>
-        Friend ReadOnly Property SubstList() As String
-            Get
-                Return ResourceManager.GetString("SubstList", resourceCulture)
-            End Get
         End Property
     End Module
 End Namespace

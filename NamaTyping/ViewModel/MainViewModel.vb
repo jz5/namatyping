@@ -1,11 +1,10 @@
-﻿Imports System.Collections.ObjectModel
+Imports System.Collections.ObjectModel
 Imports System.ComponentModel
 Imports System.IO
 Imports System.Windows.Threading
 Imports Pronama.NamaTyping.Model
 Imports Microsoft.Win32
 Imports Pronama.NicoVideo.LiveStreaming
-Imports Pronama.NicoVideo.LiveStreaming.CommunityChannelRoom
 Imports System.Text.RegularExpressions
 Imports System.Threading.Tasks
 Imports System.Runtime.InteropServices
@@ -23,11 +22,6 @@ Namespace ViewModel
         Friend Const RemoveSymbols As String = "['’.]+"
 
         Public Property Dispatcher As Dispatcher
-
-        ''' <summary>
-        ''' 運営NGワードの強調色。
-        ''' </summary>
-        Private ReadOnly _blacklistCharactersHighlightColor As Brush = Brushes.Red
 
         ''' <summary>
         ''' <see cref="MediaElement"/>で Media 読み込み時、対応していないメディア形式だった場合に
@@ -418,9 +412,7 @@ Namespace ViewModel
                 Exit Sub
             End If
 
-            If (e.Comment.Source <> ChatSource.Broadcaster OrElse
-                    TypeOf sender Is LiveProgramClient AndAlso _liveProgramClientAndRoomLabels.Count > 1 AndAlso
-                        Not _liveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.client Is sender).label.StartsWith("立ち見")) AndAlso
+            If e.Comment.Source <> ChatSource.Broadcaster AndAlso
                 e.Comment.Source <> ChatSource.General AndAlso
                 e.Comment.Source <> ChatSource.Premium Then
                 Exit Sub
@@ -695,11 +687,6 @@ Namespace ViewModel
                     wtb.Text = _lyrics.Lines(_lyricsIndex).Text
                 End If
 
-                ' 強調範囲の設定
-                For Each range As KeyValuePair(Of Integer, Integer) In _lyrics.Lines(_lyricsIndex).HighlightRanges
-                    wtb.WipeTextBlock.TextEffects.Add(New TextEffect(Nothing, _blacklistCharactersHighlightColor, Nothing, range.Key, range.Value))
-                Next
-
                 RecentLyrics.Add(wtb)
 
                 '' お手本モード
@@ -923,7 +910,7 @@ Namespace ViewModel
 #Region "Connect"
         Private _connecting As Boolean
 
-        Private ReadOnly _liveProgramClientAndRoomLabels As New List(Of (client As LiveProgramClient, label As String))
+        Private _liveProgramClient As LiveProgramClient
 
         Private _connectCommand As ICommand
         Public ReadOnly Property ConnectCommand As ICommand
@@ -944,17 +931,14 @@ Namespace ViewModel
 
             _connecting = True
 
-            Dim commentServers = If(ConnectAllCommentServers, GetAllCommentServersAsync(), LiveProgramClient.GetCommentServersAsync(LiveProgramId))
-
             Try
-                For Each server In Await If(ConnectAllCommentServers, GetAllCommentServersAsync(), LiveProgramClient.GetCommentServersAsync(LiveProgramId))
-                    Dim client = New LiveProgramClient()
-                    AddHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
-                    AddHandler client.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
-                    AddHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
-                    client.ConnectAsync(server)
-                    _liveProgramClientAndRoomLabels.Add((client, server.RoomLabel))
-                Next
+                Dim server = Await LiveProgramClient.GetCommentServerAsync(LiveProgramId)
+                _liveProgramClient = New LiveProgramClient()
+                AddHandler _liveProgramClient.CommentReceived, AddressOf LiveProgramClient_CommentReceived
+                AddHandler _liveProgramClient.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
+                AddHandler _liveProgramClient.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
+                _liveProgramClient.ConnectAsync(server)
+                RecommnedDisablingCommentFilter()
             Catch ex As Exception When ex.Message = "closed"
                 StatusMessage = $"「{LiveProgramId}」は現在配信中ではありません。"
             Catch ex As Exception When ex.Message = "require_community_member"
@@ -964,71 +948,12 @@ Namespace ViewModel
             _connecting = False
         End Sub
 
-        ''' <summary> 
-        ''' すべてのコメントサーバーを取得します (ニコニコミュニティの配信のみ)。 
-        ''' </summary>
-        ''' <returns></returns> 
-        Private Async Function GetAllCommentServersAsync() As Task(Of IList(Of CommentServer))
-            Dim webTask = LiveProgramClient.GetCommentServersAsync(LiveProgramId)
-            Dim liveProgramTask = NicoVideoWeb.GetLiveProgramAsync(LiveProgramId)
-
-            Await Task.WhenAll(webTask, liveProgramTask)
-
-            Dim commentServers = webTask.Result
-            Dim program = liveProgramTask.Result
-            Return If(commentServers.Count = 1 AndAlso Not program.IsOfficial AndAlso TypeOf program.ChannelCommunity Is Community,
-                GetAllCommentServers(program, commentServers(0)),
-                webTask.Result)
-        End Function
-
-        ''' <summary> 
-        ''' 指定したライブ配信のすべてのコメントサーバーを取得します。 
-        ''' </summary> 
-        ''' <param name="program">ニコニコミュニティの配信。</param> 
-        ''' <param name="basicServer">指定した配信のいずれかのコメントサーバー。</param> 
-        ''' <returns></returns> 
-        Private Function GetAllCommentServers(program As LiveProgram, basicServer As CommentServer) As IList(Of CommentServer)
-            Dim servers = New List(Of CommentServer)
-
-            For Each room In GetCommunityChannelRooms(DirectCast(program.ChannelCommunity, Community).Level)
-                servers.Add(If(basicServer.Room = room, basicServer, CommentServer.ChangeRoom(basicServer, room)))
-            Next
-
-            Return servers
-        End Function
-
-        ''' <summary>
-        ''' コミュニティレベルをもとに、作られる<see cref="CommunityChannelRoom"/>を取得します。 
-        ''' </summary>
-        ''' <param name="level"></param>
-        ''' <returns></returns>
-        Private Function GetCommunityChannelRooms(level As Integer) As CommunityChannelRoom()
-            Select Case level
-                Case Is < 50
-                    Return {Arena, StandingA}
-                Case Is < 70
-                    Return {Arena, StandingA, StandingB}
-                Case Is < 105
-                    Return {Arena, StandingA, StandingB, StandingC}
-                Case Is < 150
-                    Return {Arena, StandingA, StandingB, StandingC, StandingD}
-                Case Is < 190
-                    Return {Arena, StandingA, StandingB, StandingC, StandingD, StandingE}
-                Case Is < 230
-                    Return {Arena, StandingA, StandingB, StandingC, StandingD, StandingE, StandingF}
-                Case Is < 256
-                    Return {Arena, StandingA, StandingB, StandingC, StandingD, StandingE, StandingF, StandingG}
-                Case Else
-                    Return {Arena, StandingA, StandingB, StandingC, StandingD, StandingE, StandingF, StandingG, StandingH, StandingI}
-            End Select
-        End Function
-
         Private Function CanConnect(obj As Object) As Boolean
             If LiveProgramId = "" Then
                 Return False
             End If
 
-            If _liveProgramClientAndRoomLabels.Count = 0 Then
+            If _liveProgramClient Is Nothing Then
                 If _connecting Then
                     Return False
                 Else
@@ -1039,6 +964,13 @@ Namespace ViewModel
             Return False
 
         End Function
+
+        ''' <summary>
+        ''' コメントフィルターの無効化を推奨するメッセージをログへ追加します。
+        ''' </summary>
+        Private Sub RecommnedDisablingCommentFilter()
+            AddMessage(0, "コメントフィルターが有効になっていると、歌詞によってはコメントできません。もし有効になっている場合は、ニコニコ生放送の配信設定画面から無効化してください。", MessageKind.None)
+        End Sub
 
 #End Region
 
@@ -1056,15 +988,12 @@ Namespace ViewModel
 
         Private Sub Disconnect(obj As Object)
 
-            If _liveProgramClientAndRoomLabels.Count > 0 Then
-                For Each clientAndLabel In _liveProgramClientAndRoomLabels
-                    Dim client = clientAndLabel.client
-                    RemoveHandler client.CommentReceived, AddressOf LiveProgramClient_CommentReceived
-                    RemoveHandler client.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
-                    RemoveHandler client.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
-                    client.Close()
-                Next
-                _liveProgramClientAndRoomLabels.Clear()
+            If _liveProgramClient IsNot Nothing Then
+                RemoveHandler _liveProgramClient.CommentReceived, AddressOf LiveProgramClient_CommentReceived
+                RemoveHandler _liveProgramClient.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
+                RemoveHandler _liveProgramClient.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
+                _liveProgramClient.Close()
+                _liveProgramClient = Nothing
 
                 StatusMessage = "切断しました"
 
@@ -1074,7 +1003,7 @@ Namespace ViewModel
         End Sub
 
         Private Function CanDisconnect(obj As Object) As Boolean
-            Return _liveProgramClientAndRoomLabels.Count > 0
+            Return _liveProgramClient IsNot Nothing
         End Function
 
         Public Sub Disconnect()
@@ -1246,13 +1175,7 @@ Namespace ViewModel
             Dim client = DirectCast(sender, LiveProgramClient)
 
             If client.Connected Then
-                Dim prefix = "接続しました: "
-                Dim label = _liveProgramClientAndRoomLabels.Find(Function(clientAndLabel) clientAndLabel.client Is client).label
-                If StatusMessage IsNot Nothing AndAlso StatusMessage.StartsWith(prefix) Then
-                    StatusMessage &= ", " & label
-                Else
-                    StatusMessage = prefix & label
-                End If
+                StatusMessage = "接続しました: " & LiveProgramId
 
                 Connected = True
             Else
@@ -1435,28 +1358,6 @@ Namespace ViewModel
         End Property
 
         Public ReadOnly Property MediaStretch As Integer = My.Settings.MediaStretch
-
-        Public Property BlacklistCharactersHighlight As Boolean
-            Get
-                Return My.Settings.BlacklistCharactersHighlight
-            End Get
-            Set
-                My.Settings.BlacklistCharactersHighlight = Value
-            End Set
-        End Property
-
-        Public Property SplitBlacklistCharacters As Boolean
-            Get
-                Return My.Settings.SplitBlacklistCharacters
-            End Get
-            Set
-                My.Settings.SplitBlacklistCharacters = Value
-            End Set
-        End Property
-
-        Public ReadOnly Property BlacklistCharactersSeparator As String = My.Settings.BlacklistCharactersSeparator
-
-        Public Property ConnectAllCommentServers As Boolean = My.Settings.ConnectAllCommentServers
 
         Public Property ShowTimeOnLyricsGrid As Boolean
             Get

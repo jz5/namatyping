@@ -14,7 +14,7 @@ Option Explicit On
 
 
 <Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute(),  _
- Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0"),  _
+ Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.5.0.0"),  _
  Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
 Partial Friend NotInheritable Class MySettings
     Inherits Global.System.Configuration.ApplicationSettingsBase
@@ -343,57 +343,6 @@ Partial Friend NotInheritable Class MySettings
     End Property
     
     '''<summary>
-    '''運営NGワードについて、歌詞の一致部分を強調する。
-    '''</summary>
-    <Global.System.Configuration.UserScopedSettingAttribute(),  _
-     Global.System.Configuration.SettingsDescriptionAttribute("運営NGワードについて、歌詞の一致部分を強調する。"),  _
-     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-     Global.System.Configuration.DefaultSettingValueAttribute("True"),  _
-     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
-    Public Property BlacklistCharactersHighlight() As Boolean
-        Get
-            Return CType(Me("BlacklistCharactersHighlight"),Boolean)
-        End Get
-        Set
-            Me("BlacklistCharactersHighlight") = value
-        End Set
-    End Property
-    
-    '''<summary>
-    '''運営NGワードについて、歌詞の一致部分に記号を挿入する。
-    '''</summary>
-    <Global.System.Configuration.UserScopedSettingAttribute(),  _
-     Global.System.Configuration.SettingsDescriptionAttribute("運営NGワードについて、歌詞の一致部分に記号を挿入する。"),  _
-     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-     Global.System.Configuration.DefaultSettingValueAttribute("True"),  _
-     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
-    Public Property SplitBlacklistCharacters() As Boolean
-        Get
-            Return CType(Me("SplitBlacklistCharacters"),Boolean)
-        End Get
-        Set
-            Me("SplitBlacklistCharacters") = value
-        End Set
-    End Property
-    
-    '''<summary>
-    '''すべての部屋からコメントを取得する。
-    '''</summary>
-    <Global.System.Configuration.UserScopedSettingAttribute(),  _
-     Global.System.Configuration.SettingsDescriptionAttribute("すべての部屋からコメントを取得する。"),  _
-     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-     Global.System.Configuration.DefaultSettingValueAttribute("False"),  _
-     Global.System.Configuration.SettingsManageabilityAttribute(Global.System.Configuration.SettingsManageability.Roaming)>  _
-    Public Property ConnectAllCommentServers() As Boolean
-        Get
-            Return CType(Me("ConnectAllCommentServers"),Boolean)
-        End Get
-        Set
-            Me("ConnectAllCommentServers") = value
-        End Set
-    End Property
-    
-    '''<summary>
     '''経過時間と総時間を、歌詞表示領域の右上にも表示する
     '''</summary>
     <Global.System.Configuration.UserScopedSettingAttribute(),  _
@@ -457,32 +406,6 @@ Partial Friend NotInheritable Class MySettings
         Set
             Me("WindowTop") = value
         End Set
-    End Property
-    
-    '''<summary>
-    '''運営NGワードを分断する文字。
-    '''</summary>
-    <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
-     Global.System.Configuration.SettingsDescriptionAttribute("運営NGワードを分断する文字。"),  _
-     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-     Global.System.Configuration.DefaultSettingValueAttribute("/")>  _
-    Public ReadOnly Property BlacklistCharactersSeparator() As String
-        Get
-            Return CType(Me("BlacklistCharactersSeparator"),String)
-        End Get
-    End Property
-    
-    '''<summary>
-    '''NGワード置換ファイルを手動でダウンロードするURL。
-    '''</summary>
-    <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
-     Global.System.Configuration.SettingsDescriptionAttribute("NGワード置換ファイルを手動でダウンロードするURL。"),  _
-     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-     Global.System.Configuration.DefaultSettingValueAttribute("https://id.pokemori.jp/niconico-live-ncv")>  _
-    Public ReadOnly Property SubstitutionListDownloadURL() As String
-        Get
-            Return CType(Me("SubstitutionListDownloadURL"),String)
-        End Get
     End Property
     
     '''<summary>
