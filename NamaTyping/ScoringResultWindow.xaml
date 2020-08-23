@@ -1,23 +1,32 @@
-﻿<Window x:Class="ScoringResultWindow"
+﻿<Window
+    x:Class="ScoringResultWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="採点結果" Height="480" Width="640" Icon="Images/report--pencil.png">
+    Title="採点結果"
+    Width="640"
+    Height="480"
+    Icon="Images/report--pencil.png">
 
     <Window.Resources>
         <Style TargetType="{x:Type ListViewItem}">
             <Style.Triggers>
                 <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                    <Setter Property="Background" Value="#F3F7FB"/>
+                    <Setter Property="Background" Value="#F3F7FB" />
                 </Trigger>
             </Style.Triggers>
         </Style>
     </Window.Resources>
 
     <DockPanel>
-        <ToolBarPanel  DockPanel.Dock="Top">
+        <ToolBarPanel DockPanel.Dock="Top">
             <ToolBar ToolBarTray.IsLocked="True">
-                <Button ToolTip="クリップボードにコピー" Click="Button_Click">
-                    <Image VerticalAlignment="Center" Source="Images/document-copy.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                <Button Click="Button_Click" ToolTip="クリップボードにコピー">
+                    <Image
+                        Width="16"
+                        Height="16"
+                        VerticalAlignment="Center"
+                        SnapsToDevicePixels="True"
+                        Source="Images/document-copy.png" />
                 </Button>
             </ToolBar>
         </ToolBarPanel>
@@ -29,15 +38,33 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <ListView ItemsSource="{Binding}" Name="RankListBox"  AlternationCount="2">
+            <ListView
+                Name="RankListBox"
+                AlternationCount="2"
+                ItemsSource="{Binding}">
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
-                            <GridViewColumn Header="順位" Width="Auto" DisplayMemberBinding="{Binding Rank}" />
-                            <GridViewColumn Header="点数" Width="Auto" DisplayMemberBinding="{Binding Score}" />
-                            <GridViewColumn Header="名前" Width="Auto" DisplayMemberBinding="{Binding Name}" />
-                            <GridViewColumn Header="前回順位" Width="Auto" DisplayMemberBinding="{Binding PreviousRank}" />
-                            <GridViewColumn Header="合計点数" Width="Auto" DisplayMemberBinding="{Binding TotalScore}" />
+                            <GridViewColumn
+                                Width="Auto"
+                                DisplayMemberBinding="{Binding Rank}"
+                                Header="順位" />
+                            <GridViewColumn
+                                Width="Auto"
+                                DisplayMemberBinding="{Binding Score}"
+                                Header="点数" />
+                            <GridViewColumn
+                                Width="Auto"
+                                DisplayMemberBinding="{Binding Name}"
+                                Header="名前" />
+                            <GridViewColumn
+                                Width="Auto"
+                                DisplayMemberBinding="{Binding PreviousRank}"
+                                Header="前回順位" />
+                            <GridViewColumn
+                                Width="Auto"
+                                DisplayMemberBinding="{Binding TotalScore}"
+                                Header="合計点数" />
                         </GridView.Columns>
                     </GridView>
                 </ListView.View>
@@ -46,10 +73,12 @@
 
 
 
-            <GridSplitter Width="5" Grid.Column="1"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Stretch"
-                        ResizeDirection="Columns">
+            <GridSplitter
+                Grid.Column="1"
+                Width="5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Stretch"
+                ResizeDirection="Columns">
                 <GridSplitter.Style>
                     <Style TargetType="{x:Type GridSplitter}">
                         <Setter Property="Background" Value="Transparent" />
@@ -63,14 +92,16 @@
             </GridSplitter>
 
 
-            <ListView Grid.Column="2" Name="ResultListBox"
-                  AlternationCount="2">
+            <ListView
+                Name="ResultListBox"
+                Grid.Column="2"
+                AlternationCount="2">
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
-                            <GridViewColumn Header="No" DisplayMemberBinding="{Binding CommentNo}" />
-                            <GridViewColumn Header="" DisplayMemberBinding="{Binding Rating}" />
-                            <GridViewColumn Header="" DisplayMemberBinding="{Binding Text}" />
+                            <GridViewColumn DisplayMemberBinding="{Binding CommentNo}" Header="No" />
+                            <GridViewColumn DisplayMemberBinding="{Binding Rating}" Header="" />
+                            <GridViewColumn DisplayMemberBinding="{Binding Text}" Header="" />
                         </GridView.Columns>
                     </GridView>
                 </ListView.View>

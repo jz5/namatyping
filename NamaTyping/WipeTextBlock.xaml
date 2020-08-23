@@ -1,27 +1,44 @@
-﻿<UserControl x:Class="WipeTextBlock"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Width="630"
-             d:DesignHeight="300" d:DesignWidth="300">
+﻿<UserControl
+    x:Class="WipeTextBlock"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="630"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    mc:Ignorable="d">
 
-    <TextBlock Name="WipeTextBlock" Text="0" TextWrapping="Wrap">
-            <TextBlock.Effect>
-                <DropShadowEffect BlurRadius="8" ShadowDepth="0" Direction="0" Color="Black" />
-            </TextBlock.Effect>        
-            <TextBlock.TextEffects>
-                <TextEffect x:Name="WipedTextEffect" PositionStart="0" PositionCount="0" Foreground="Orange" />
-                <TextEffect x:Name="WipeAnimationTextEffect" PositionStart="0" PositionCount="1">
-                    <TextEffect.Foreground>
-                        <LinearGradientBrush EndPoint="1,0">
-                            <GradientStop x:Name="StartGradientStop" Color="Orange" Offset="0" />
-                            <GradientStop x:Name="EndGradientStop" Color="White" Offset="0" />
-                        </LinearGradientBrush>
-                    </TextEffect.Foreground>
-                </TextEffect>
-            </TextBlock.TextEffects>
-            <!--<TextBlock.BitmapEffect>
+    <TextBlock
+        Name="WipeTextBlock"
+        Text="0"
+        TextWrapping="Wrap">
+        <TextBlock.Effect>
+            <DropShadowEffect
+                BlurRadius="8"
+                Direction="0"
+                ShadowDepth="0"
+                Color="Black" />
+        </TextBlock.Effect>
+        <TextBlock.TextEffects>
+            <TextEffect
+                x:Name="WipedTextEffect"
+                Foreground="Orange"
+                PositionCount="0"
+                PositionStart="0" />
+            <TextEffect
+                x:Name="WipeAnimationTextEffect"
+                PositionCount="1"
+                PositionStart="0">
+                <TextEffect.Foreground>
+                    <LinearGradientBrush EndPoint="1,0">
+                        <GradientStop x:Name="StartGradientStop" Offset="0" Color="Orange" />
+                        <GradientStop x:Name="EndGradientStop" Offset="0" Color="White" />
+                    </LinearGradientBrush>
+                </TextEffect.Foreground>
+            </TextEffect>
+        </TextBlock.TextEffects>
+        <!--<TextBlock.BitmapEffect>
                 <OuterGlowBitmapEffect GlowSize="8" GlowColor="Black" Opacity="1" />
             </TextBlock.BitmapEffect>-->
     </TextBlock>

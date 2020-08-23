@@ -1,9 +1,13 @@
-<Window x:Class="ConsoleWindow"
+<Window
+    x:Class="ConsoleWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="設定 - ニコ生タイピング" SizeToContent="Height"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
-    Width="450" ResizeMode="NoResize" Icon="Images/gear.png">
+    Title="設定 - ニコ生タイピング"
+    Width="450"
+    Icon="Images/gear.png"
+    ResizeMode="NoResize"
+    SizeToContent="Height">
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -12,25 +16,46 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel>
-            <TextBlock Text="表示するコメント:" />            
+            <TextBlock Text="表示するコメント:" />
             <TextBox Text="{Binding DisplayCommentPattern}" />
             <TextBlock Text="※ 以上の文字で始まるコメントを表示，指定なしで全コメント表示" />
-            
-            <TextBlock Text="色付きユーザー ID（コンマ区切り）:" Margin="0 10 0 0" />
+
+            <TextBlock Margin="0,10,0,0" Text="色付きユーザー ID（コンマ区切り）:" />
             <TextBox Text="{Binding Path=HighlightUsers}" />
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10">
-                <TextBlock Text="歌詞・ランキング背景の不透明度:" VerticalAlignment="Center" />
-                <Slider Width="150" Margin="5 0 5 0" Value="{Binding BottomGridOpacity}" VerticalAlignment="Center" Maximum="1.0" Minimum="0" LargeChange="0.2" />
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding BottomGridOpacity, StringFormat=0.00}" />
+            <StackPanel
+                Margin="0,10"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" Text="歌詞・ランキング背景の不透明度:" />
+                <Slider
+                    Width="150"
+                    Margin="5,0,5,0"
+                    VerticalAlignment="Center"
+                    LargeChange="0.2"
+                    Maximum="1.0"
+                    Minimum="0"
+                    Value="{Binding BottomGridOpacity}" />
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="{Binding BottomGridOpacity, StringFormat=0.00}" />
             </StackPanel>
 
-            <CheckBox Content="再生時間を、歌詞表示領域にも表示する" IsChecked="{Binding ShowTimeOnLyricsGrid}" Margin="0,0,0,10" />
+            <CheckBox
+                Margin="0,0,0,10"
+                Content="再生時間を、歌詞表示領域にも表示する"
+                IsChecked="{Binding ShowTimeOnLyricsGrid}" />
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10">
-                <TextBlock Text="一人プレイ用 ツールバーのフォントサイズ:" VerticalAlignment="Center" />
-                <ComboBox Width="50" Margin="5 0 0 0"
-                          SelectedValue="{Binding SinglePlayTextBoxFontSize}">
+            <StackPanel
+                Margin="0,10"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" Text="一人プレイ用 ツールバーのフォントサイズ:" />
+                <ComboBox
+                    Width="50"
+                    Margin="5,0,0,0"
+                    SelectedValue="{Binding SinglePlayTextBoxFontSize}">
                     <System:Double>12</System:Double>
                     <System:Double>13</System:Double>
                     <System:Double>14</System:Double>
@@ -47,17 +72,25 @@
                     <System:Double>32</System:Double>
                     <System:Double>34</System:Double>
                 </ComboBox>
-                <TextBlock Text="px" VerticalAlignment="Center" />
+                <TextBlock VerticalAlignment="Center" Text="px" />
             </StackPanel>
 
             <CheckBox Content="画像・動画をウィンドウ右に分離し、代わりにグリーンバックを表示する" IsChecked="{Binding SeparateMedia}" />
 
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Margin="0 15 0 0">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="設定ファイル保存フォルダを開く" Click="OpenSettingsFolder" Padding="10,1"  Margin="0,0,15,0" />
-                <Button Content="閉じる" Width="100" Click="Button_Click" IsDefault="True" />
+        <StackPanel Grid.Row="2" Margin="0,15,0,0">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button
+                    Margin="0,0,15,0"
+                    Padding="10,1"
+                    Click="OpenSettingsFolder"
+                    Content="設定ファイル保存フォルダを開く" />
+                <Button
+                    Width="100"
+                    Click="Button_Click"
+                    Content="閉じる"
+                    IsDefault="True" />
             </StackPanel>
         </StackPanel>
     </Grid>

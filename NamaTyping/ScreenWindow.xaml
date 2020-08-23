@@ -1,44 +1,43 @@
 ﻿<Window
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:me="clr-namespace:Pronama.NamaTyping"
-	xmlns:converter="clr-namespace:Pronama.NamaTyping.Converter"
-	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" 
-	x:Class="ScreenWindow"
-	x:Name="ScreenWindow"
-	SizeToContent="WidthAndHeight"
-	Title="{Binding WindowTitle}" ResizeMode="CanMinimize">
+    x:Class="ScreenWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converter="clr-namespace:Pronama.NamaTyping.Converter"
+    xmlns:i="clr-namespace:Microsoft.Xaml.Behaviors;assembly=Microsoft.Xaml.Behaviors"
+    xmlns:ic="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:me="clr-namespace:Pronama.NamaTyping"
+    x:Name="ScreenWindow"
+    Title="{Binding WindowTitle}"
+    ResizeMode="CanMinimize"
+    SizeToContent="WidthAndHeight">
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converter:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
         <converter:NegationBooleanToVisibilityConverter x:Key="NegationBooleanToVisibilityConverter" />
         <converter:DoubleToPercentageConverter x:Key="DoubleToPercentageConverter" />
         <Storyboard x:Key="FadeStoryboard">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="StatusTextBox">
-                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:6.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:7.5" Value="0"/>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="StatusTextBox" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1" />
+                <EasingDoubleKeyFrame KeyTime="0:0:6.5" Value="1" />
+                <EasingDoubleKeyFrame KeyTime="0:0:7.5" Value="0" />
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
     </Window.Resources>
     <Window.Triggers>
         <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-            <BeginStoryboard Storyboard="{StaticResource FadeStoryboard}"/>
+            <BeginStoryboard Storyboard="{StaticResource FadeStoryboard}" />
         </EventTrigger>
     </Window.Triggers>
 
     <Grid x:Name="RootGrid">
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="VisualStateGroup"/>
-        </VisualStateManager.VisualStateGroups>
         <!--<Grid.Resources>
-			<ResourceDictionary Source="/presentationframework.Royale;component/themes/royale.normalcolor.xaml" />
-		</Grid.Resources>-->
+            <ResourceDictionary Source="/presentationframework.Royale;component/themes/royale.normalcolor.xaml" />
+        </Grid.Resources>-->
 
         <Grid.RowDefinitions>
             <RowDefinition Height="29" />
-            <RowDefinition Height="480" x:Name="MainContentRowDefinition" />
+            <RowDefinition x:Name="MainContentRowDefinition" Height="480" />
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
@@ -48,57 +47,117 @@
         <ToolBarPanel>
             <ToolBar ToolBarTray.IsLocked="True">
                 <Grid>
-                    <TextBox Margin="5 0 0 0" x:Name="LiveIdTextBox" VerticalAlignment="Center" Width="100" Text="{Binding LiveProgramIdText, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox
+                        x:Name="LiveIdTextBox"
+                        Width="100"
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding LiveProgramIdText, UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
 
-                <Button ToolTip="接続" x:Name="ConnectButton" Command="{Binding ConnectCommand}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Image Source="Images/lightning.png" Width="16" Height="16" SnapsToDevicePixels="True" x:Name="Image1" />
-                        <TextBlock Text="接続" VerticalAlignment="Center" Margin="5 0 5 0" />
+                <Button
+                    x:Name="ConnectButton"
+                    Command="{Binding ConnectCommand}"
+                    ToolTip="接続">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                        <Image
+                            x:Name="Image1"
+                            Width="16"
+                            Height="16"
+                            SnapsToDevicePixels="True"
+                            Source="Images/lightning.png" />
+                        <TextBlock
+                            Margin="5,0,5,0"
+                            VerticalAlignment="Center"
+                            Text="接続" />
                     </StackPanel>
                 </Button>
-                <Button ToolTip="切断" x:Name="DisconnectButton" Command="{Binding DisconnectCommand}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Image Source="Images/lightning_cross.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                        <TextBlock Text="切断" VerticalAlignment="Center" Margin="5 0 5 0" />
+                <Button
+                    x:Name="DisconnectButton"
+                    Command="{Binding DisconnectCommand}"
+                    ToolTip="切断">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                        <Image
+                            Width="16"
+                            Height="16"
+                            SnapsToDevicePixels="True"
+                            Source="Images/lightning_cross.png" />
+                        <TextBlock
+                            Margin="5,0,5,0"
+                            VerticalAlignment="Center"
+                            Text="切断" />
                     </StackPanel>
                 </Button>
 
-                <Separator Margin="5 0 5 0" />
+                <Separator Margin="5,0,5,0" />
 
-                <ToggleButton ToolTip="最前面に表示" IsChecked="{Binding Topmost, ElementName=ScreenWindow}">
-                    <Image Source="Images/pin.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                <ToggleButton IsChecked="{Binding Topmost, ElementName=ScreenWindow}" ToolTip="最前面に表示">
+                    <Image
+                        Width="16"
+                        Height="16"
+                        SnapsToDevicePixels="True"
+                        Source="Images/pin.png" />
                 </ToggleButton>
 
-                <ToggleButton ToolTip="一人プレイ用 ツールバーの表示" Margin="5 0 0 0"
-							  x:Name="SinglePlayBarToggleButton">
-                    <Image Source="Images/ui-status-bar-blue.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                <ToggleButton
+                    x:Name="SinglePlayBarToggleButton"
+                    Margin="5,0,0,0"
+                    ToolTip="一人プレイ用 ツールバーの表示">
+                    <Image
+                        Width="16"
+                        Height="16"
+                        SnapsToDevicePixels="True"
+                        Source="Images/ui-status-bar-blue.png" />
                 </ToggleButton>
 
-                <ToggleButton ToolTip="テスト ツールバーの表示" Margin="5 0 0 0"
-							  x:Name="BarToggleButton">
-                    <Image Source="Images/ui-status-bar.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                <ToggleButton
+                    x:Name="BarToggleButton"
+                    Margin="5,0,0,0"
+                    ToolTip="テスト ツールバーの表示">
+                    <Image
+                        Width="16"
+                        Height="16"
+                        SnapsToDevicePixels="True"
+                        Source="Images/ui-status-bar.png" />
                 </ToggleButton>
 
-                <Separator Margin="5 0 5 0" />
+                <Separator Margin="5,0,5,0" />
 
-                <Button ToolTip="設定" Command="{Binding ShowResultsCommand}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Image Source="Images/report--pencil.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                        <TextBlock Text="採点結果..." VerticalAlignment="Center" Margin="5 0 5 0" />
+                <Button Command="{Binding ShowResultsCommand}" ToolTip="設定">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                        <Image
+                            Width="16"
+                            Height="16"
+                            SnapsToDevicePixels="True"
+                            Source="Images/report--pencil.png" />
+                        <TextBlock
+                            Margin="5,0,5,0"
+                            VerticalAlignment="Center"
+                            Text="採点結果..." />
                     </StackPanel>
                 </Button>
 
-                <Button ToolTip="設定" Command="{Binding ShowSettingsCommand}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Image Source="Images/gear.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                        <TextBlock Text="設定..." VerticalAlignment="Center" Margin="5 0 5 0" />
+                <Button Command="{Binding ShowSettingsCommand}" ToolTip="設定">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                        <Image
+                            Width="16"
+                            Height="16"
+                            SnapsToDevicePixels="True"
+                            Source="Images/gear.png" />
+                        <TextBlock
+                            Margin="5,0,5,0"
+                            VerticalAlignment="Center"
+                            Text="設定..." />
                     </StackPanel>
                 </Button>
 
-                <ComboBox Width="80" SelectionChanged="ComboBox_SelectionChanged"
-                          KeyUp="ComboBox_KeyUp" LostFocus="ComboBox_LostFocus"
-                          Name="SizeComboBox" IsEditable="True">
+                <ComboBox
+                    Name="SizeComboBox"
+                    Width="80"
+                    IsEditable="True"
+                    KeyUp="ComboBox_KeyUp"
+                    LostFocus="ComboBox_LostFocus"
+                    SelectionChanged="ComboBox_SelectionChanged">
                     <ComboBoxItem>
                         <TextBlock Padding="3,0,0,0">800×450</TextBlock>
                     </ComboBoxItem>
@@ -110,10 +169,12 @@
                     </ComboBoxItem>
                 </ComboBox>
 
-                <ComboBox Width="60" SelectionChanged="StretchComboBox_SelectionChanged" 
-                          Name="StretchComboBox"
-                          SelectedValuePath="Tag"
-                          SelectedValue="{Binding MediaStretch, Mode=OneTime}">
+                <ComboBox
+                    Name="StretchComboBox"
+                    Width="60"
+                    SelectedValue="{Binding MediaStretch, Mode=OneTime}"
+                    SelectedValuePath="Tag"
+                    SelectionChanged="StretchComboBox_SelectionChanged">
                     <ComboBoxItem Tag="2">
                         <TextBlock Padding="3,0,0,0">Uniform</TextBlock>
                     </ComboBoxItem>
@@ -125,22 +186,30 @@
             </ToolBar>
 
         </ToolBarPanel>
-        <WindowsFormsHost Width="640" Height="480" Grid.Row="1"
-						  x:Name="ScreenWindowsFormsHost" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <WindowsFormsHost
+            x:Name="ScreenWindowsFormsHost"
+            Grid.Row="1"
+            Width="640"
+            Height="480"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center" />
 
         <ToolBarPanel Grid.Row="2">
             <DockPanel>
 
-                <ToolBar ToolBarTray.IsLocked="True" DockPanel.Dock="Right">
+                <ToolBar DockPanel.Dock="Right" ToolBarTray.IsLocked="True">
 
                     <Button Click="GenerateReplacementWordsFile">
                         <Button.ToolTip>
                             <TextBlock>
-                                ニコ生タイピング用置換ファイル (.repl.txt) を生成する<LineBreak/>
-                                (※タイムタグが含まれていても可能)
-                            </TextBlock>
+                                ニコ生タイピング用置換ファイル (.repl.txt) を生成する<LineBreak />
+                                (※タイムタグが含まれていても可能)</TextBlock>
                         </Button.ToolTip>
-                        <Image Source="Images/document-convert.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                        <Image
+                            Width="16"
+                            Height="16"
+                            SnapsToDevicePixels="True"
+                            Source="Images/document-convert.png" />
                     </Button>
 
                 </ToolBar>
@@ -148,48 +217,97 @@
                 <ToolBar ToolBarTray.IsLocked="True">
 
                     <!--<Button ToolTip="ホーム" Command="{Binding GoHomeCommand}">
-					    <Image VerticalAlignment="Center" Source="Images/home.png" Width="16" Height="16" SnapsToDevicePixels="True" x:Name="image2" />
-				    </Button>-->
+                        <Image VerticalAlignment="Center" Source="Images/home.png" Width="16" Height="16" SnapsToDevicePixels="True" x:Name="image2" />
+                    </Button>-->
 
-                    <Button ToolTip="開く" Command="{Binding LoadCommand}" Margin="5 0 0 0">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="Images/folder-open-document-music.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                            <TextBlock Text="開く" VerticalAlignment="Center" Margin="5 0 5 0" />
+                    <Button
+                        Margin="5,0,0,0"
+                        Command="{Binding LoadCommand}"
+                        ToolTip="開く">
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                SnapsToDevicePixels="True"
+                                Source="Images/folder-open-document-music.png" />
+                            <TextBlock
+                                Margin="5,0,5,0"
+                                VerticalAlignment="Center"
+                                Text="開く" />
                         </StackPanel>
                     </Button>
 
-                    <Button ToolTip="開始" Command="{Binding PlayCommand}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="Images/control.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                            <TextBlock Text="開始" VerticalAlignment="Center" Margin="5 0 5 0" />
+                    <Button Command="{Binding PlayCommand}" ToolTip="開始">
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                SnapsToDevicePixels="True"
+                                Source="Images/control.png" />
+                            <TextBlock
+                                Margin="5,0,5,0"
+                                VerticalAlignment="Center"
+                                Text="開始" />
                         </StackPanel>
                     </Button>
 
-                    <Button ToolTip="終了しランキングを表示します" Command="{Binding StopCommand}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="Images/trophy.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                            <TextBlock Text="終了" VerticalAlignment="Center" Margin="5 0 5 0" />
+                    <Button Command="{Binding StopCommand}" ToolTip="終了しランキングを表示します">
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                SnapsToDevicePixels="True"
+                                Source="Images/trophy.png" />
+                            <TextBlock
+                                Margin="5,0,5,0"
+                                VerticalAlignment="Center"
+                                Text="終了" />
                         </StackPanel>
                     </Button>
 
                     <!--<Button ToolTip="ランキング・採点情報をアップロードします" IsEnabled="False">
-					    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-						    <Image Source="Images/arrow-curve-090-left.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-						    <TextBlock Text="アップロード" VerticalAlignment="Center" Margin="5 0 5 0" />
-					    </StackPanel>
-				    </Button>-->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Image Source="Images/arrow-curve-090-left.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                            <TextBlock Text="アップロード" VerticalAlignment="Center" Margin="5 0 5 0" />
+                        </StackPanel>
+                    </Button>-->
 
-                    <Separator Margin="5 0 0 0" />
+                    <Separator Margin="5,0,0,0" />
 
-                    <TextBlock Text="{Binding PlayerPosition, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
-                    <TextBlock Text="/" Margin="0" VerticalAlignment="Center" />
-                    <TextBlock Text="{Binding MediaLength, Converter={StaticResource TimeSpanToStringConverter}}" Margin="5 0 5 0" VerticalAlignment="Center" />
+                    <TextBlock
+                        Margin="5,0,5,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding PlayerPosition, Converter={StaticResource TimeSpanToStringConverter}}" />
+                    <TextBlock
+                        Margin="0"
+                        VerticalAlignment="Center"
+                        Text="/" />
+                    <TextBlock
+                        Margin="5,0,5,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding MediaLength, Converter={StaticResource TimeSpanToStringConverter}}" />
 
 
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" ToolTip="音量" Margin="5 0 0 0">
-                        <Image Source="Images/speaker-volume.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                        <Slider x:Name="VolumeSlider" Width="275" Margin="5 0 5 0" Value="{Binding Volume, Converter={StaticResource DoubleToPercentageConverter}}"
-                                VerticalAlignment="Center" Maximum="100" Minimum="0" LargeChange="20" AutoToolTipPlacement="TopLeft" />
+                    <StackPanel
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        ToolTip="音量">
+                        <Image
+                            Width="16"
+                            Height="16"
+                            SnapsToDevicePixels="True"
+                            Source="Images/speaker-volume.png" />
+                        <Slider
+                            x:Name="VolumeSlider"
+                            Width="275"
+                            Margin="5,0,5,0"
+                            VerticalAlignment="Center"
+                            AutoToolTipPlacement="TopLeft"
+                            LargeChange="20"
+                            Maximum="100"
+                            Minimum="0"
+                            Value="{Binding Volume, Converter={StaticResource DoubleToPercentageConverter}}" />
                     </StackPanel>
 
                 </ToolBar>
@@ -197,83 +315,205 @@
         </ToolBarPanel>
 
         <ToolBarPanel Grid.Row="3">
-            <ToolBar ToolBarTray.IsLocked="True" MaxWidth="{Binding ElementName=ScreenWindowsFormsHost, Path=Width}"
-                     Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=SinglePlayBarToggleButton}">
+            <ToolBar
+                MaxWidth="{Binding ElementName=ScreenWindowsFormsHost, Path=Width}"
+                ToolBarTray.IsLocked="True"
+                Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=SinglePlayBarToggleButton}">
                 <ToolBar.Resources>
                     <Style TargetType="{x:Type ToolBarPanel}">
-                        <Setter Property="Orientation" Value="Vertical"/>
+                        <Setter Property="Orientation" Value="Vertical" />
                     </Style>
                 </ToolBar.Resources>
-                <TextBox x:Name="SinglePlayMessageTextBox" HorizontalAlignment="Stretch" KeyDown="MessageTextBox_KeyDown"
-                         FontSize="{Binding SinglePlayTextBoxFontSize}" />
+                <TextBox
+                    x:Name="SinglePlayMessageTextBox"
+                    HorizontalAlignment="Stretch"
+                    FontSize="{Binding SinglePlayTextBoxFontSize}"
+                    KeyDown="MessageTextBox_KeyDown" />
             </ToolBar>
         </ToolBarPanel>
 
         <ToolBarPanel Grid.Row="4">
 
             <ToolBar ToolBarTray.IsLocked="True" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=BarToggleButton}">
-                <Button ToolTip="置換後 歌詞表示" Command="{Binding ShowLyricCommand}">
-                    <Image VerticalAlignment="Center" Source="Images/document-music-playlist.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                <Button Command="{Binding ShowLyricCommand}" ToolTip="置換後 歌詞表示">
+                    <Image
+                        Width="16"
+                        Height="16"
+                        VerticalAlignment="Center"
+                        SnapsToDevicePixels="True"
+                        Source="Images/document-music-playlist.png" />
                 </Button>
 
-                <Separator Margin="5 0 0 0" />
+                <Separator Margin="5,0,0,0" />
 
-                <Image VerticalAlignment="Center" Source="Images/balloon.png" Width="16" Height="16" SnapsToDevicePixels="True" Margin="5 0 0 0" />
-                <TextBlock Text="コメント入力:" Margin="5 0 0 0" VerticalAlignment="Center" />
+                <Image
+                    Width="16"
+                    Height="16"
+                    Margin="5,0,0,0"
+                    VerticalAlignment="Center"
+                    SnapsToDevicePixels="True"
+                    Source="Images/balloon.png" />
+                <TextBlock
+                    Margin="5,0,0,0"
+                    VerticalAlignment="Center"
+                    Text="コメント入力:" />
 
-                <ComboBox SelectedIndex="1" VerticalAlignment="Center" Margin="5 0 0 0" Width="80" x:Name="UserComboBox">
+                <ComboBox
+                    x:Name="UserComboBox"
+                    Width="80"
+                    Margin="5,0,0,0"
+                    VerticalAlignment="Center"
+                    SelectedIndex="1">
                     <ComboBoxItem>
-                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
-                            <Image VerticalAlignment="Center" Source="Images/user-silhouette.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                            <TextBlock VerticalAlignment="Center" Text="生主" Margin="3 0 0 0" />
+                        <StackPanel
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="True"
+                                Source="Images/user-silhouette.png" />
+                            <TextBlock
+                                Margin="3,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="生主" />
                         </StackPanel>
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <StackPanel x:Name="CasterComboBoxItem" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
-                            <Image VerticalAlignment="Center" Source="Images/user-silhouette.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                            <TextBlock VerticalAlignment="Center" Text="User 1" Margin="3 0 0 0" />
+                        <StackPanel
+                            x:Name="CasterComboBoxItem"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="True"
+                                Source="Images/user-silhouette.png" />
+                            <TextBlock
+                                Margin="3,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="User 1" />
                         </StackPanel>
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
-                            <Image VerticalAlignment="Center" Source="Images/user-silhouette.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                            <TextBlock VerticalAlignment="Center" Text="User 2" Margin="3 0 0 0" />
+                        <StackPanel
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="True"
+                                Source="Images/user-silhouette.png" />
+                            <TextBlock
+                                Margin="3,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="User 2" />
                         </StackPanel>
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
-                            <Image VerticalAlignment="Center" Source="Images/user-silhouette.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                            <TextBlock VerticalAlignment="Center" Text="User 3" Margin="3 0 0 0" />
+                        <StackPanel
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="True"
+                                Source="Images/user-silhouette.png" />
+                            <TextBlock
+                                Margin="3,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="User 3" />
                         </StackPanel>
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
-                            <Image VerticalAlignment="Center" Source="Images/user-silhouette.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                            <TextBlock VerticalAlignment="Center" Text="User 4" Margin="3 0 0 0" />
+                        <StackPanel
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="True"
+                                Source="Images/user-silhouette.png" />
+                            <TextBlock
+                                Margin="3,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="User 4" />
                         </StackPanel>
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
-                            <Image VerticalAlignment="Center" Source="Images/user-silhouette.png" Width="16" Height="16" SnapsToDevicePixels="True" />
-                            <TextBlock VerticalAlignment="Center" Text="User 5" Margin="3 0 0 0" />
+                        <StackPanel
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="True"
+                                Source="Images/user-silhouette.png" />
+                            <TextBlock
+                                Margin="3,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="User 5" />
                         </StackPanel>
                     </ComboBoxItem>
                 </ComboBox>
 
-                <TextBox x:Name="MessageTextBox"  Width="220" Margin="5 0 0 0" KeyDown="MessageTextBox_KeyDown" />
+                <TextBox
+                    x:Name="MessageTextBox"
+                    Width="220"
+                    Margin="5,0,0,0"
+                    KeyDown="MessageTextBox_KeyDown" />
 
-                <Button ToolTip="ファイルから入力" Margin="5 0 0 0" Click="CommentFromFileButton">
-                    <Image VerticalAlignment="Center" Source="Images/script-text.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                <Button
+                    Margin="5,0,0,0"
+                    Click="CommentFromFileButton"
+                    ToolTip="ファイルから入力">
+                    <Image
+                        Width="16"
+                        Height="16"
+                        VerticalAlignment="Center"
+                        SnapsToDevicePixels="True"
+                        Source="Images/script-text.png" />
                 </Button>
 
-                <Separator Margin="5 0 5 0" />
+                <Separator Margin="5,0,5,0" />
 
-                <Button ToolTip="再生スピード" Click="SpeedButtonClick">
-                    <Image Source="Images/metronome.png" Width="16" Height="16" SnapsToDevicePixels="True" />
+                <Button Click="SpeedButtonClick" ToolTip="再生スピード">
+                    <Image
+                        Width="16"
+                        Height="16"
+                        SnapsToDevicePixels="True"
+                        Source="Images/metronome.png" />
                 </Button>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" ToolTip="再生スピード">
-                    <Slider Width="80" Margin="5 0 5 0" Value="{Binding SpeedRatio}" VerticalAlignment="Center" Maximum="5" Minimum="0" LargeChange="0.2" />
-                    <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding SpeedRatio, StringFormat=0.00}" />
+                <StackPanel
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    ToolTip="再生スピード">
+                    <Slider
+                        Width="80"
+                        Margin="5,0,5,0"
+                        VerticalAlignment="Center"
+                        LargeChange="0.2"
+                        Maximum="5"
+                        Minimum="0"
+                        Value="{Binding SpeedRatio}" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Text="{Binding SpeedRatio, StringFormat=0.00}" />
                 </StackPanel>
 
 
@@ -283,20 +523,28 @@
 
         <StatusBar Grid.Row="5">
             <StatusBarItem x:Name="statusBarItem" MaxWidth="{Binding ElementName=ScreenWindowsFormsHost, Path=Width}">
-                <TextBox IsReadOnly="True" x:Name="StatusTextBox" Text="{Binding StatusMessage}"
-						 BorderThickness="0" Background="Transparent" VerticalAlignment="Center"
-                         MaxLines="1" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}">
+                <TextBox
+                    x:Name="StatusTextBox"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    IsReadOnly="True"
+                    MaxLines="1"
+                    Text="{Binding StatusMessage}"
+                    ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="TextChanged">
-                            <ei:ControlStoryboardAction Storyboard="{StaticResource FadeStoryboard}"/>
+                            <ic:ControlStoryboardAction Storyboard="{StaticResource FadeStoryboard}" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </TextBox>
                 <!--<TextBlock x:Name="textBlock" Text="{Binding StatusMessage, NotifyOnTargetUpdated=True}" >
-				</TextBlock>-->
+                </TextBlock>-->
             </StatusBarItem>
         </StatusBar>
-
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="VisualStateGroup" />
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 
 </Window>
