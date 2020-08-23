@@ -939,7 +939,7 @@ Namespace ViewModel
                 AddHandler _liveProgramClient.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
                 _liveProgramClient.ConnectAsync(server)
                 RecommnedDisablingCommentFilter()
-            Catch ex As Exception When ex.Message = "closed"
+            Catch ex As Exception When ex.Message = "comingsoon" OrElse ex.Message = "closed"
                 StatusMessage = $"「{LiveProgramId}」は現在配信中ではありません。"
             Catch ex As Exception When ex.Message = "require_community_member"
                 StatusMessage = "ニコ生タイピングは、フォロワー限定 (コミュ限) の配信には接続できません。"
