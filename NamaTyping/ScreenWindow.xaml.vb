@@ -3,10 +3,10 @@ Imports System.IO
 Imports System.Reflection
 Imports System.Windows.Forms.Integration
 Imports Microsoft.Win32
-Imports Pronama.NicoVideo.LiveStreaming
 Imports Pronama.NamaTyping.TextEncoding
 Imports Pronama.NamaTyping.ViewModel
 Imports System.ComponentModel
+Imports NamaTyping.NicoVideo.Comments
 
 Partial Public Class ScreenWindow
 
@@ -125,7 +125,7 @@ Partial Public Class ScreenWindow
         Dim textBox = DirectCast(sender, TextBox)
 
         Dim comment = New LiveCommentMessage With {.UserId = UserComboBox.SelectedIndex.ToString,
-                .Text = textBox.Text}
+                .Content = textBox.Text}
         comment.No = _commentNo
         _commentNo -= 1
 
@@ -208,7 +208,7 @@ Partial Public Class ScreenWindow
                 Continue For
             End If
 
-            Dim comment = New LiveCommentMessage With {.UserId = words(0), .Text = words(1), .Source = If(words(0) = "0", ChatSource.Broadcaster, ChatSource.General)}
+            Dim comment = New LiveCommentMessage With {.UserId = words(0), .Content = words(1), .Source = If(words(0) = "0", ChatSource.Broadcaster, ChatSource.General)}
             comment.No = _commentNo
             _commentNo -= 1
 

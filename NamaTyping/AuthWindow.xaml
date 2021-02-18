@@ -1,0 +1,52 @@
+﻿<Window
+    x:Class="AuthWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Pronama.NamaTyping"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="アカウント連携 - ニコ生タイピング"
+    Width="450"
+    Icon="Images/gear.png"
+    ResizeMode="NoResize"
+    SizeToContent="Height"
+    mc:Ignorable="d">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <Button Click="OpenAuthPage" Content="アカウントと連携（Webブラウザーで開く）..." />
+            <TextBlock Margin="0,10,0,5" Text="連携ページでニコニコアカウントにログインし、表示されたテキストを入力してください。" />
+            <TextBox Name="AuthTextBox" IsEnabled="False" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,15,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <!--<Button
+                    Width="100"
+                    HorizontalAlignment="Left"
+                    Content="Test Refresh" Click="ButtonBase_OnClick" />-->
+
+                <StackPanel
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+                    <Button
+                        Width="100"
+                        Click="Button_Click"
+                        Content="OK"
+                        IsDefault="True" />
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+    </Grid>
+</Window>

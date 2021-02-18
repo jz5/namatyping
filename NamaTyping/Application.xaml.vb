@@ -11,6 +11,7 @@ Class Application
     Private WithEvents ViewModel As MainViewModel
     Private WithEvents ScreenWindow As ScreenWindow
     Private WithEvents ConsoleWindow As ConsoleWindow
+    Private WithEvents AuthWindow As AuthWindow
     Private WithEvents ScoringResultWindow As ScoringResultWindow
 
     Protected Overrides Sub OnStartup(e As StartupEventArgs)
@@ -90,12 +91,19 @@ Class Application
         ConsoleWindow = Nothing
     End Sub
 
+    Private Sub AuthWindow_Closed(sender As Object, e As EventArgs) Handles AuthWindow.Closed
+        AuthWindow = Nothing
+    End Sub
+
     Private Sub ScreenWindow_Closed(sender As Object, e As EventArgs) Handles ScreenWindow.Closed
         SaveSettings()
 
         ScreenWindow = Nothing
         If ConsoleWindow IsNot Nothing Then
             ConsoleWindow.Close()
+        End If
+        if AuthWindow IsNot Nothing
+            AuthWindow.Close()
         End If
         If ScoringResultWindow IsNot Nothing Then
             ScoringResultWindow.Close()
@@ -144,6 +152,21 @@ Class Application
         End If
 
     End Sub
+
+    Private Sub ViewModel_ShowAuthSettings(sender As Object, e As EventArgs) Handles ViewModel.ShowAuthSettings
+
+        If AuthWindow Is Nothing Then
+            AuthWindow = New AuthWindow With {
+                .DataContext = ViewModel
+                }
+            AuthWindow.Show()
+
+        Else
+            AuthWindow.Activate()
+        End If
+
+    End Sub
+
 
     Private Sub ScoringResultWindow_Closed(sender As Object, e As EventArgs) Handles ScoringResultWindow.Closed
         ScoringResultWindow = Nothing

@@ -151,6 +151,20 @@
                     </StackPanel>
                 </Button>
 
+                <Button Command="{Binding ShowAuthSettingsCommand}" ToolTip="アカウント連携">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                        <Image
+                            Width="16"
+                            Height="16"
+                            SnapsToDevicePixels="True"
+                            Source="Images/gear.png" />
+                        <TextBlock
+                            Margin="5,0,5,0"
+                            VerticalAlignment="Center"
+                            Text="アカウント連携..." />
+                    </StackPanel>
+                </Button>
+
                 <ComboBox
                     Name="SizeComboBox"
                     Width="80"

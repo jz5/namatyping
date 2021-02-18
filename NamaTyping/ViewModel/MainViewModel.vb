@@ -1,15 +1,17 @@
 Imports System.Collections.ObjectModel
 Imports System.ComponentModel
 Imports System.IO
+Imports System.Net.WebSockets
 Imports System.Windows.Threading
 Imports Pronama.NamaTyping.Model
 Imports Microsoft.Win32
-Imports Pronama.NicoVideo.LiveStreaming
 Imports System.Text.RegularExpressions
 Imports System.Threading.Tasks
 Imports System.Runtime.InteropServices
 Imports System.Text
-Imports Pronama.NicoVideo
+Imports NamaTyping.Auth
+Imports NamaTyping.NicoVideo
+Imports NamaTyping.NicoVideo.Comments
 
 Namespace ViewModel
 
@@ -338,6 +340,11 @@ Namespace ViewModel
         Public Event ShowSettings As EventHandler(Of EventArgs)
         Protected Sub OnShowSettings()
             RaiseEvent ShowSettings(Me, EventArgs.Empty)
+        End Sub
+
+        Public Event ShowAuthSettings As EventHandler(Of EventArgs)
+        Protected Sub OnShowAuthSettings()
+            RaiseEvent ShowAuthSettings(Me, EventArgs.Empty)
         End Sub
 
         Public Event ShowResults As EventHandler(Of EventArgs)
@@ -940,22 +947,72 @@ Namespace ViewModel
                 Exit Sub
             End If
 
+            If String.IsNullOrWhiteSpace(My.Settings.UserId) Then
+                StatusMessage = "アカウントを連携してください。"
+                Exit Sub
+            End If
+
+            ' ニコ生タイピング サーバーと接続
+            Dim result As Result
+            Try
+
+                result = Await Client.RefreshTokenAsync(My.Settings.RefreshToken)
+
+            Catch ex As Exception
+                StatusMessage = "トークンの取得に失敗しました"
+                Exit Sub
+            End Try
+
+            Try
+                If result IsNot Nothing Then
+                    My.Settings.AccessToken = result.AccessToken
+                    My.Settings.RefreshToken = result.RefreshToken
+                End If
+
+            Catch ex As Exception
+                StatusMessage = ex.Message
+                Exit Sub
+            End Try
+
+            ' ニコニコ サーバー群と接続
             _connecting = True
 
             Try
-                Dim server = Await LiveProgramClient.GetCommentServerAsync(LiveProgramId)
-                _liveProgramClient = New LiveProgramClient()
+                _liveProgramClient = New LiveProgramClient(My.Settings.AccessToken, LiveProgramId, My.Settings.UserId)
+
+                ' WebSocket エンドポイント取得（ニコニコに接続）
+                Dim endpoint = Await _liveProgramClient.GetWebSocketEndpointAsync()
+
+                If endpoint?.Meta.Status <> 200 Then
+                    _connecting = False
+
+                    Select Case endpoint?.Meta.ErrorCode
+
+                        Case "PROGRAM_NOT_BEGUN", "PROGRAM_ENDED"
+                            StatusMessage = $"「{LiveProgramId}」は現在配信中ではありません。"
+
+                        Case Else
+                            StatusMessage = endpoint?.Meta.ErrorCode
+
+                    End Select
+                    Exit Sub
+                End If
+
+                ' event handlers
+
+                AddHandler _liveProgramClient.MessageReceived, AddressOf LiveProgramClient_MessageReceived
+                AddHandler _liveProgramClient.ServerConnectionStateChanged, AddressOf LiveProgramClient_ServerConnectionStateChanged
+
                 AddHandler _liveProgramClient.CommentReceived, AddressOf LiveProgramClient_CommentReceived
-                AddHandler _liveProgramClient.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
-                AddHandler _liveProgramClient.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
-                _liveProgramClient.ConnectAsync(server)
+                AddHandler _liveProgramClient.MessageServerConnectionStateChanged, AddressOf LiveProgramClient_MessageServerConnectionStateChanged
+
+                ' WebSocket エンドポイントのサーバーに接続
+                Await _liveProgramClient.StartWatchingAsync()
                 RecommnedDisablingCommentFilter()
-            Catch ex As Exception When ex.Message = "comingsoon" OrElse ex.Message = "closed"
-                StatusMessage = $"「{LiveProgramId}」は現在配信中ではありません。"
-            Catch ex As Exception When ex.Message = "require_community_member"
-                StatusMessage = "ニコ生タイピングは、フォロワー限定 (コミュ限) の配信には接続できません。"
-            Catch ex As Exception When ex.Message = "status_7"
-                StatusMessage = $"「{LiveProgramId}」は見つかりません。"
+
+            Catch ex As Exception
+                StatusMessage = ex.Message
+
             End Try
 
             _connecting = False
@@ -1002,10 +1059,13 @@ Namespace ViewModel
         Private Sub Disconnect(obj As Object)
 
             If _liveProgramClient IsNot Nothing Then
+                RemoveHandler _liveProgramClient.MessageReceived, AddressOf LiveProgramClient_MessageReceived
+                RemoveHandler _liveProgramClient.ServerConnectionStateChanged, AddressOf LiveProgramClient_ServerConnectionStateChanged
+
                 RemoveHandler _liveProgramClient.CommentReceived, AddressOf LiveProgramClient_CommentReceived
-                RemoveHandler _liveProgramClient.ConnectCompleted, AddressOf LiveProgramClient_ConnectCompleted
-                RemoveHandler _liveProgramClient.ConnectedChanged, AddressOf LiveProgramClient_ConnectionStatusChanged
-                _liveProgramClient.Close()
+                RemoveHandler _liveProgramClient.MessageServerConnectionStateChanged, AddressOf LiveProgramClient_MessageServerConnectionStateChanged
+
+                _liveProgramClient.Dispose()
                 _liveProgramClient = Nothing
 
                 StatusMessage = "切断しました"
@@ -1165,37 +1225,42 @@ Namespace ViewModel
 
         End Sub
 
-        Private Sub LiveProgramClient_ConnectCompleted(sender As Object, e As AsyncCompletedEventArgs)
-            If e.Error Is Nothing Then
-                Exit Sub
+
+        ''' <summary>
+        ''' サーバからクライアントに番組の視聴に必要な情報（メッセージ）を受信
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        Private Sub LiveProgramClient_MessageReceived(sender As Object, e As MessageEventArgs)
+            If e.Message.Type = "room" Then
+                ' type = room のメッセージに、メッセージサーバー（コメントサーバー）情報を含む。
+                ' メッセージサーバーに接続
+                _liveProgramClient.ConnectMessageServerAsync()
             End If
-
-            Throw e.Error
-            'If TypeOf e.Error Is NicoVideo.NicoVideoException Then
-            '    Dim nex = DirectCast(e.Error, NicoVideo.NicoVideoException)
-            '    If nex.ErrorDescription <> "" Then
-            '        Me.StatusMessage = String.Format("接続に失敗しました（Code={0}, Desc={1}）", nex.ErrorCode, nex.ErrorDescription)
-            '    Else
-            '        Me.StatusMessage = String.Format("接続に失敗しました（Code={0}）", nex.ErrorCode)
-            '    End If
-            'Else
-            '    Me.StatusMessage = String.Format("接続に失敗しました（{0}）", e.Error.Message)
-            'End If
-
         End Sub
 
-        Private Sub LiveProgramClient_ConnectionStatusChanged(sender As Object, e As EventArgs)
-            Dim client = DirectCast(sender, LiveProgramClient)
+        ''' <summary>
+        ''' WebSocket エンドポイントのサーバーとの接続状態が変化した
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        Private Sub LiveProgramClient_ServerConnectionStateChanged(sender As Object, e As EventArgs)
+            ' Do nothing
+        End Sub
 
-            If client.Connected Then
+        ''' <summary>
+        ''' メッセージサーバー（コメントサーバー）との接続状態が変化した
+        ''' </summary>
+        ''' <param name="sender"></param>
+        ''' <param name="e"></param>
+        Private Sub LiveProgramClient_MessageServerConnectionStateChanged(sender As Object, e As EventArgs)
+            If _liveProgramClient.MessageServerSocketState = WebSocketState.Open Then
                 StatusMessage = "接続しました: " & LiveProgramId
-
                 Connected = True
             Else
                 Disconnect()
             End If
         End Sub
-
 
 
 #Region "Show Lyric Command"
@@ -1354,6 +1419,19 @@ Namespace ViewModel
                                               End Sub))
                 End If
                 Return _showSettingsCommand
+            End Get
+        End Property
+
+        Private _showAuthSettingsCommand As ICommand
+        Public ReadOnly Property ShowAuthSettingsCommand As ICommand
+            Get
+                If _showAuthSettingsCommand Is Nothing Then
+                    _showAuthSettingsCommand = New RelayCommand(
+                        New Action(Of Object)(Sub()
+                                                  OnShowAuthSettings()
+                                              End Sub))
+                End If
+                Return _showAuthSettingsCommand
             End Get
         End Property
 
