@@ -1,4 +1,7 @@
-﻿using System;
+﻿using NamaTyping.NicoVideo.Messages;
+using NamaTyping.NicoVideo.OAuth;
+using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Net;
 using System.Net.Http;
@@ -7,10 +10,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using NamaTyping.NicoVideo.Comments;
-using NamaTyping.NicoVideo.Messages;
-using NamaTyping.NicoVideo.OAuth;
-using Newtonsoft.Json;
 using Message = NamaTyping.NicoVideo.Messages.Message;
 
 namespace NamaTyping.NicoVideo
@@ -36,14 +35,16 @@ namespace NamaTyping.NicoVideo
         private CancellationTokenSource _serverCancellationTokenSource;
 
 
+        [Obsolete]
         private ClientWebSocket _messageServerSocket;
+        [Obsolete]
         private CancellationTokenSource _messageServerCancellationTokenSource;
+        [Obsolete]
         private long _maxCommentNo = -1;
 
 
-        public RoomMessage RoomMessage => _roomMessage;
-        private RoomMessage _roomMessage;
-        
+        public MessageServerMessage MessageServerMessage { get; private set; }
+
 
         public LiveProgramClient(string accessToken, string liveId, string userId)
         {
@@ -181,9 +182,9 @@ namespace NamaTyping.NicoVideo
                         var json = Encoding.UTF8.GetString(buffer, 0, count);
                         var message = JsonConvert.DeserializeObject<Message>(json);
 
-                        if (message.Type == "room")
+                        if (message.Type == "messageServer")
                         {
-                            _roomMessage = JsonConvert.DeserializeObject<RoomMessage>(json);
+                            MessageServerMessage = JsonConvert.DeserializeObject<MessageServerMessage>(json);
                         }
                         MessageReceived?.Invoke(this, new MessageEventArgs(message));
                     }
@@ -198,17 +199,22 @@ namespace NamaTyping.NicoVideo
 
         public async Task ConnectMessageServerAsync(int resFrom = 0)
         {
+            var uri = MessageServerMessage.Data.ViewUri;
+
+            throw new NotImplementedException();
+
+            /*
             // Create WebSocket
             _messageServerSocket = new ClientWebSocket();
             _messageServerCancellationTokenSource = new CancellationTokenSource();
 
             // Connect to message server
-            var uri = new Uri(RoomMessage.Data.MessageServer.Uri);
+            var uri = new Uri(MessageServerMessage.Data.MessageServer.Uri);
             await _messageServerSocket.ConnectAsync(uri, _messageServerCancellationTokenSource.Token);
             MessageServerConnectionStateChanged?.Invoke(this, EventArgs.Empty);
 
             // Send 
-            var thread = $@"{{""thread"":{{""thread"":""{RoomMessage.Data.ThreadId}"",""version"":""20061206"",""user_id"":""{_userId}"",""res_from"":{resFrom},""with_global"":1,""scores"":1,""nicoru"":0,""threadkey"":""{RoomMessage.Data.YourPostKey}""}}}}";
+            var thread = $@"{{""thread"":{{""thread"":""{MessageServerMessage.Data.ThreadId}"",""version"":""20061206"",""user_id"":""{_userId}"",""res_from"":{resFrom},""with_global"":1,""scores"":1,""nicoru"":0,""threadkey"":""{MessageServerMessage.Data.YourPostKey}""}}}}";
 
             var firstSegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(thread));
             await _messageServerSocket.SendAsync(firstSegment, WebSocketMessageType.Text, true, _messageServerCancellationTokenSource.Token);
@@ -270,6 +276,7 @@ namespace NamaTyping.NicoVideo
                 }
 
             });
+            */
 
 
         }
