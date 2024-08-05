@@ -32,7 +32,7 @@ namespace NamaTyping.NicoVideo.Test
 
             client.MessageReceived += async (o, e) =>
             {
-                if (e.Message.Type == "room")
+                if (e.Message.Type == "messageServer")
                 {
                     await client.ConnectMessageServerAsync();
                 }

@@ -1,17 +1,15 @@
 Imports System.Collections.ObjectModel
-Imports System.ComponentModel
 Imports System.IO
 Imports System.Net.WebSockets
-Imports System.Windows.Threading
-Imports Pronama.NamaTyping.Model
-Imports Microsoft.Win32
-Imports System.Text.RegularExpressions
-Imports System.Threading.Tasks
 Imports System.Runtime.InteropServices
 Imports System.Text
+Imports System.Text.RegularExpressions
+Imports System.Windows.Threading
+Imports Microsoft.Win32
 Imports NamaTyping.Auth
 Imports NamaTyping.NicoVideo
 Imports NamaTyping.NicoVideo.Comments
+Imports Pronama.NamaTyping.Model
 
 Namespace ViewModel
 
@@ -1232,8 +1230,8 @@ Namespace ViewModel
         ''' <param name="sender"></param>
         ''' <param name="e"></param>
         Private Sub LiveProgramClient_MessageReceived(sender As Object, e As MessageEventArgs)
-            If e.Message.Type = "room" Then
-                ' type = room のメッセージに、メッセージサーバー（コメントサーバー）情報を含む。
+            If e.Message.Type = "messageServer" Then
+                ' type = messageServer のメッセージに、メッセージサーバー（コメントサーバー）情報を含む。
                 ' メッセージサーバーに接続
                 _liveProgramClient.ConnectMessageServerAsync()
             End If
