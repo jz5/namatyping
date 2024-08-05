@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
+﻿namespace NamaTyping.NicoVideo.Messages;
 
-namespace NamaTyping.NicoVideo.Messages
+public class Data
 {
-    public class Data
-    {
-    }
-
-   
 }

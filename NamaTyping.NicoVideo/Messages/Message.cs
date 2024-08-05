@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace NamaTyping.NicoVideo.Messages;
 
-namespace NamaTyping.NicoVideo.Messages
+/// <summary>
+/// ニコ動 API メッセージ
+/// </summary>
+public class Message
 {
-    /// <summary>
-    /// ニコ動 API メッセージ
-    /// </summary>
-    public class Message
-    {
-        public string Type { get; set; }
-        public virtual Data Data { get; set; }
-    }
+    public string Type { get; set; }
+    public virtual Data Data { get; set; }
 }

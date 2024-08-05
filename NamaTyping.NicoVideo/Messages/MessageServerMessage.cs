@@ -1,7 +1,6 @@
-﻿namespace NamaTyping.NicoVideo.Messages
+﻿namespace NamaTyping.NicoVideo.Messages;
+
+public class MessageServerMessage : Message
 {
-    public class MessageServerMessage : Message
-    {
-        public new MessageServerData Data { get; set; }
-    }
+    public new MessageServerData Data { get; set; }
 }
