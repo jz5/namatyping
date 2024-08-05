@@ -1,83 +1,74 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
+using Dwango.Nicolive.Chat.Data;
+using Dwango.Nicolive.Chat.Service.Edge;
 
-namespace NamaTyping.NicoVideo.Comments
+namespace NamaTyping.NicoVideo.Comments;
+
+// {"chat":{"thread":"xxx","no":173,"vpos":131432,
+// "date":1605704227,"date_usec":590855,"mail":"184",
+// "user_id":"xxx","anonymity":1,"content":"xxx"}}
+
+public class LiveCommentMessage
 {
-    // {"chat":{"thread":"xxx","no":173,"vpos":131432,
-    // "date":1605704227,"date_usec":590855,"mail":"184",
-    // "user_id":"xxx","anonymity":1,"content":"xxx"}}
+    public int No { get; set; }
+    public long VPos { get; set; }
+    public string UserId { get; set; }
+    public int? Premium { get; set; }
+    public string Content { get; set; }
+    public ChatSource Source { get; set; }
+    public string Text => Content; // 互換性保持
+    public DateTime DateTime { get; set; }
 
-    public class LiveCommentMessage : Message
+    public static LiveCommentMessage Create(ChunkedMessage chunkedMessage)
     {
-        private class ChatEnvelope
+        switch (chunkedMessage.PayloadCase)
         {
-            [JsonProperty("chat")]
-            public LiveCommentMessage Chat { get; set; }
-        }
-
-        [JsonProperty("thread")]
-        public string Thread { get; set; }
-
-        [JsonProperty("no")]
-        public int No { get; set; }
-
-        [JsonProperty("vpos")]
-        public long VPos { get; set; }
-
-        [JsonProperty("date")]
-        public long Date { get; set; }
-
-        [JsonProperty("date_usec")]
-        public long DateUsec { get; set; }
-
-        [JsonProperty("user_id")]
-        public string UserId { get; set; }
-
-        [JsonProperty("mail")]
-        public string Mail { get; set; }
-
-        [JsonProperty("anonymity")]
-        public int Anonymity { get; set; }
-
-        [JsonProperty("premium")]
-        public int? Premium { get; set; }
-
-        [JsonProperty("content")]
-        public string Content { get; set; }
-
-        [JsonProperty("deleted")]
-        public int Deleted { get; set; }
-
-
-        public ChatSource Source { get; set; }
-        public string Text => Content; // 互換性保持
-
-        private DateTime? _dateTime;
-        public DateTime DateTime
-        {
-            get
+            case ChunkedMessage.PayloadOneofCase.Message:
             {
-                if (_dateTime != null)
+                var chat = chunkedMessage.Message.Chat;
+                return new LiveCommentMessage
                 {
-                    return _dateTime.Value;
-                }
-
-                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0,
-                    DateTimeKind.Utc).AddSeconds(Date);
-                _dateTime = dateTime.AddMilliseconds(DateUsec / 1000.0);
-
-                return _dateTime.Value;
+                    No = chat.No,
+                    VPos = chat.Vpos,
+                    UserId = chat.HashedUserId,
+                    Premium = chat.AccountStatus == Chat.Types.AccountStatus.Premium ? 1 : null,
+                    Content = chat.Content,
+                    DateTime = chunkedMessage.Meta.At.ToDateTimeOffset().DateTime,
+                    Source = ChatSource.General
+                };
             }
+            case ChunkedMessage.PayloadOneofCase.State
+                when string.IsNullOrWhiteSpace(chunkedMessage.State.Marquee?.Display?.OperatorComment?.Content):
+                // 運営コメント
+                return new LiveCommentMessage
+                {
+                    No = 0,
+                    VPos = 0,
+                    UserId = "",
+                    Premium = null,
+                    Content = chunkedMessage.State.Marquee?.Display?.OperatorComment?.Content,
+                    DateTime = chunkedMessage.Meta.At.ToDateTimeOffset().DateTime,
+                    Source = ChatSource.Operator
+                };
+            case ChunkedMessage.PayloadOneofCase.State
+                when chunkedMessage.State.ProgramStatus?.State == ProgramStatus.Types.State.Ended:
+                // 状態付きメッセージの放送状態
+                return new LiveCommentMessage
+                {
+                    No = 0,
+                    VPos = 0,
+                    UserId = "",
+                    Premium = null,
+                    Content = "/disconnect",
+                    DateTime = chunkedMessage.Meta.At.ToDateTimeOffset().DateTime,
+                    Source = ChatSource.Operator
+                };
+            case ChunkedMessage.PayloadOneofCase.State:
+                break;
+            default:
+                return null;
         }
 
-        public static LiveCommentMessage Create(string json)
-        {
-            var message =  JsonConvert.DeserializeObject<ChatEnvelope>(json)?.Chat;
-
-            message.Source = Enum.TryParse<ChatSource>($"{message.Premium}", out var chatSource) ? chatSource : ChatSource.General;
-
-            return message;
-        }
+        return null;
     }
 }
