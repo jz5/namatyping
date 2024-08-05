@@ -260,3 +260,6 @@ paket-files/
 __pycache__/
 *.pyc
 /codealike.json
+
+# macOS
+.DS_Store
