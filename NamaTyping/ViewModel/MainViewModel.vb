@@ -1,6 +1,5 @@
 Imports System.Collections.ObjectModel
 Imports System.IO
-Imports System.Net.WebSockets
 Imports System.Runtime.InteropServices
 Imports System.Text
 Imports System.Text.RegularExpressions
@@ -1233,7 +1232,7 @@ Namespace ViewModel
             If e.Message.Type = "messageServer" Then
                 ' type = messageServer のメッセージに、メッセージサーバー（コメントサーバー）情報を含む。
                 ' メッセージサーバーに接続
-                _liveProgramClient.ConnectMessageServerAsync()
+                _liveProgramClient.ConnectMessageServer()
             End If
         End Sub
 
@@ -1252,7 +1251,7 @@ Namespace ViewModel
         ''' <param name="sender"></param>
         ''' <param name="e"></param>
         Private Sub LiveProgramClient_MessageServerConnectionStateChanged(sender As Object, e As EventArgs)
-            If _liveProgramClient.MessageServerSocketState = WebSocketState.Open Then
+            If _liveProgramClient.Connected Then
                 StatusMessage = "接続しました: " & LiveProgramId
                 Connected = True
             Else

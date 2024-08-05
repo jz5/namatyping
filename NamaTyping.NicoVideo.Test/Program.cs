@@ -30,11 +30,11 @@ namespace NamaTyping.NicoVideo.Test
                 return;
             }
 
-            client.MessageReceived += async (o, e) =>
+            client.MessageReceived += (o, e) =>
             {
                 if (e.Message.Type == "messageServer")
                 {
-                    await client.ConnectMessageServerAsync();
+                    client.ConnectMessageServer();
                 }
             };
 
@@ -48,10 +48,10 @@ namespace NamaTyping.NicoVideo.Test
                 Console.WriteLine($"ServerConnectionStateChanged: {client.ServerSocketState}");
             };
 
-            client.MessageServerConnectionStateChanged += (o, e) =>
-            {
-                Console.WriteLine($"MessageServerConnectionStateChanged: {client.MessageServerSocketState}");
-            };
+            //client.MessageServerConnectionStateChanged += (o, e) =>
+            //{
+            //    Console.WriteLine($"MessageServerConnectionStateChanged: {client.MessageServerSocketState}");
+            //};
 
             await client.StartWatchingAsync();
 
