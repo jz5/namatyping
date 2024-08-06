@@ -46,7 +46,9 @@ public partial class LiveProgramClient
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw;
+                _shouldDisconnect = true;
+                Connected = false;
+                MessageServerConnectionStateChanged?.Invoke(this, EventArgs.Empty);
             }
         });
 
@@ -148,11 +150,9 @@ public partial class LiveProgramClient
             {
                 await foreach (var entry in retriever.RetrieveAsync($"{uri}?at={next}", entryParser))
                 {
-                    Console.WriteLine($"ChunkedEntry: {entry}"); // メッセージの内容を表示
-
                     if (entry.EntryCase == ChunkedEntry.EntryOneofCase.Backward && initialPhase)
                     {
-
+                        // Do nothing
                     }
                     else if (entry.EntryCase == ChunkedEntry.EntryOneofCase.Previous && initialPhase)
                     {
@@ -165,7 +165,6 @@ public partial class LiveProgramClient
                     }
                     else if (entry.EntryCase == ChunkedEntry.EntryOneofCase.Next)
                     {
-                        Console.WriteLine($"Next: {entry.Next.At}");
                         next = entry.Next.At;
                     }
                 }
