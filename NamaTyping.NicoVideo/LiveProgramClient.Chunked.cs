@@ -35,24 +35,24 @@ public partial class LiveProgramClient
         _messageIds.Clear();
 
         var retriever = new Retriever();
-        //var entryParser = new MessageParser<ChunkedEntry>(() => new ChunkedEntry());
-        //var messageParser = new MessageParser<ChunkedMessage>(() => new ChunkedMessage());
+        var entryParser = new MessageParser<ChunkedEntry>(() => new ChunkedEntry());
+        var messageParser = new MessageParser<ChunkedMessage>(() => new ChunkedMessage());
 
         var at = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var uri = MessageServerMessage.Data.ViewUri;
 
-        //_ = Task.Run(async () =>
-        //{
-        //    try
-        //    {
-        //        await FetchForwardPlaylistMessagesAsync(retriever, entryParser, messageParser, uri, at);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e);
-        //        throw;
-        //    }
-        //});
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await FetchForwardPlaylistMessagesAsync(retriever, entryParser, messageParser, uri, at);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        });
 
 
         /*
