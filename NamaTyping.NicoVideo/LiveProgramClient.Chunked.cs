@@ -17,18 +17,14 @@ public partial class LiveProgramClient
     public bool Connected { get; private set; }
 
 
+    private bool _shouldDisconnect;
+
     /// <summary>
     /// メッセージID（重複受信チェック用）
     /// </summary>
     private readonly HashSet<string> _messageIds = new();
 
 
-
-
-    public void Disconnect()
-    {
-
-    }
 
     public void ConnectMessageServer()
     {
@@ -146,7 +142,7 @@ public partial class LiveProgramClient
 
         var initialPhase = true;
         var next = from;
-        while (true)
+        while (!_shouldDisconnect)
         {
             try
             {
@@ -184,6 +180,7 @@ public partial class LiveProgramClient
 
 
         Connected = false;
+        _shouldDisconnect = false;
         MessageServerConnectionStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -209,29 +206,23 @@ public partial class LiveProgramClient
             await foreach (var message in retriever.RetrieveAsync(uri, parser))
             {
 
-                if (message.PayloadCase == ChunkedMessage.PayloadOneofCase.Message)
-                {
-                    var at = message.Meta.At.ToDateTimeOffset();
-                    Console.WriteLine($"{at}: {message.Message.Chat.Vpos}: {message.Message.Chat.Content}");
+                //Console.WriteLine($"{at}: {message.Message.Chat.Vpos}: {message.Message.Chat.Content}");
+                if (message.Meta == null)
+                    continue;
 
-                    if (_messageIds.Contains(message.Meta.Id))
-                        continue;
+                if (_messageIds.Contains(message.Meta.Id))
+                    continue;
 
-                    _messageIds.Add(message.Meta.Id);
+                // コメントオブジェクト作成
+                var comment = LiveCommentMessage.Create(message);
+                if (comment == null)
+                    continue;
 
-                    // コメント通知
-                    var comment = LiveCommentMessage.Create(message);
-                    if (comment != null)
-                    {
-                        CommentReceived?.Invoke(this, new CommentReceivedEventArgs(comment));
-                    }
+                // コメント通知
+                CommentReceived?.Invoke(this, new CommentReceivedEventArgs(comment));
 
+                _messageIds.Add(message.Meta.Id);
 
-                }
-                else
-                {
-                    Console.WriteLine($"{message.PayloadCase}");
-                }
             }
         }
         catch (Exception e)

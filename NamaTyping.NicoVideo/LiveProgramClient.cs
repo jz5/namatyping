@@ -29,5 +29,7 @@ public partial class LiveProgramClient : IDisposable
     {
         _serverSocket?.Dispose();
         _serverCancellationTokenSource?.Dispose();
+
+        _shouldDisconnect = true;
     }
 }
