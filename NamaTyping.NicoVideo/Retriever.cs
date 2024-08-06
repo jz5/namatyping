@@ -13,7 +13,7 @@ public class Retriever
 
     public async IAsyncEnumerable<T> RetrieveAsync<T>(string uri, MessageParser<T> parser) where T : IMessage<T>
     {
-        Console.WriteLine($"Fetching messages... {uri}");
+        //Console.WriteLine($"Fetching messages... {uri}");
         HttpResponseMessage response;
         try
         {

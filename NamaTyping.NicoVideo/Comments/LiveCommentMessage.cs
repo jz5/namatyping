@@ -31,7 +31,7 @@ public class LiveCommentMessage
                     {
                         No = chat.No,
                         VPos = chat.Vpos,
-                        UserId = chat.HashedUserId,
+                        UserId = chat.HasRawUserId ? chat.RawUserId.ToString() : chat.HashedUserId,
                         Premium = chat.AccountStatus == Chat.Types.AccountStatus.Premium ? 1 : null,
                         Content = chat.Content,
                         DateTime = chunkedMessage.Meta.At.ToDateTimeOffset().DateTime,
@@ -39,7 +39,7 @@ public class LiveCommentMessage
                     };
                 }
             case ChunkedMessage.PayloadOneofCase.State
-                when string.IsNullOrWhiteSpace(chunkedMessage.State.Marquee?.Display?.OperatorComment?.Content):
+                when !string.IsNullOrWhiteSpace(chunkedMessage.State.Marquee?.Display?.OperatorComment?.Content):
                 // 運営コメント
                 return new LiveCommentMessage
                 {
