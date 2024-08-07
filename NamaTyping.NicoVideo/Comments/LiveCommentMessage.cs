@@ -49,7 +49,7 @@ public class LiveCommentMessage
                     Premium = null,
                     Content = chunkedMessage.State.Marquee?.Display?.OperatorComment?.Content,
                     DateTime = chunkedMessage.Meta.At.ToDateTimeOffset().DateTime,
-                    Source = ChatSource.Operator
+                    Source = ChatSource.Operator | ChatSource.Broadcaster
                 };
             case ChunkedMessage.PayloadOneofCase.State
                 when chunkedMessage.State.ProgramStatus?.State == ProgramStatus.Types.State.Ended:
