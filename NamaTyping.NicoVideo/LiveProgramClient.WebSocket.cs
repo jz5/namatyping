@@ -121,7 +121,7 @@ public partial class LiveProgramClient
             {
                 while (true)
                 {
-                    var buffer = new byte[4096];
+                    var buffer = new byte[4096 * 10];
 
                     // Receive
                     var segment = new ArraySegment<byte>(buffer);
